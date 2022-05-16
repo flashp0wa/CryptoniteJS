@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Cryptonite - Binance History Data Download</title>
+    <script type="module" src="./JS/binanceHistoryDownload.js"></script>
+    <style>
+      body {
+        background-color: grey;
+        color: yellow;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .wssBox {
+        height: 250;
+      }
+    </style>
+  </head>
+<table>
+  <tr>
+    <td>
+      <p>Symbol: 
+        <select name="symbol" id="symbol">
+        </select>
+      </p>
+        <label for="trade-type" class="dropDown">
+          Trade Type:
+          <select name="tradeType" id="trade-type">
+            <option value="aggTrades">AggTrades</option>
+            <option value="klines">Klines</option>
+            <option value="trades">Trades</option>
+          </select>
+        </label> 
+        <label for="dd-klines" id="lklines">
+          Klines: 
+          <select name="klines" id="dd-klines" value="klinesTimeFrame"></select>
+        </label>
+      <p>
+        Time Frame:
+        <label for="radio-daily" class="timeFrame">
+          <input type="radio" id="radio-daily" value="daily">
+          Daily
+        </label> 
+        <label for="radio-monthly" class="timeFrame">
+          <input type="radio" id="radio-monthly" value="monthly">
+          Monthly
+        </label>
+      </p>
+      <p>
+        <label for="radio-date" id="lradio-date">
+          <input type="radio" id="radio-date" value="specificDate">
+          Specific Date
+        </label>
+        <label for="radio-range" id="lradio-range">
+          <input type="radio" id="radio-range" value="radioRange">
+          Range
+        </label>
+      </p>
+      <p>Start date: <input type="date" id="start-date"></p>
+      <p>End date: <input type="date" id="end-date"></p>
+      <button type="submit" id="download">Download</button>
+      <p>
+        <a href="index.html">Back To Index</a>
+      </p>
+    </td>
+    <td>
+      <input type="text" name="wssSymbolIn" id="wss-symbol-in" class="wssBox">
+      <input type="button" value="add" id="add-wss-symbol">
+      <input type="text" name="wssSymbolOut" id="wss-symbol-out" class="wssBox">
+      <p><input type="button" value="Start Stream" id="start-wss-stream"></p>
+    </td>
+  </tr>
+</table>
+
+  <body>
+  </body>
+</html>

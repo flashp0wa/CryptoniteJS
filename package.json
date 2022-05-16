@@ -1,0 +1,29 @@
+{
+    "name": "cryptonite",
+    "version": "1.0.0",
+    "dependencies": {
+        "axios": "^0.21.4",
+        "cctx": "^1.0.1",
+        "ccxt": "^1.62.90",
+        "ccxws": "^0.47.0",
+        "cheerio": "^1.0.0-rc.10",
+        "csv-parser": "^3.0.0",
+        "dotenv": "^10.0.0",
+        "download": "^8.0.0",
+        "express": "^4.17.3",
+        "fast-csv": "^4.3.6",
+        "lodash": "^4.17.21",
+        "mssql": "^7.2.0",
+        "node-fetch": "^3.2.3",
+        "node-powershell": "^4.0.0",
+        "nodemailer": "^6.6.3",
+        "pretty": "^2.0.0",
+        "shrimpy-node": "^0.2.15",
+        "websocket": "^1.0.34",
+        "winston": "^3.3.3"
+    },
+    "devDependencies": {
+        "eslint": "^8.0.1",
+        "eslint-config-google": "^0.14.0"
+    }
+}

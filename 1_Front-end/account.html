@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Account Info</title>
+    <script type="module" src="./JS/accountInfo.js"></script>
+    <style>
+      .tarea {
+        white-space: pre-line;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td valign="top">
+          <label">
+            Exchange
+            <select name="exchange" id="exchange">
+              <option value="binance-test">Binance-Test</option>
+            </select>
+            <p>
+              <button id="btnGetInfo">Get Info</button>
+            </p>
+          </label>
+        </td>
+        <td>
+          <p>Account Balance</p>
+          <textarea name="accountBalance" id="account-balance" cols="30" rows="20" class="tarea">
+          </textarea>
+        </td>
+        <td valign="top">
+          <p>Open Orders</p>
+          <textarea name="openOrders" id="open-orders" cols="160" rows="20" class="tarea"></textarea>
+        </td>
+      </tr>
+    </table>
+    <a href="./index.html">Back to Home</a>
+    lol
+  </body>
+</html>
