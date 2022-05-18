@@ -96,7 +96,8 @@ class Order {
           break;
       }
     } catch (error) {
-      TraderLog.info(`Error in creation of Order: ${error.message}`);
+      TraderLog.info(`Error occured while creating order for ${this.symbol}. ${error.message}`);
+      globalEvent.emit('SendMail', `Error occured while creating order for ${this.symbol}. ${error.message}`)
     }
   }
 }

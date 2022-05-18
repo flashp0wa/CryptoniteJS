@@ -1,1 +1,1 @@
-class Wss
+c

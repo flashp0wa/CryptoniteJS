@@ -1,9 +1,17 @@
+import {loadSymbols} from './loadSymbols.js'
+import {config} from './config.js'
+
+loadSymbols();
+
 async function getAccountInfo() {
   const exchange = document.getElementById('exchange').value;
   const url = `http://127.0.0.1:3000/exchange/${exchange}/getAccountInfo`;
   const response = await (await fetch(url)).json();
   const balance = document.getElementById('account-balance');
   const openOrdersText = document.getElementById('open-orders');
+
+  balance.value = '';
+  openOrdersText.value = '';
 
   balance.value = 'Free:\n';
   for (const coin in response.free) {
@@ -40,6 +48,20 @@ async function getAccountInfo() {
 
 }
 
+async function cancelAllOrders(params) {
+  const exchange = document.getElementById('exchange').value;
+  const url = `${config.BACKEND_URL}/exchange/${exchange}/cancelOrders/all`;
+  await fetch(url);
+}
+
+async function cancelOrder() {
+  const exchange = document.getElementById('exchange').value;
+  const symbol = document.getElementById('symbol').value;
+  const url = `${config.BACKEND_URL}/exchange/${exchange}/cancelOrders/${symbol}`;
+  await fetch(url);
+}
 
 
 document.getElementById('btnGetInfo').addEventListener('click', getAccountInfo);
+document.getElementById('btnCancelOrder').addEventListener('click', cancelOrder);
+document.getElementById('btnCancelAllOrders').addEventListener('click', cancelAllOrders);

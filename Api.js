@@ -5,6 +5,8 @@ const {ApiLog} = require('./Toolkit/Logger.js');
 const {startDataScan} = require('./Toolkit/DataScan.js');
 const queryProcessor = require('./DatabaseConnection/QueryProcessor.js');
 const {downloadHistoryData} = require('./Toolkit/BncHistoryDownload.js');
+const _ = require('lodash');
+
 /**
  * Initializes cryptonite API
  */
@@ -58,6 +60,32 @@ function startApi() {
         res.send(response);
       } catch (error) {
         ApiLog.error(`Could not retrieve account info. ${error}`);
+      }
+    })();
+  });
+  
+  app.get('/exchange/:exchange/cancelOrders/:symbol', (req, res) => {
+    (async () => {
+      try {
+        const exchange = dataBank.getCcxtExchange(req.params.exchange);
+        const openOrders = await exchange.fetchOpenOrders();
+    
+        if (req.params.symbol === 'all') {
+          const symbols = [];
+          for (const order of openOrders) {
+            symbols.push(order.info.symbol);
+          }
+          const uniqueSymbols = _.uniq(symbols);
+          for (const symbol of uniqueSymbols) {
+            exchange.cancelAllOrders(symbol);
+          }
+          ApiLog.info('All orders have been canceled.')
+        } else {
+          exchange.cancelAllOrders(req.params.symbol);
+          ApiLog.info(`Orders for ${req.params.symbol} has been canceled.`)
+        }
+      } catch (error) {
+        ApiLog.error(`Cannot cancel orders. ${error}`);
       }
     })();
   });

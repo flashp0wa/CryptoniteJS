@@ -1,5 +1,6 @@
 require('dotenv').config({path: '.env'});
 const ccxt = require('ccxt');
+const _ = require('lodash');
 
 const bncTst = 'binance';
 const binanceTest = new ccxt[bncTst]();
@@ -19,10 +20,17 @@ binanceTest.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all o
   // const res = binanceTest.symbols
   // console.log(markets['ETH/BTC'].info.filters);
 
-  await binanceTest.cancelAllOrders('BTCUSDT');
-  const stuff = await binanceTest.createLimitSellOrder('BTCUSDT', 0.00675, 54892)
+  await binanceTest.createLimitSellOrder('BTCUSDT', 0.2, 50000)
+  await binanceTest.createLimitSellOrder('XRPUSDT', 100, 1)
+  await binanceTest.createLimitSellOrder('ETHUSDT', 0.2, 3000)
   // const openOrders = await binanceTest.fetchOpenOrders();
   
-  console.log(stuff);
-
+  // const symbols = [];
+  // for (const order of openOrders) {
+  //   symbols.push(order.info.symbol);
+  // }
+  // const newArray = _.uniq(symbols);
+  // for (const symbol of newArray) {
+  //   binanceTest.cancelAllOrders(symbol);
+  // }
 })();
