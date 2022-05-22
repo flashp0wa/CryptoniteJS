@@ -20,17 +20,28 @@ binanceTest.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all o
   // const res = binanceTest.symbols
   // console.log(markets['ETH/BTC'].info.filters);
 
-  await binanceTest.createLimitSellOrder('BTCUSDT', 0.2, 50000)
-  await binanceTest.createLimitSellOrder('XRPUSDT', 100, 1)
-  await binanceTest.createLimitSellOrder('ETHUSDT', 0.2, 3000)
+  // await binanceTest.createLimitSellOrder('BTCUSDT', 0.2, 50000)
+  // await binanceTest.createLimitSellOrder('XRPUSDT', 100, 1)
+  // await binanceTest.createLimitSellOrder('ETHUSDT', 0.2, 3000)
   // const openOrders = await binanceTest.fetchOpenOrders();
   
-  // const symbols = [];
-  // for (const order of openOrders) {
-  //   symbols.push(order.info.symbol);
-  // }
-  // const newArray = _.uniq(symbols);
-  // for (const symbol of newArray) {
-  //   binanceTest.cancelAllOrders(symbol);
-  // }
+  // binanceTest.defineRestApi()
+
+  await binanceTest.loadMarkets();
+
+  const rees = binanceTest.priceToPrecision('XRPUSDT', 0.45898);
+  console.log(rees);
+  
+  const res = await binanceTest.privatePostOrderOco({
+    symbol: 'XRPUSDT',
+    side: 'sell',
+    quantity: 200,
+    price: 0.45,
+    stopPrice: binanceTest.priceToPrecision('XRPUSDT',0.39123),
+    stopLimitPrice: binanceTest.priceToPrecision('XRPUSDT', 0.37123),
+    stopLimitTimeInForce: 'GTC'
+
+  })
+  console.log(res);
+  
 })();

@@ -1,11 +1,13 @@
+import {config} from './config.js'
+
 const exchange = document.getElementById('exchange');
 export async function loadSymbols() {
   try {
     let url;
     if (!exchange) {
-      url = `http://localhost:3000/exchange/binance/getSymbols`;
+      url = `${config.BACKEND_URL}/exchange/binance/getSymbols`;
     } else {
-      url = `http://localhost:3000/exchange/${exchange.value}/getSymbols`;
+      url = `${config.BACKEND_URL}/exchange/${exchange.value}/getSymbols`;
     }
     const symbols = document.getElementById('symbol');
 

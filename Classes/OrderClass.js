@@ -5,17 +5,19 @@ const {writeToDatabase} = require('../DatabaseConnection/SQLConnector.js');
 
 class Order {
   constructor(conObj) {
+    this.exchangeObj = dataBank.getCcxtExchange(conObj.exchange);
     this.symbol = conObj.symbol;
     this.price = conObj.price;
     this.side = conObj.side;
     this.exchangeName = conObj.exchange;
-    this.exchangeObj = dataBank.getCcxtExchange(conObj.exchange);
     this.orderAmountPercent = conObj.orderAmountPercent;
-    this.orderAmount = conObj.orderAmount || false;
     this.orderType = conObj.orderType;
     this.useLastOrderCost = conObj.useLastOrderCost || false;
-    this.stopLossPrice = conObj.stopLossPrice;
-    this.sellPrice = conObj.sellPrice;
+    this.orderAmount = this.exchangeObj.decimalToPrecision(conObj.orderAmount, 'ROUND', 2, 'DECIMAL_PLACES') || false;
+    this.stopLimitPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopLimitPrice);
+    this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.stopLimitPrice + conObj.stopLimitPrice * 0.01))
+    this.sellPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.sellPrice);
+    this.buyPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.buyPrice + conObj.buyPrice * 0.003))
   }
 
   processOrderResponse(inObj) {
@@ -71,24 +73,34 @@ class Order {
         this.orderAmount = await this.calcOrderVol();
       }
 
-      const orderPrice = this.price + (this.price * 0.003); // place order 0.3% higher than market price
-
       switch (this.orderType) {
         case 'createMarketOrder':
-          TraderLog.info(`New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${orderPrice}`);
-          const response = await this.exchangeObj.createMarketOrder(this.symbol, this.side, this.orderAmount, orderPrice);
-          globalEvent.emit('SendMail', `New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${orderPrice}`);
-          this.processOrderResponse(response);
-          dataBank.lastSellOrderCost('set', this.symbol, response.cost);
-          TraderLog.info(`New market order has been created. Id: ${response.id}`);
+          console.log(this.sellPrice)
           if (this.side === 'buy') {
-            const stopLimitPrice = this.stopLossPrice
-            const stopPrice = stopLimitPrice + stopLimitPrice * 0.01;
+            TraderLog.info(`New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.buyPrice}`);
+            const response = await this.exchangeObj.createMarketOrder(this.symbol, this.side, this.orderAmount, this.buyPrice);
+            TraderLog.info(`New market order has been created. Id: ${response.id}`);
+            globalEvent.emit('SendMail', `New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.buyPrice}`);
+            
+            this.processOrderResponse(response);
+            
+            const ocoResp = await this.exchangeObj.privatePostOrderOco({
+              symbol: this.symbol,
+              side: 'sell',
+              quantity: this.orderAmount,
+              price: this.sellPrice,
+              stopPrice: this.stopPrice,
+              stopLimitPrice: this.stopLimitPrice,
+              stopLimitTimeInForce: 'GTC'
+            });
 
-            await this.exchangeObj.createOrder(this.symbol, 'stop_loss_limit', 'sell', this.orderAmount, stopLimitPrice, {'stopPrice': stopPrice});
-            TraderLog.info('Stop-Limit order has been created for the buy order');
-            await this.exchangeObj.createLimitSellOrder(this.symbol, this.orderAmount, this.sellPrice);
-            TraderLog.info('Limit-sell order has been creted for the buy order');
+            TraderLog.info('OCO order has been creted for the buy order');
+          } else {
+            TraderLog.info(`New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.sellPrice}`);
+            const response = await this.exchangeObj.createMarketOrder(this.symbol, this.side, this.orderAmount, this.sellPrice);
+            TraderLog.info(`New market order has been created. Id: ${response.id}`);
+            this.processOrderResponse(response);
+            dataBank.lastSellOrderCost('set', this.symbol, response.cost);
           }
           break;
 

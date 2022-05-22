@@ -5,7 +5,7 @@ loadSymbols();
 
 async function getAccountInfo() {
   const exchange = document.getElementById('exchange').value;
-  const url = `http://127.0.0.1:3000/exchange/${exchange}/getAccountInfo`;
+  const url = `${config.BACKEND_URL}/exchange/${exchange}/getAccountInfo`;
   const response = await (await fetch(url)).json();
   const balance = document.getElementById('account-balance');
   const openOrdersText = document.getElementById('open-orders');
