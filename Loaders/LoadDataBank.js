@@ -1,5 +1,6 @@
 const ccxt = require('ccxt');
 const {singleRead} = require('../DatabaseConnection/SQLConnector.js');
+const {ApplicationLog} = require('../Toolkit/Logger.js');
 
 const dataBank = new Map();
 /**
@@ -66,26 +67,27 @@ async function lastSellOrderCost(exch, symbol, price) {
  */
 function getCcxtExchange(exch) {
   async function loadExchanges() {
+    ApplicationLog.info('Loading exchanges...');
     const excMap = new Map();
     const excArr = [
       'binance',
-      'coinbase',
-      'ftx',
-      'kraken',
-      'kucoin',
-      'huobi',
-      'gemini',
-      'bitfinex',
-      'bitstamp',
-      'coincheck',
-      'bitflyer',
-      'bybit',
-      'okex',
-      'coinone',
-      'poloniex',
+      // 'coinbase',
+      // 'ftx',
+      // 'kraken',
+      // 'kucoin',
+      // 'huobi',
+      // 'gemini',
+      // 'bitfinex',
+      // 'bitstamp',
+      // 'coincheck',
+      // 'bitflyer',
+      // 'bybit',
+      // 'okex',
+      // 'coinone',
+      // 'poloniex',
     ];
 
-    excArr.forEach(async (exc) => {
+    for (const exc of excArr) {
       const newExc = new ccxt[exc]();
       await newExc.loadMarkets();
 
@@ -95,16 +97,18 @@ function getCcxtExchange(exch) {
           newExc.apiKey = process.env.BNC_APIKEY;
           newExc.secret = process.env.BNC_SECKEY;
           newExc.options.adjustForTimeDifference = true;
-          newExc.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call open orders without symbol once per 10 sec
+          newExc.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call open orders without symbol once per 10 sec
           excMap.set(exc, newExc);
 
           const bncTst = 'binance';
           const binanceTest = new ccxt[bncTst]();
+          binanceTest.loadMarkets();
           binanceTest.apiKey = process.env.BNCT_APIKEY;
           binanceTest.secret = process.env.BNCT_SECKEY;
           binanceTest.set_sandbox_mode(true);
-          binanceTest.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call open orders without symbol once per 10 sec
+          binanceTest.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call open orders without symbol once per 10 sec
           binanceTest.options.adjustForTimeDifference = true;
+          // binanceTest.verbose = true;
           excMap.set('binance-test', binanceTest);
           break;
 
@@ -112,7 +116,8 @@ function getCcxtExchange(exch) {
           excMap.set(exc, newExc);
           break;
       }
-    });
+      ApplicationLog.info(`${exc} has been loaded`);
+    }
 
     dataBank.set('exchanges', excMap);
   }

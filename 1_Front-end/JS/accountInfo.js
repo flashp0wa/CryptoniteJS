@@ -1,5 +1,5 @@
-import {loadSymbols} from './loadSymbols.js'
-import {config} from './config.js'
+import {loadSymbols} from './loadSymbols.js';
+import {config} from './config.js';
 
 loadSymbols();
 
@@ -20,7 +20,7 @@ async function getAccountInfo() {
       balance.value += line;
     }
   }
-  
+
   balance.value += '\n';
 
   balance.value += 'Used:\n';
@@ -45,7 +45,6 @@ async function getAccountInfo() {
       openOrdersText.value += line;
     }
   }
-
 }
 
 async function cancelAllOrders(params) {

@@ -154,7 +154,7 @@ async function stream_PriceWatch(streamObject) {
     if (!pw_baseDate) {
       ApplicationLog.info(`First run ... setting base date: ${pw_baseDate}`);
       pw_baseDate = new Date();
-      pw_resetDate = new Date(pw_baseDate.setDate(pw_baseDate.getDate() + 1)); // Addin one day to current day
+      pw_resetDate = new Date(pw_baseDate.setDate(pw_baseDate.getDate() + 1)); // Adding one day to current day
     } else if (today > pw_resetDate) { // reseting baseprice eveyday to avoid long running price percent increase/decrease
       pw_coinData.set(currentSymbol, currentPrice); // setting new baseprice
       pw_baseDate = new Date();

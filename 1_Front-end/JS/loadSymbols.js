@@ -1,4 +1,4 @@
-import {config} from './config.js'
+import {config} from './config.js';
 
 const exchange = document.getElementById('exchange');
 export async function loadSymbols() {
@@ -13,7 +13,7 @@ export async function loadSymbols() {
 
     if (symbols) {
       const option = document.querySelectorAll('#symbol option');
-      option.forEach(o => o.remove());
+      option.forEach((o) => o.remove());
     }
 
     const symbolResponse = await (await fetch(url)).json();

@@ -63,13 +63,13 @@ function startApi() {
       }
     })();
   });
-  
+
   app.get('/exchange/:exchange/cancelOrders/:symbol', (req, res) => {
     (async () => {
       try {
         const exchange = dataBank.getCcxtExchange(req.params.exchange);
         const openOrders = await exchange.fetchOpenOrders();
-    
+
         if (req.params.symbol === 'all') {
           const symbols = [];
           for (const order of openOrders) {
@@ -79,10 +79,10 @@ function startApi() {
           for (const symbol of uniqueSymbols) {
             exchange.cancelAllOrders(symbol);
           }
-          ApiLog.info('All orders have been canceled.')
+          ApiLog.info('All orders have been canceled.');
         } else {
           exchange.cancelAllOrders(req.params.symbol);
-          ApiLog.info(`Orders for ${req.params.symbol} has been canceled.`)
+          ApiLog.info(`Orders for ${req.params.symbol} has been canceled.`);
         }
       } catch (error) {
         ApiLog.error(`Cannot cancel orders. ${error}`);

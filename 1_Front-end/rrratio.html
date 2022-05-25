@@ -14,6 +14,28 @@
             <p>Buy Price:       <input type="text" id="buy-price" required></p>
             <p>Sell Price:      <input type="text" id="sell-price"></p>
             <p>Risk (%):        <input type="text" id="risk-percent"></p>
+            <p>Exchange: 
+            <select name="exchange" id="exchange">
+              <option value="binance-test">Binance-Test</option>
+              <option value="binance">Binance</option>
+            </select>
+            </p>
+            <p>Side: 
+              <select name="side" id="side">
+                <option value="buy">Buy</option>
+                <option value="sell">Sell</option>
+              </select>
+            </p>
+            <p>Order Type: 
+              <select name="orderType" id="order-type">
+                <option value="createMarketOrder">Market Order</option>
+                <option value="createLimitOrder">Limit Order</option>
+              </select>
+            </p>
+            <p>Symbol: 
+              <select name="symbol" id="symbol">
+              </select>
+            </p>
             <p><button id="tradeBtn">Trade</button></p>
           </div>      
         </td>
@@ -21,40 +43,16 @@
           <div class="userInput">
             <p>Profit:          <input type="text" id="profit"></p>
             <p>Risk:            <input type="text" id="risk"></p>
-            <p>Share:           <input type="text" id="share"></p>
-            <p>Stop-Limit Price: <input type="text" id="stop-limit-price"></p>
-            <p>Profit Per Share:<input type="text" id="profit-per-share"></p>
-            <p>Loss Per Share:  <input type="text" id="loss-per-share"></p>
-            <p>Risk Per Share:  <input type="text" id="risk-per-share"></p>
+            <p>Order Amount:           <input type="text" id="order-amount"></p>
+            <p>Stop Price: <input type="text" id="stop-price"></p>
+            <p>Profit Per Share:<input type="text" id="profit-per-order-amount"></p>
+            <p>Loss Per Share:  <input type="text" id="loss-per-order-amount"></p>
+            <p>Risk Per Share:  <input type="text" id="risk-per-order-amount"></p>
             <p>Ratio:           <input type="text" id="ratio"></p>
             <p>Total W Profit:  <input type="text" id="total-w-profit"></p>
             <p>Total W\ Profit: <input type="text" id="total-wo-profit"></p>
           </div>
-        </td>
-        <td valign="top">
-          <p>Exchange: 
-          <select name="exchange" id="exchange">
-            <option value="binance">Binance</option>
-            <option value="binance-test">Binance-Test</option>
-          </select>
-          </p>
-          <p>Side: 
-            <select name="side" id="side">
-              <option value="sell">Sell</option>
-              <option value="buy">Buy</option>
-            </select>
-          </p>
-          <p>Order Type: 
-            <select name="orderType" id="order-type">
-              <option value="createMarketOrder">Market Order</option>
-              <option value="createLimitOrder">Limit Order</option>
-            </select>
-          </p>
-          <p>Symbol: 
-            <select name="symbol" id="symbol">
-            </select>
-          </p>
-        </td>
+        </td>-
       </tr>
     </table>
     

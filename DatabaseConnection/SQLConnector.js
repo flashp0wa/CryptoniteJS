@@ -45,18 +45,63 @@ pool.once('error', (error) => {
 });
 
 // #region single I/O operations
-const writeToDatabase = async (query) => {
-  try {
-    await poolConnect; // ensures that the pool has been created
-    DatabaseLog.silly(`Writing to database. Query: ${query}`);
-    const request = pool.request();
-    const result = await request.query(query);
-    return result;
-  } catch (error) {
-    // eslint-disable-next-line max-len
-    DatabaseLog.error(`SQLConnector : An error occured while writing to database. ${error}`);
+/**
+ *
+ * @param {object} inObj // Keys: dataObj, table, statement, query?
+ * @param {object} params // @ INSERT INTO {insertIntoAll: true || false}
+ * @return {object} result
+ */
+const writeToDatabase = async (inObj, params) => {
+  await poolConnect; // ensures that the pool has been created
+  const request = pool.request();
+  let query;
+  switch (inObj.statement) {
+    case 'INSERT INTO':
+      try {
+        if (params.insertIntoAll === true) {
+          query = `INSERT INTO ${inObj.table} VALUES (`;
+          for (const key of Object.keys(inObj.dataObj)) {
+            query += `\'${inObj[key]}\',`;
+          }
+          query = query.slice(0, -1);
+          query += ')';
+        } else {
+          query = `INSERT INTO ${inObj.table} `;
+          let tableColumn = '(';
+          let values = ' VALUES (';
+
+          for (const column of Object.keys(inObj.dataObj)) {
+            tableColumn += `${column},`;
+            values += `\'${inObj.dataObj[column]}\',`;
+          }
+
+          tableColumn = tableColumn.slice(0, -1);
+          tableColumn += ')';
+          values = values.slice(0, -1);
+          values += ')';
+
+          query += `${tableColumn} ${values}`;
+        }
+        DatabaseLog.silly(`Writing to database. Query: ${query}`);
+        const result = await request.query(query);
+        return result;
+      } catch (error) {
+        DatabaseLog.error(`SQLConnector : An error occured while 'INSERT INTO' to database. ${error}`);
+      }
+      break;
+    case 'QUERY':
+      try {
+        const result = await request.query(inObj.query);
+        return result;
+      } catch (error) {
+        DatabaseLog.error(`SQLConnector : An error occured while running query. ${error}`);
+      }
+      break;
+    default:
+      break;
   }
 };
+
 
 const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
   /*

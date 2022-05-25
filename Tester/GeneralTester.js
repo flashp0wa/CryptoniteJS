@@ -1,30 +1,15 @@
-function sayMyName() {
-  return 'Return This';
+a = {name: 'David'}
+b = {name: 'Balazs'}
+
+function test(inObj) {
+  
 }
 
-function* myGen2() {
-  let a = yield sayMyName();
-  console.log(a);
-}
+c = { a: (a.name).toLowerCase()}
 
-let fasz = myGen2();
-fasz.next();
-fasz.next(2);
+time = new Date(1653412076579).toISOString();
+console.log(c)
 
-
-function arr() {
-  const lol = new Map();
-  lol.set('Lolka', 1);
-  lol.set('bolka', 2);
-
-  return lol
-}
-
-function* turbi() {
-  yield* arr();
-  console.log('round')
-}
-
-for (const iterator of turbi()) {
-  console.log(iterator)
+for (const iterator of Object.keys(a)) {
+  console.log(iterator);
 }

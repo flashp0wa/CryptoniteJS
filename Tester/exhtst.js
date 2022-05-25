@@ -1,6 +1,8 @@
+/*eslint-disable*/
+
 require('dotenv').config({path: '.env'});
-const ccxt = require('ccxt');
 const _ = require('lodash');
+const ccxt = require('ccxt');
 
 const bncTst = 'binance';
 const binanceTest = new ccxt[bncTst]();
@@ -43,5 +45,9 @@ binanceTest.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all o
 
   })
   console.log(res);
+
+  binanceTest.createLimitOrder(symbol, side, amount, price)
+
+  binanceTest.crea
   
 })();
