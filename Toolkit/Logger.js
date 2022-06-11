@@ -1,4 +1,5 @@
 const winston = require('winston');
+const chalk = require('chalk');
 
 const ApplicationLog = winston.createLogger({
   transports: [
@@ -14,7 +15,14 @@ const ApplicationLog = winston.createLogger({
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
 
@@ -35,7 +43,14 @@ const DatabaseLog = winston.createLogger({
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
 
@@ -53,7 +68,14 @@ const QueryProcessorLog = winston.createLogger({
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
 
@@ -71,7 +93,14 @@ const TraderLog = winston.createLogger({
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
 const ApiLog = winston.createLogger({
@@ -88,7 +117,14 @@ const ApiLog = winston.createLogger({
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
 const BncHistoryDownloadLog = winston.createLogger({
@@ -100,15 +136,21 @@ const BncHistoryDownloadLog = winston.createLogger({
   ],
   format: winston.format.combine(
       winston.format.label({
-        label: `API🏷️`,
+        label: `BinanceDownload🏷️`,
       }),
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss',
       }),
-      winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
   ),
 });
-
 
 module.exports = {
   ApplicationLog,

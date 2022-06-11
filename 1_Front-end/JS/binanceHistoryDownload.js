@@ -1,4 +1,5 @@
-import {loadSymbols} from './loadSymbols.js'
+import {loadSymbols} from './loadSymbols.js';
+import {config} from './config.js';
 
 loadSymbols();
 
@@ -58,7 +59,7 @@ function toggleTradeType() {
   }
 }
 async function download() {
-  const url = `http://127.0.0.1:3000/exchange/binance/historyDataDownload`;
+  const url = `${config.BACKEND_URL}/exchange/binance/historyDataDownload`;
   const bodyObj = {};
   bodyObj.symbol = document.getElementById('symbol').value;
   bodyObj.tradeType = document.getElementById('trade-type').value;

@@ -1,12 +1,12 @@
 require('dotenv').config({path: '.env'});
 const {loadEventListeners} = require('./Loaders/Events.js');
-const {loadDataBank} = require('./Loaders/LoadDataBank.js');
-const {startApi} = require('./Api.js');
+const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
+const {startApi} = require('./API/Api.js');
 const {startIntervals} = require('./Intervals.js');
 // const streamFunc = require('./Streams/WssStreamHandler/StreamFunctions.js');
 
 (async () => {
-  await loadDataBank();
+  await getExchanges().loadAllMarkets();
   loadEventListeners();
   startApi();
   startIntervals();

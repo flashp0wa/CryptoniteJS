@@ -23,9 +23,14 @@ async function getAvailableCurrencies(processorFunction) {
   for (const [key, value] of exchanges.entries()) {
     const exchangeObj = value;
     const availableCurrencies = [];
+    let result;
 
-    const query = `SELECT TOP 1 * FROM Currencies WHERE exchange=\'${key}\'`; // Check if data is available from the exchange
-    const result = await sqlConnector.singleRead(query);
+    try {
+      const query = `SELECT TOP 1 * FROM Currencies WHERE exchange=\'${key}\'`; // Check if data is available from the exchange
+      result = await sqlConnector.singleRead(query);
+    } catch (error) {
+      ApplicationLog.error(`Getting available currencies failed. ${error.stack}`);
+    }
 
     ApplicationLog.info(`Loading market data for ${key}`);
 
@@ -43,7 +48,7 @@ async function getAvailableCurrencies(processorFunction) {
             await sqlConnector.writeToDatabase(query);
             ApplicationLog.info('Write done!');
           } catch (error) {
-            ApplicationLog.error('Database write failed at GetAvailableCurrencies.');
+            ApplicationLog.error(`Database write failed at GetAvailableCurrencies. ${error.stack}`);
           }
         }
       }
@@ -70,7 +75,7 @@ async function getAvailableCurrencies(processorFunction) {
     try {
       result = await runPsCommand('Cryptonite.Cmc.QuotesLatest -CryptoniteJS');
     } catch (error) {
-      ApplicationLog.error(`Run PowerShell command "Cryptonite.Cmc.QuotesLatest -CryptoniteJS failed". ${error}`);
+      ApplicationLog.error(`Run PowerShell command "Cryptonite.Cmc.QuotesLatest -CryptoniteJS failed". ${error.stack}`);
     }
 
     if (result.match(/True*/)) {
@@ -87,15 +92,19 @@ async function getAvailableCurrencies(processorFunction) {
  * @return {array} Returns an array with all available symbols in Klines table
  */
 async function getAllSymbols() {
-  const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
-  const results = await sqlConnector.singleRead(query);
-  const symbols = [];
+  try {
+    const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
+    const results = await sqlConnector.singleRead(query);
+    const symbols = [];
 
-  for (const symbolObj of results.recordset) {
-    symbols.push(symbolObj.Symbol);
+    for (const symbolObj of results.recordset) {
+      symbols.push(symbolObj.Symbol);
+    }
+
+    return symbols;
+  } catch (error) {
+    ApplicationLog.error(`Could not get all symbols from database. ${error.stack}`);
   }
-
-  return symbols;
 }
 
 /**
@@ -108,13 +117,16 @@ async function getNewCurrencies(inputArray) {
   const returnMap = new Map();
   for (const obj of inputArray) {
     const query = `SELECT Currency FROM Currencies WHERE Exchange='${obj.exchange}'`;
-    const result = await sqlConnector.singleRead(query);
     const refArray = [];
     const diffArray = obj.currencyList;
     const date = new Date();
-
-    for (const obj of result.recordset) {
-      refArray.push(obj.Currency);
+    try {
+      const result = await sqlConnector.singleRead(query);
+      for (const obj of result.recordset) {
+        refArray.push(obj.Currency);
+      }
+    } catch (error) {
+      ApplicationLog.error(`Could not read currencies from database. ${error.stack}`);
     }
 
     const newCurrencies = _.difference(diffArray, refArray);
@@ -128,8 +140,7 @@ async function getNewCurrencies(inputArray) {
         try {
           await sqlConnector.writeToDatabase(query);
         } catch (error) {
-          ApplicationLog.error('Write to database failed at getNewCurrencies');
-          ApplicationLog.error(error);
+          ApplicationLog.error(`Failed to write new currencies into database ${error.stack}`);
         }
       }
       returnMap.set(obj.exchange, newCurrencies);
@@ -176,7 +187,7 @@ function totalTradedQuoteAssetVolume(operationToRun) {
               AverageTradedQuoteAssetVolume: sqlObject.output.averageVolumeOut,
             };
           } catch (error) {
-            DatabaseLog.error(`Error occured processing TotalTradedQuoteAssetVolume. ${error}`);
+            DatabaseLog.error(`Error occured processing TotalTradedQuoteAssetVolume. ${error.stack}`);
           }
         }
         return functionReturnObject;
@@ -321,8 +332,12 @@ function totalTradedQuoteAssetVolume(operationToRun) {
             HighestDecreaseTime: actualHighestDecreaseTime,
           };
         }
-        const result = await sqlConnector.streamRead(query, processorFunction, processorFunctionOnDone);
-        return result;
+        try {
+          const result = await sqlConnector.streamRead(query, processorFunction, processorFunctionOnDone);
+          return result;
+        } catch (error) {
+          ApplicationLog.error(`Could not read from database. ${error.stack}`);
+        }
       };
       break;
 
@@ -356,9 +371,13 @@ async function simpleMovingAverage(symbols) {
       let reObj7days = sqlConnector.sproc_SMA(symbol, dateBegin7, dateEnd);
       let reObj50days = sqlConnector.sproc_SMA(symbol, dateBegin50, dateEnd);
       let reObj200days = sqlConnector.sproc_SMA(symbol, dateBegin200, dateEnd);
-      reObj7days = await reObj7days;
-      reObj50days = await reObj50days;
-      reObj200days = await reObj200days;
+      try {
+        reObj7days = await reObj7days;
+        reObj50days = await reObj50days;
+        reObj200days = await reObj200days;
+      } catch (error) {
+        ApplicationLog.error(`Could not run stored procedure. ${error.stack}`);
+      }
       functionReturnObject[symbol] = {
         SMA7Days: reObj7days.output.SMAOut,
         SMA50Days: reObj50days.output.SMAOut,
@@ -382,7 +401,7 @@ async function simpleMovingAverage(symbols) {
         sqlConnector.writeToDatabase(query);
       }
     } catch (error) {
-      DatabaseLog.error(`Error occured processing SimpleMovingAverage. ${error}`);
+      DatabaseLog.error(`Error occured processing SimpleMovingAverage. ${error.stack}`);
     }
   }
   console.log(functionReturnObject);
@@ -399,12 +418,16 @@ async function onBalanceVolume(symbolsFromParam) {
   let symbols;
 
   if (!symbolsFromParam) {
-    const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
-    const results = await sqlConnector.singleRead(query);
-    symbols = getAllSymbols();
+    try {
+      const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
+      const results = await sqlConnector.singleRead(query);
+      symbols = getAllSymbols();
 
-    for (const symbolObj of results.recordset) {
-      symbols.push(symbolObj.Symbol);
+      for (const symbolObj of results.recordset) {
+        symbols.push(symbolObj.Symbol);
+      }
+    } catch (error) {
+      ApplicationLog.error(`Could not read symbols from database. ${error.stack}`);
     }
   } else {
     symbols = symbolsFromParam;
@@ -465,12 +488,16 @@ async function adIndicator(symbolsFromParam) {
   let symbols;
 
   if (!symbolsFromParam) {
-    const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
-    const results = await sqlConnector.singleRead(query);
-    symbols = getAllSymbols();
+    try {
+      const query = 'SELECT Symbol FROM Klines GROUP BY Symbol';
+      const results = await sqlConnector.singleRead(query);
+      symbols = getAllSymbols();
 
-    for (const symbolObj of results.recordset) {
-      symbols.push(symbolObj.Symbol);
+      for (const symbolObj of results.recordset) {
+        symbols.push(symbolObj.Symbol);
+      }
+    } catch (error) {
+      ApplicationLog.error(`Could not read symbols from database. ${error.stack}`);
     }
   } else {
     symbols = symbolsFromParam;
@@ -503,7 +530,6 @@ async function adIndicator(symbolsFromParam) {
     return true;
   }
   for (const symbol of symbols) {
-    // eslint-disable-next-line max-len
     const query = `SELECT CloseTime, ClosePrice, LowPrice, HighPrice QuoteAssetVolume, Symbol FROM Klines WHERE Symbol=\'${symbol}\' AND TimeFrame=\'1d\' ORDER BY CloseTime ASC`; // Switch timeframe to modify precision
     sqlConnector.streamRead(query, processorFunction, processorFunction);
   }

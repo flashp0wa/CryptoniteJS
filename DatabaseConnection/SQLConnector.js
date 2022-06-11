@@ -2,7 +2,6 @@ const sql = require('mssql');
 const {DatabaseLog} = require('../Toolkit/Logger.js');
 const {once} = require('events');
 const {returnEmitter} = require('../Loaders/EventEmitter.js');
-// const { fail } = require('assert');
 
 // #region config
 const config = {
@@ -32,14 +31,14 @@ if (!pool) {
       poolConnect = pool.connect();
       DatabaseLog.info('Connection pool has been created');
     } catch (error) {
-      DatabaseLog.error(`The following database error occured while creating pool. ${error}`);
+      DatabaseLog.error(`The following database error occured while creating pool. ${error.stack}`);
       process.exit();
     }
   })();
 };
 
 pool.once('error', (error) => {
-  DatabaseLog.error(`The following database error occured: ${error}`);
+  DatabaseLog.error(`The following database error occured: ${error.stack}`);
   globalEvent.emit('SendEmail', `The following database error occured: ${error}`);
   process.exit();
 });
@@ -52,7 +51,11 @@ pool.once('error', (error) => {
  * @return {object} result
  */
 const writeToDatabase = async (inObj, params) => {
-  await poolConnect; // ensures that the pool has been created
+  try {
+    await poolConnect; // ensures that the pool has been created
+  } catch (error) {
+    DatabaseLog.error(`Connection pool could not be created. ${error.stack}`);
+  }
   const request = pool.request();
   let query;
   switch (inObj.statement) {
@@ -86,7 +89,7 @@ const writeToDatabase = async (inObj, params) => {
         const result = await request.query(query);
         return result;
       } catch (error) {
-        DatabaseLog.error(`SQLConnector : An error occured while 'INSERT INTO' to database. ${error}`);
+        DatabaseLog.error(`SQLConnector : An error occured while 'INSERT INTO' to database. ${error.stack}`);
       }
       break;
     case 'QUERY':
@@ -94,7 +97,7 @@ const writeToDatabase = async (inObj, params) => {
         const result = await request.query(inObj.query);
         return result;
       } catch (error) {
-        DatabaseLog.error(`SQLConnector : An error occured while running query. ${error}`);
+        DatabaseLog.error(`SQLConnector : An error occured while running query. ${error.stack}`);
       }
       break;
     default:
@@ -129,7 +132,11 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
       rowsToProcess.push(row);
       if (rowsToProcess.length >= 15) {
         request.pause();
-        await callbFunction(rowsToProcess);
+        try {
+          await callbFunction(rowsToProcess);
+        } catch (error) {
+          DatabaseLog.error(`Error in running stream read callback function ${error.stack}`);
+        }
         rowsProcessed += rowsToProcess.length;
         rowsToProcess = [];
         request.resume();
@@ -143,8 +150,7 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
     const returnValue = await callbFunctionOnDone(rowsToProcess);
     return returnValue;
   } catch (error) {
-    // eslint-disable-next-line max-len
-    DatabaseLog.error(`An error occured while stream reading from the database. ${error}`);
+    DatabaseLog.error(`An error occured while stream reading from the database. ${error.stack}`);
   }
 };
 
@@ -159,13 +165,13 @@ const singleRead = async (query) => {
   rowsAffected: [ 1 ]
 }
   */
+
   try {
     await poolConnect;
     DatabaseLog.silly(`Reading from database. Query: ${query}`);
     const result = await pool.request().query(query);
-    return result;
+    return result.recordset;
   } catch (error) {
-    // eslint-disable-next-line max-len
     DatabaseLog.error(`An error occured while reading from the database: ${error}`);
   }
 };
@@ -174,6 +180,58 @@ const closePool = () => {
   pool.close();
   DatabaseLog.info('Connection pool closed.');
 };
+
+async function selectEverythingFrom(tableName, where) {
+  try {
+    await poolConnect;
+    let query;
+    if (!where) {
+      query = `SELECT * FROM ${tableName}`;
+    } else {
+      query = `SELECT * FROM ${tableName} WHERE ${where}`;
+    }
+    DatabaseLog.silly(`Reading from database. Query: ${query}`);
+    const result = await pool.request().query(query);
+    return result.recordset;
+  } catch (error) {
+    DatabaseLog.error(`An error occured while reading from the database: ${error.stack}`);
+  }
+}
+/**
+ *
+ * @param {string} tableName|
+ * @param {string} columns // comma separated string value (value1, value2)
+ * @param {string} where // columnName='stuff'
+ * @return {object}
+ */
+async function selectColumnsFrom(tableName, columns, where) {
+  try {
+    await poolConnect;
+    let query;
+    if (!where) {
+      query = `SELECT ${columns} FROM ${tableName}`;
+    } else {
+      query = `SELECT ${columns} FROM ${tableName} WHERE ${where}`;
+    }
+    DatabaseLog.silly(`Reading from database. Query: ${query}`);
+    const result = await pool.request().query(query);
+    return result.recordset;
+  } catch (error) {
+    DatabaseLog.error(`An error occured while reading from the database: ${error.stack}`);
+  }
+}
+
+async function updateTable(tableName, set, where) {
+  try {
+    await poolConnect;
+    const query = `UPDATE ${tableName} SET ${set} WHERE ${where}`;
+    const result = await pool.request().query(query);
+    return result.recordset;
+  } catch (error) {
+    DatabaseLog.error(`An error occured while updating table: ${error.stack}`);
+  }
+}
+
 
 // #endregion
 // #region stored procedures
@@ -198,7 +256,7 @@ const sproc_TTQAV = async (symbol, dateBegin, dateEnd) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.info(`Encountered an error running stored procedure. ${error}`);
+    DatabaseLog.info(`Encountered an error running stored procedure. ${error.stack}`);
   }
 };
 
@@ -219,7 +277,7 @@ const sproc_SMA = async (symbol, dateBegin, dateEnd) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.info(`Encountered an error running stored procedure. ${error}`);
+    DatabaseLog.info(`Encountered an error running stored procedure. ${error.stack}`);
   }
 };
 
@@ -233,4 +291,7 @@ module.exports = {
   sproc_TTQAV,
   sproc_SMA,
   closePool,
+  selectEverythingFrom,
+  selectColumnsFrom,
+  updateTable,
 };

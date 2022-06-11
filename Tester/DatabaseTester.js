@@ -6,20 +6,8 @@ const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
 
 
 (async () => {
-  const obj = {
-    name : 'Bazsi',
-  }
   
-  const data = {
-    dataObj : obj,
-    statement: 'INSERT INTO',
-    table: 'dummy',
-  }
-  
-  
-  const results = await sqlConnector.writeToDatabase(data, {insertIntoAll: false});
-  
-
-  console.log(results.recordset);
+  const results = await sqlConnector.updateTable('cry_order_sell','orderStatus=\'cancelled\'', 'orderId=2701443' );
+  console.log(results);
 
 })();

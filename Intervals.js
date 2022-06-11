@@ -1,5 +1,5 @@
 // const queryProcessor = require('./DatabaseConnection/QueryProcessor.js');
-const dataBank = require ('./Loaders/LoadDataBank.js');
+const {getExchanges} = require('./Classes/Exchanges/ExchangesClass.js');
 /**
  * // Strats automatic processes
  */
@@ -28,10 +28,14 @@ function startIntervals() {
   //  console.log(`Highest decrease time: ${result.HighestDecreaseTime}`);
   // clearInterval(tradingVolumeIntervals)
 
-  //#endregion
+  // #endregion
   setInterval(() => {
-    dataBank.getCcxtExchange('load');
+    getExchanges().loadAllMarkets();
   }, 300000);
+
+  setInterval(() => {
+    getExchanges().checkOrderStatus();
+  }, 10000);
 }
 
 

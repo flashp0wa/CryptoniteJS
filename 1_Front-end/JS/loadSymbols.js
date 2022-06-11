@@ -30,4 +30,3 @@ export async function loadSymbols() {
 if (exchange) {
   document.getElementById('exchange').addEventListener('change', loadSymbols);
 }
-

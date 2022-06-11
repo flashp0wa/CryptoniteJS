@@ -1,15 +1,11 @@
-a = {name: 'David'}
-b = {name: 'Balazs'}
+/* eslint-disable */
 
-function test(inObj) {
-  
+const a = {
+  a: 1,
+  b: 2,
+  c: 3
 }
 
-c = { a: (a.name).toLowerCase()}
-
-time = new Date(1653412076579).toISOString();
-console.log(c)
-
-for (const iterator of Object.keys(a)) {
-  console.log(iterator);
+for (const lol of Object.keys(a)) {
+  console.log(lol);
 }

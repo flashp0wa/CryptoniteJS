@@ -1,6 +1,6 @@
 const {sendEmail, sendNewCurrencyEmail} = require('./SendEmail.js');
 const {collectBinanceDataFromCsv} = require('./DataStreamRead.js');
-const {Order} = require('../Classes/OrderClass.js');
+const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
 
 /**
  *
@@ -11,7 +11,16 @@ function loadListeners(emitter) {
   emitter.on('SendNewCurrencyEmail', sendNewCurrencyEmail);
   emitter.on('NewBinanceCsv', collectBinanceDataFromCsv);
   emitter.on('CreateOrder', (conObj) => {
-    new Order(conObj).createOrder();
+    switch (conObj.orderType) {
+      case 'marketOrder':
+        getExchanges()[conObj.exchange].createMarketBuyOrder(conObj);
+        break;
+      case 'limitOrder':
+        getExchanges()[conObj.exchange].createLimitBuyOrder(conObj);
+        break;
+      default:
+        break;
+    }
   });
 }
 
