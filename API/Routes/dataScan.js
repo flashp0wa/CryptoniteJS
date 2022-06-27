@@ -6,6 +6,7 @@ const queryProcessor = require('../../DatabaseConnection/QueryProcessor.js');
 
 
 router.route('/binance/coinDataImport').get((req, res) => {
+  console.log('start scan');
   startDataScan();
   res.send('Scan initiated...');
 });

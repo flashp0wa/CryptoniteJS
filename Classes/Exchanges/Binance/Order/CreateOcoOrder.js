@@ -43,18 +43,17 @@ class CreateOcoOrder extends Order {
       siblingOrderId: this.ocoOrderResponse['orderReports'][0].orderId,
     };
 
-    const param = {insertIntoAll: false};
 
     super.writeToDatabase({
       dataObj: ocoLimitDataObj,
       table: `cry_order_${ocoLimitDataObj.side}`,
       statement: 'INSERT INTO',
-    }, param);
+    });
     super.writeToDatabase({
       dataObj: ocoStopLossDataObj,
       table: `cry_order_${ocoStopLossDataObj.side}`,
       statement: 'INSERT INTO',
-    }, param);
+    });
 
     this.traderLog.info('OCO order response has been processed');
   }

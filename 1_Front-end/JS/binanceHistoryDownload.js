@@ -82,7 +82,13 @@ async function download() {
   });
 }
 
+function dataScan() {
+  const url = `${config.BACKEND_URL}/dataScan/binance/coinDataImport`;
+  fetch(url);
+}
+
 document.getElementById('download').addEventListener('click', download);
+document.getElementById('database-import').addEventListener('click', dataScan);
 document.getElementById('trade-type').addEventListener('change', toggleTradeType);
 radioRange.addEventListener('change', toggleRange);
 radioDate.addEventListener('change', toggleSpecificDate);

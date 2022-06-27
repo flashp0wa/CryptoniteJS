@@ -22,13 +22,12 @@ class CreateLimitBuyOrder extends Order {
       cost: this.limitOrderResponse.cost,
       exchange: this.exchangeName,
     };
-    const param = {insertIntoAll: false};
 
     super.writeToDatabase({
       dataObj: limitDataObj,
       table: `cry_order_${limitDataObj.side}`,
       statement: 'INSERT INTO',
-    }, param);
+    });
 
     this.traderLog.info('Limit order response has been processed');
   }

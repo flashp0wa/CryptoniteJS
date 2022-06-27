@@ -82,69 +82,75 @@ async function csvJsonStream2Object(jsonStreamArray, csvFileInfo) {
     for (let i = 0; i < jsonStreamArray.length; i++) {
       const values = jsonStreamArray[i];
       const regexp = new RegExp(/kline...*/);
-      let query;
 
       switch (csvFileInfo.DataType) {
         case 'aggTrades': {
-          const aggTradeId = parseInt(values[0]);
-          const price = parseFloat(values[1]);
-          const quantity = parseFloat(values[2]);
-          const firstTradeId = parseInt(values[3]);
-          const lastTradeIde = parseInt(values[4]);
-          const eventTime = new Date(parseFloat(values[5])).toISOString();
-          const isBuyerMarketMaker = (values[6] === 'TRUE');
-          const bestTradePriceMatch = (values[7] === 'TRUE');
-
-          // eslint-disable-next-line max-len
-          query = `INSERT INTO AggregateTrades VALUES (\'${aggTradeId}\',\'${price}\',\'${quantity}\',\'${firstTradeId}\',\'${lastTradeIde}\',\'${eventTime}\',\'${isBuyerMarketMaker}\',\'${bestTradePriceMatch}\',\'${csvFileInfo.Symbol}\')`;
+          await writeToDatabase({
+            dataObj: {
+              AggTradeId: parseInt(values[0]),
+              Price: parseFloat(values[1]),
+              Quantity: parseFloat(values[2]),
+              FirstTradeId: parseInt(values[3]),
+              LastTradeIde: parseInt(values[4]),
+              EventTime: new Date(parseFloat(values[5])).toISOString(),
+              IsBuyerMarketMaker: (values[6] === 'TRUE'),
+              BestTradePriceMatch: (values[7] === 'TRUE'),
+              Symbol: csvFileInfo.Symbol,
+            },
+            table: 'AggregateTrades',
+            statement: 'INSERT INTO',
+          });
           break;
         }
 
         case 'trades': {
-          const tradeId = parseInt(values[0]);
-          const price = parseFloat(values[1]);
-          const quantity = parseFloat(values[2]);
-          // const quoteQuantity = parseFloat(values[3]);
-          const eventTime = new Date(parseFloat(values[4])).toISOString();
-          const isBuyerMaker = (values[5] === 'TRUE');
-          // const isBestMatch = (values[6] === 'TRUE');
-          const lol = 0;
-
-          // eslint-disable-next-line max-len
-          query = `INSERT INTO Trades VALUES (\'${tradeId}\',\'${price}\',\'${quantity}\',\'${lol}\',\'${lol}\',\'${eventTime}\',\'${isBuyerMaker}\',\'${lol}\',\'${lol}\',\'${eventTime}\',\'${csvFileInfo.Symbol}\')`;
+          await writeToDatabase({
+            dataObj: {
+              TradeId: parseInt(values[0]),
+              Price: parseFloat(values[1]),
+              Quantity: parseFloat(values[2]),
+              EventTime: new Date(parseFloat(values[4])).toISOString(),
+              IsBuyerMaker: (values[5] === 'TRUE'),
+              Symbol: csvFileInfo.Symbol,
+            },
+            table: 'Trades',
+            statement: 'INSERT INTO',
+          });
           break;
         }
         case regexp.exec(csvFileInfo.DataType)[0]: {
-          const openTime = new Date(parseFloat(values[0])).toISOString();
-          const openPrice = parseFloat(values[1]);
-          const highPrice = parseFloat(values[2]);
-          const lowPrice = parseFloat(values[3]);
-          const closePrice = parseFloat(values[4]);
-          const volume = parseFloat(values[5]);
-          const closeTime = new Date(parseFloat(values[6])).toISOString();
-          const quoteAssetVolume = parseFloat(values[7]);
-          const numberOfTrades = parseInt(values[8]);
-          const takerBuyBaseAssetVolume = parseFloat(values[9]);
-          const takerBuyQuoteAssetVolume = parseFloat(values[10]);
-          const ignore = parseInt(values[11]);
-
-          // eslint-disable-next-line max-len
-          query = `INSERT INTO Klines VALUES (\'${openTime}\',\'${openPrice}\',\'${highPrice}\',\'${lowPrice}\',\'${closePrice}\',\'${volume}\',\'${closeTime}\',\'${quoteAssetVolume}\',\'${numberOfTrades}\',\'${takerBuyBaseAssetVolume}\',\'${takerBuyQuoteAssetVolume}\',\'${ignore}\',\'${csvFileInfo.KlineTimeFrame}\',\'${csvFileInfo.Symbol}\')`;
+          await writeToDatabase({
+            dataObj: {
+              OpenTime: new Date(parseFloat(values[0])).toISOString(),
+              OpenPrice: parseFloat(values[1]),
+              HighPrice: parseFloat(values[2]),
+              LowPrice: parseFloat(values[3]),
+              ClosePrice: parseFloat(values[4]),
+              Volume: parseFloat(values[5]),
+              CloseTime: new Date(parseFloat(values[6])).toISOString(),
+              QuoteAssetVolume: parseFloat(values[7]),
+              NumberOfTrades: parseInt(values[8]),
+              TakerBuyBaseAssetVolume: parseFloat(values[9]),
+              TakerBuyQuoteAssetVolume: parseFloat(values[10]),
+              Ignore: parseInt(values[11]),
+              TimeFrame: csvFileInfo.KlineTimeFrame,
+              Symbol: csvFileInfo.Symbol,
+            },
+            table: 'Klines',
+            statement: 'INSERT INTO',
+          });
           break;
         }
 
         default: {
-          // eslint-disable-next-line max-len
           ApplicationLog.info(`Data type could not be identified. Data Type: ${csvFileInfo.DataType}`);
           continue;
         }
       }
-      await writeToDatabase(query);
     }
   } catch (error) {
-    ApplicationLog.info(`Parsing CSV failed. ${error}`);
+    ApplicationLog.info(`Could not write CSV data into database. ${error.stack}`);
   }
-  ApplicationLog.info('Data has been successfully inserted into database');
 }
 
 module.exports = {

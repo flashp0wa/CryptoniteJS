@@ -23,7 +23,7 @@ function startApi() {
   app.use(express.json());
   app.use('/exchange', exchange);
   app.use('/trade', trade);
-  app.use('/dataScan', dataScan);
+  app.use('/dataScan ', dataScan);
 
   app.listen(port, () => {
     ApiLog.info(`API started on port: ${process.env.CRYPTONITE_API_PORT}`);

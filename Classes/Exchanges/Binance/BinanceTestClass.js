@@ -31,6 +31,11 @@ class BinanceTestClass {
         try {
           const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
           if (res.status === 'closed') {
+            if (!res.fee) {
+              updateTable(
+                  'cry_order_sell', `filled=${res.filled}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
+              );
+            }
             updateTable(
                 'cry_order_sell', `filled=${res.filled}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
             );
@@ -53,6 +58,11 @@ class BinanceTestClass {
             );
           }
           if (res.status === 'closed') {
+            if (!res.fee) {
+              updateTable(
+                  'cry_order_buy', `cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
+              );
+            }
             updateTable(
                 'cry_order_buy', `fee=${res.fee}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
             );

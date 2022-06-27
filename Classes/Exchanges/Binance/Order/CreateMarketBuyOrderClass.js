@@ -43,13 +43,11 @@ class CreateMarketBuyOrder extends Order {
       ocoStopLossLimitId: inObj.ocoStopLossLimitId,
     };
 
-    const param = {insertIntoAll: false};
-
     super.writeToDatabase({
       dataObj: marketDataObj,
       table: `cry_order_${marketDataObj.side}`,
       statement: 'INSERT INTO',
-    }, param);
+    });
 
     this.traderLog.info('Market order response has been processed');
   }

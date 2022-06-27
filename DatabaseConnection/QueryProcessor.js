@@ -518,12 +518,10 @@ async function adIndicator(symbolsFromParam) {
       }
 
       const date = new Date(row.CloseTime).toISOString();
-      // eslint-disable-next-line max-len
       const query = `INSERT INTO AdIndicator VALUES (${ad},\'${date}\',\'${row.Symbol}\')`;
       try {
         await sqlConnector.writeToDatabase(query);
       } catch (error) {
-        // eslint-disable-next-line max-len
         ApplicationLog.error(`An error occured while writing AD Indicator to database. ${error.stack}`);
       }
     }

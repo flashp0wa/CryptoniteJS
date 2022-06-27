@@ -50,7 +50,7 @@ pool.once('error', (error) => {
  * @param {object} params // @ INSERT INTO {insertIntoAll: true || false}
  * @return {object} result
  */
-const writeToDatabase = async (inObj, params) => {
+const writeToDatabase = async (inObj) => {
   try {
     await poolConnect; // ensures that the pool has been created
   } catch (error) {
@@ -61,31 +61,23 @@ const writeToDatabase = async (inObj, params) => {
   switch (inObj.statement) {
     case 'INSERT INTO':
       try {
-        if (params.insertIntoAll === true) {
-          query = `INSERT INTO ${inObj.table} VALUES (`;
-          for (const key of Object.keys(inObj.dataObj)) {
-            query += `\'${inObj[key]}\',`;
-          }
-          query = query.slice(0, -1);
-          query += ')';
-        } else {
-          query = `INSERT INTO ${inObj.table} `;
-          let tableColumn = '(';
-          let values = ' VALUES (';
+        query = `INSERT INTO ${inObj.table} `;
+        let tableColumn = '(';
+        let values = ' VALUES (';
 
-          for (const column of Object.keys(inObj.dataObj)) {
-            tableColumn += `${column},`;
-            values += `\'${inObj.dataObj[column]}\',`;
-          }
-
-          tableColumn = tableColumn.slice(0, -1);
-          tableColumn += ')';
-          values = values.slice(0, -1);
-          values += ')';
-
-          query += `${tableColumn} ${values}`;
+        for (const column of Object.keys(inObj.dataObj)) {
+          tableColumn += `${column},`;
+          values += `\'${inObj.dataObj[column]}\',`;
         }
-        DatabaseLog.silly(`Writing to database. Query: ${query}`);
+
+        tableColumn = tableColumn.slice(0, -1);
+        tableColumn += ')';
+        values = values.slice(0, -1);
+        values += ')';
+
+        query += `${tableColumn} ${values}`;
+
+        DatabaseLog.info(`Writing to database. Query: ${query}`);
         const result = await request.query(query);
         return result;
       } catch (error) {
@@ -104,7 +96,6 @@ const writeToDatabase = async (inObj, params) => {
       break;
   }
 };
-
 
 const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
   /*
@@ -228,7 +219,7 @@ async function updateTable(tableName, set, where) {
     const result = await pool.request().query(query);
     return result.recordset;
   } catch (error) {
-    DatabaseLog.error(`An error occured while updating table: ${error.stack}`);
+    DatabaseLog.error(`An error occured while updating table: ${error}`);
   }
 }
 
@@ -277,7 +268,7 @@ const sproc_SMA = async (symbol, dateBegin, dateEnd) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.info(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
   }
 };
 
