@@ -42,19 +42,13 @@ class CreateMarketBuyOrder extends Order {
       ocoLimitId: inObj.ocoLimitId,
       ocoStopLossLimitId: inObj.ocoStopLossLimitId,
     };
-
-    super.writeToDatabase({
-      dataObj: marketDataObj,
-      table: `cry_order_${marketDataObj.side}`,
-      statement: 'INSERT INTO',
-    });
-
-    this.traderLog.info('Market order response has been processed');
+    super.writeToDatabase(marketDataObj);
   }
 
   async createOrder() {
     this.traderLog.info(`New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.buyPrice}`);
     let ocoId;
+
     try {
       this.marketOrderResponse = await this.exchangeObj.createMarketOrder(this.symbol, this.side, this.orderAmount, this.buyPrice);
       this.traderLog.info(`New market order has been created.`);
@@ -62,18 +56,16 @@ class CreateMarketBuyOrder extends Order {
     } catch (error) {
       this.traderLog.error(`Market order creation failed. ${error.stack}`);
     }
+
     try {
       ocoId = await this.ocoOrder.createOrder();
     } catch (error) {
-      try {
-        this.processOrderResponse();
-      } catch (error) {
-        this.traderLog.error(`Failed to write market data to database. ${error.stack}`);
-      }
       this.traderLog.error('Oco order creation failed.');
     }
+
     try {
       this.processOrderResponse(ocoId);
+      this.traderLog.info('Market order response has been processed');
     } catch (error) {
       this.traderLog.error(`Failed to write order response to database. ${error.stack}`);
     }

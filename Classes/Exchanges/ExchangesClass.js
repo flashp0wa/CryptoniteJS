@@ -10,6 +10,8 @@ class Exchanges {
   async loadAllMarkets() {
     await this.binance.loadMarkets();
     await this.binanceTest.loadMarkets();
+    this.binance.loadSymbols();
+    this.binanceTest.loadSymbols();
   }
 
   checkOrderStatus() {

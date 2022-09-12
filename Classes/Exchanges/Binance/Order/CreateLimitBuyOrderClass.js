@@ -7,7 +7,7 @@ class CreateLimitBuyOrder extends Order {
     this.buyPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.buyPrice));
   }
 
-  processOrderResponse(inObj) {
+  processOrderResponse() {
     this.traderLog.info('Processing limit order response...');
     const limitDataObj = {
       symbol: this.limitOrderResponse.info.symbol,
@@ -21,15 +21,10 @@ class CreateLimitBuyOrder extends Order {
       tradeStatus: this.limitOrderResponse.info.status,
       cost: this.limitOrderResponse.cost,
       exchange: this.exchangeName,
+      filled: null,
     };
 
-    super.writeToDatabase({
-      dataObj: limitDataObj,
-      table: `cry_order_${limitDataObj.side}`,
-      statement: 'INSERT INTO',
-    });
-
-    this.traderLog.info('Limit order response has been processed');
+    super.writeToDatabase(limitDataObj);
   }
 
   async createOrder() {
@@ -42,6 +37,7 @@ class CreateLimitBuyOrder extends Order {
     }
     try {
       this.processOrderResponse(this.limitOrderResponse);
+      this.traderLog.info('Limit order response has been processed');
     } catch (error) {
       this.traderLog.error(`Could not write limit order response to database. ${error.stack}`);
     }

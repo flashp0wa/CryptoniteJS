@@ -22,6 +22,11 @@ export async function loadSymbols() {
       newOption.innerHTML = symbol;
       symbols.appendChild(newOption);
     });
+    const newOption = document.createElement('option');
+    newOption.innerHTML = 'All';
+    newOption.id = 'all-symbol';
+    newOption.value = 'all';
+    symbols.appendChild(newOption);
   } catch (error) {
     console.log(`Error while loading symbols. ${error}`);
   }

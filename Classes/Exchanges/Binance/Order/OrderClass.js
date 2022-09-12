@@ -1,5 +1,5 @@
 const {TraderLog} = require('../../../../Toolkit/Logger.js');
-const {writeToDatabase} = require('../../../../DatabaseConnection/SQLConnector.js');
+const {sproc_InsertIntoOrderBuy, sproc_InsertIntoOrderSell} = require('../../../../DatabaseConnection/SQLConnector.js');
 
 class Order {
   constructor(excObj, conObj) {
@@ -19,8 +19,12 @@ class Order {
     throw new Error('This function must be overridden.');
   }
 
-  writeToDatabase(databaseObj, param) {
-    writeToDatabase(databaseObj, param);
+  writeToDatabase(databaseObj) {
+    if (databaseObj.side === 'buy') {
+      sproc_InsertIntoOrderBuy(databaseObj);
+    } else {
+      sproc_InsertIntoOrderSell(databaseObj);
+    }
   }
 }
 

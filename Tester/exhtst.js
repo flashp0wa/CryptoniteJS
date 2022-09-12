@@ -1,8 +1,8 @@
 /*eslint-disable*/
 
 require('dotenv').config({path: '.env'});
-const ccxt = require('ccxt');
 const _ = require('lodash');
+const ccxt = require('ccxt');
 
 const bncTst = 'binance';
 const binanceTst = new ccxt[bncTst]();
@@ -54,8 +54,13 @@ binanceTst.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all op
   // market = await exchange.loadMarkets();
 
   // console.log(bncTst)
-  const res = await binanceTst.fetchOrder('2935563','XRPUSDT');
+  
 // const res = await binanceTst.limit
-  console.log(res);
+//await binanceTst.loadMarkets()
+console.log(await binanceTst.fetchClosedOrders());
+
 })();
+
+
+
 

@@ -1,5 +1,4 @@
 const {sendEmail, sendNewCurrencyEmail} = require('./SendEmail.js');
-const {collectBinanceDataFromCsv} = require('./DataStreamRead.js');
 const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
 
 /**
@@ -9,7 +8,6 @@ const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
 function loadListeners(emitter) {
   emitter.on('SendEmail', sendEmail);
   emitter.on('SendNewCurrencyEmail', sendNewCurrencyEmail);
-  emitter.on('NewBinanceCsv', collectBinanceDataFromCsv);
   emitter.on('CreateOrder', (conObj) => {
     switch (conObj.orderType) {
       case 'marketOrder':

@@ -1,9 +1,11 @@
 const download = require('download');
+const _ = require('lodash');
 const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
-const {BncHistoryDownloadLog} = require('./Logger.js');
+const {BncHistoryDownloadLog, ApplicationLog} = require('./Logger.js');
 const fs = require('fs');
 const util = require('util');
 const {runPsCommand} = require('./PowerShell.js');
+const {sproc_ImportBinanceCsv} = require('../DatabaseConnection/SQLConnector.js');
 
 async function downloadHistoryData(inObj) {
   return new Promise(async (resolve, reject) => {
@@ -13,29 +15,56 @@ async function downloadHistoryData(inObj) {
     let dates;
     let url;
 
-    if (inObj.startDate && inObj.endDate) {
-      if (inObj.timeFrame === 'daily') {
-        dates = getDatesArray(new Date(inObj.startDate), new Date(inObj.endDate), 'days');
-      } else {
-        dates = getDatesArray(new Date(inObj.startDate), new Date(inObj.endDate), 'months');
-      }
-    } else if (inObj.startDate) {
-      if (inObj.timeFrame === 'daily') {
-        dates = [inObj.startDate];
-      } else {
-        dates = [inObj.startDate.slice(0, 7)];
-      }
-    } else {
-      const today = new Date();
-      const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-      dates = getDatesArray(oneYearAgo, today, 'months');
+    const datesArr = [];
+    const yesterday = new Date().setDate(new Date().getDate() -1);
+    let startDate;
+    let endDate;
+    if (typeof inObj.startDate === 'string') {
+      startDate = new Date(inObj.startDate);
+      endDate = inObj.endDate ? new Date(inObj.endDate) : false;
     }
 
+    if (yesterday < endDate) {
+      throw (new Error('End Date cannot be bigger than yesterdays date.'));
+    }
+    if (!endDate) {
+      dates = [startDate.toISOString().split('T')[0]];
+    } else if ((endDate.getMonth() - startDate.getMonth()) === 0) {
+      dates = getDatesArray(startDate, endDate, 'days');
+    } else {
+      const startYear = startDate.getFullYear();
+      const startMonth = startDate.getMonth();
+      const lastDay = new Date(startYear, startMonth +1, 1);
+      let tempArray = getDatesArray(startDate, lastDay, 'days');
+      datesArr.push(tempArray);
+
+      const endYear = endDate.getFullYear();
+      const endMonth = endDate.getMonth() + 1;
+      let firstDay;
+      if (endMonth <= 9) {
+        firstDay = new Date(`${endYear}-0${endMonth}-01`);
+      } else {
+        firstDay = new Date(`${endYear}-${endMonth}-01`);
+      }
+      tempArray = getDatesArray(firstDay, endDate, 'days');
+      datesArr.push(tempArray);
+
+      tempArray = getDatesArray(new Date(startYear, startMonth +2), new Date(endYear, endMonth -1 ), 'months');
+      datesArr.push(tempArray);
+
+      dates = _.flatten(datesArr);
+    }
     let fileProcessDone;
     let firstRun = true;
     let index = 0;
 
     for (const date of dates) {
+      if (date.length < 8) {
+        inObj.timeFrame = 'monthly';
+      } else {
+        inObj.timeFrame = 'daily';
+      }
+
       index++;
 
       if (inObj.tradeType === 'klines') {
@@ -70,8 +99,20 @@ async function downloadHistoryData(inObj) {
                 await runPsCommand(`Expand-Archive -Path '${downloadPath}\\${file}' -DestinationPath '${downloadPath}' -Force`);
                 fs.unlinkSync(`${downloadPath}\\${file}`);
                 BncHistoryDownloadLog.info(`Deleting ${file}...`);
+                if (inObj.klinesTimeFrame) {
+                  BncHistoryDownloadLog.info('Importing CSV to database...');
+                  const csvFile = `${file.split('.')[0]}.csv`;
+                  const path = `${downloadPath}\\${csvFile}`;
+                  try {
+                    await sproc_ImportBinanceCsv(inObj.symbol, inObj.klinesTimeFrame, path);
+                    fs.unlinkSync(`${downloadPath}\\${csvFile}`);
+                    BncHistoryDownloadLog.info(`Deleting ${csvFile}...`);
+                  } catch (error) {
+                    BncHistoryDownloadLog.error(`Error during CSV import...${error.stack}`);
+                  }
+                }
               } catch (error) {
-                BncHistoryDownloadLog.error(`Error in processing file. ${error}`);
+                BncHistoryDownloadLog.error(`Could not unzip ${file}. ${error.stack}`);
               }
             }
           }
@@ -80,8 +121,9 @@ async function downloadHistoryData(inObj) {
             resolve(true);
           });
         }
-
-        if (firstRun) {
+        if (dates.length === 1) {
+          await processDownloadedData();
+        } else if (firstRun) {
           fileProcessDone = processDownloadedData();
           firstRun = false;
         } else if (!util.inspect(fileProcessDone).includes('pending')) {
@@ -95,6 +137,7 @@ async function downloadHistoryData(inObj) {
         continue;
       }
     }
+    ApplicationLog.info('Download finished....');
     resolve(true);
   });
 }

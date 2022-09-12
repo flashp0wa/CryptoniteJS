@@ -6,15 +6,9 @@ const _ = require('lodash');
 const {getExchanges} = require('../../Classes/Exchanges/ExchangesClass');
 const {downloadHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
 
-// const app = express();
-
-router.route('/:exchange/getSymbols').get(async (req, res) => {
+router.route('/:exchange/getSymbols').get((req, res) => {
   try {
-    const symbols = [];
-    const markets = await getExchanges()[req.params.exchange].exchangeObj.markets;
-    for (const market of Object.keys(markets)) {
-      symbols.push(markets[market].info.symbol);
-    }
+    const symbols = getExchanges()[req.params.exchange].symbolList;
     res.send(symbols);
   } catch (error) {
     ApiLog.error(`Could not retrieve symbols. ${error}`);
@@ -60,10 +54,34 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
   }
 });
 
-router.route('/binance/historyDataDownload').post((req, res) => {
-  downloadHistoryData(req.body);
-  res.send('Download started');
+router.route('/binance/historyDataDownload').post(async (req, res) => {
+  const klinesArr = [
+    '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo',
+  ];
+
+  if (req.body.symbol === 'all' && req.body.klinesTimeFrame === 'all') {
+    const symbols = getExchanges()['binance'].symbolList;
+    for (const symbol of symbols) {
+      for (const kline of klinesArr) {
+        req.body.symbol = symbol;
+        req.body.klinesTimeFrame = kline;
+        await downloadHistoryData(req.body);
+      }
+    }
+  } else if (req.body.symbol === 'all') {
+    const symbols = getExchanges()['binance'].symbolList;
+    for (const symbol of symbols) {
+      req.body.symbol = symbol;
+      await downloadHistoryData(req.body);
+    }
+  } else if (req.body.klinesTimeFrame === 'all') {
+    for (const kline of klinesArr) {
+      req.body.klinesTimeFrame = kline;
+      await downloadHistoryData(req.body);
+    }
+  } else {
+    downloadHistoryData(req.body);
+  }
 });
 
-// app.use('/', router);
 module.exports = router;

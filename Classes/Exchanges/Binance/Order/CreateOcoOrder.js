@@ -43,19 +43,8 @@ class CreateOcoOrder extends Order {
       siblingOrderId: this.ocoOrderResponse['orderReports'][0].orderId,
     };
 
-
-    super.writeToDatabase({
-      dataObj: ocoLimitDataObj,
-      table: `cry_order_${ocoLimitDataObj.side}`,
-      statement: 'INSERT INTO',
-    });
-    super.writeToDatabase({
-      dataObj: ocoStopLossDataObj,
-      table: `cry_order_${ocoStopLossDataObj.side}`,
-      statement: 'INSERT INTO',
-    });
-
-    this.traderLog.info('OCO order response has been processed');
+    super.writeToDatabase(ocoLimitDataObj);
+    super.writeToDatabase(ocoStopLossDataObj);
   }
   /**
    *
@@ -82,6 +71,7 @@ class CreateOcoOrder extends Order {
       this.traderLog.info('OCO order has been created.');
       try {
         this.processOrderResponse();
+        this.traderLog.info('OCO order response has been processed');
         return {
           ocoLimitId: this.ocoOrderResponse['orderReports'][1].orderId,
           ocoStopLossLimitId: this.ocoOrderResponse['orderReports'][0].orderId,

@@ -3,23 +3,17 @@ import {config} from './config.js';
 
 loadSymbols();
 
-const radioMonthly = document.getElementById('radio-monthly');
-const radioDaily = document.getElementById('radio-daily');
 const radioDate = document.getElementById('radio-date');
 const radioRange = document.getElementById('radio-range');
 const endDate = document.getElementById('end-date');
-const klines = document.getElementById('dd-klines');
-const lklines = document.getElementById('lklines');
+const klines = document.getElementById('dropdown-klines');
+const labelKlines = document.getElementById('label-klines');
+radioDate.checked = true;
+endDate.disabled = true;
 
 klines.hidden = true;
-lklines.hidden = true;
+labelKlines.hidden = true;
 
-function toggleTimeFrameDaily() {
-  radioMonthly.checked = false;
-}
-function toggleTimeFrameMonthly() {
-  radioDaily.checked = false;
-}
 function toggleSpecificDate() {
   endDate.disabled = true;
   radioRange.checked = false;
@@ -32,19 +26,18 @@ function toggleTradeType() {
   switch (document.getElementById('trade-type').value) {
     case 'aggTrades':
       klines.hidden = true;
-      lklines.hidden = true;
+      labelKlines.hidden = true;
       break;
     case 'trades':
       klines.hidden = true;
-      lklines.hidden = true;
+      labelKlines.hidden = true;
       break;
     case 'klines':
       klines.hidden = false;
-      lklines.hidden = false;
+      labelKlines.hidden = false;
       const klinesArr = [
         '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo',
       ];
-
       klinesArr.forEach((kline) => {
         const newOption = document.createElement('option');
         newOption.value = kline;
@@ -52,6 +45,12 @@ function toggleTradeType() {
         newOption.innerHTML = kline;
         klines.appendChild(newOption);
       });
+      const newOption = document.createElement('option');
+      newOption.value = 'all';
+      newOption.id = 'kline-all';
+      newOption.innerHTML = 'All';
+      klines.appendChild(newOption);
+
       break;
 
     default:
@@ -63,14 +62,11 @@ async function download() {
   const bodyObj = {};
   bodyObj.symbol = document.getElementById('symbol').value;
   bodyObj.tradeType = document.getElementById('trade-type').value;
-  if (document.getElementById('radio-daily').checked) {
-    bodyObj.timeFrame = 'daily';
-  } else {
-    bodyObj.timeFrame = 'monthly';
-  }
-  bodyObj.klinesTimeFrame = document.getElementById('dd-klines').value;
+  bodyObj.klinesTimeFrame = document.getElementById('dropdown-klines').value;
   bodyObj.startDate = document.getElementById('start-date').value;
-  bodyObj.endDate = document.getElementById('end-date').value;
+  if (radioRange.checked) {
+    bodyObj.endDate = document.getElementById('end-date').value;
+  }
 
   await fetch(url, {
     method: 'POST',
@@ -92,7 +88,5 @@ document.getElementById('database-import').addEventListener('click', dataScan);
 document.getElementById('trade-type').addEventListener('change', toggleTradeType);
 radioRange.addEventListener('change', toggleRange);
 radioDate.addEventListener('change', toggleSpecificDate);
-radioDaily.addEventListener('change', toggleTimeFrameDaily);
-radioMonthly.addEventListener('change', toggleTimeFrameMonthly);
 
 

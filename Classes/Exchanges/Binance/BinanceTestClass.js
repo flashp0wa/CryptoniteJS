@@ -2,12 +2,13 @@ const ccxt = require('ccxt');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
 const {CreateMarketBuyOrder} = require('./Order/CreateMarketBuyOrderClass');
 const {CreateLimitBuyOrder} = require('./Order/CreateLimitBuyOrderClass');
-const {selectColumnsFrom, updateTable} = require('../../../DatabaseConnection/SQLConnector');
+const {selectColumnsFrom, sproc_UpdateOrderBuy, sproc_UpdateOrderSell} = require('../../../DatabaseConnection/SQLConnector');
 
 class BinanceTestClass {
   constructor() {
     this.exchangeObj = this.configureExchange();
     this.markets;
+    this.symbolList = [];
   }
 
   configureExchange() {
@@ -25,25 +26,28 @@ class BinanceTestClass {
 
   async checkOrderStatus() {
     try {
-      const buyOrders = await selectColumnsFrom('cry_order_buy', 'orderId, symbol', 'orderStatus=\'open\' AND exchange=\'binanceTest\'');
-      const sellOrders = await selectColumnsFrom('cry_order_sell', 'orderId, symbol', 'orderStatus=\'open\' AND exchange=\'binanceTest\'');
+      const buyOrders = await selectColumnsFrom('cry_order_buy', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 2');
+      const sellOrders = await selectColumnsFrom('cry_order_sell', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 2');
       for (const order of sellOrders) {
         try {
           const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
           if (res.status === 'closed') {
             if (!res.fee) {
-              updateTable(
-                  'cry_order_sell', `filled=${res.filled}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-              );
+              sproc_UpdateOrderSell({
+                filled: res.filled,
+                cost: res.cost,
+                orderStatus: res.orderStatus,
+                tradeStatus: res.tradeStatus,
+                orderId: res.orderId,
+              });
             }
-            updateTable(
-                'cry_order_sell', `filled=${res.filled}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-            );
           }
           if (res.status === 'canceled') {
-            updateTable(
-                'cry_order_sell', `orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-            );
+            sproc_UpdateOrderSell({
+              orderStatus: res.orderStatus,
+              tradeStatus: res.tradeStatus,
+              orderId: res.orderId,
+            });
           }
         } catch (error) {
           ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
@@ -52,20 +56,14 @@ class BinanceTestClass {
       for (const order of buyOrders) {
         try {
           const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
-          if (res.status === 'canceled') {
-            updateTable(
-                'cry_order_buy', `orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-            );
-          }
-          if (res.status === 'closed') {
-            if (!res.fee) {
-              updateTable(
-                  'cry_order_buy', `cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-              );
-            }
-            updateTable(
-                'cry_order_buy', `fee=${res.fee}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-            );
+          if (res.status === 'canceled' || res.status === 'closed') {
+            sproc_UpdateOrderBuy({
+              orderStatus: res.status,
+              tradeStatus: res.info.status,
+              orderId: res.orderId,
+              fee: res.fee,
+              cost: res.cost,
+            });
           }
         } catch (error) {
           ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
@@ -82,6 +80,16 @@ class BinanceTestClass {
       this.markets = await this.exchangeObj.loadMarkets();
     } catch (error) {
       ApplicationLog.error(`Loading binance-test market data failed...${error.stack}`);
+    }
+  }
+
+  loadSymbols() {
+    try {
+      for (const market of Object.keys(this.markets)) {
+        this.symbolList.push(this.markets[market].info.symbol);
+      }
+    } catch (error) {
+      ApplicationLog.warn(`Loading symbols failed...${error.stack}`);
     }
   }
 

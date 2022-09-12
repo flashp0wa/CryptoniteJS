@@ -1,13 +1,16 @@
 const ccxt = require('ccxt');
-const {CreateMarketBuyOrder} = require('./Order/CreateMarketBuyOrderClass.js');
-const {ApplicationLog} = require('../../../Toolkit/Logger.js');
-const {selectColumnsFrom, updateTable} = require('../../../DatabaseConnection/SQLConnector');
+const {CreateMarketBuyOrder} = require('./Order/CreateMarketBuyOrderClass');
+const {CreateLimitBuyOrder} = require('./Order/CreateLimitBuyOrderClass');
+const {ApplicationLog} = require('../../../Toolkit/Logger');
+const {selectColumnsFrom, sproc_AddSymbolToDatabase, sproc_UpdateOrderSell} = require('../../../DatabaseConnection/SQLConnector');
+// const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
 
 
 class BinanceClass {
   constructor() {
     this.exchangeObj = this.configureExchange();
     this.markets;
+    this.symbolList = [];
   }
 
   configureExchange() {
@@ -23,27 +26,47 @@ class BinanceClass {
 
   async checkOrderStatus() {
     try {
-      const buyOrders = await selectColumnsFrom('cry_order_buy', 'orderId, symbol', 'orderStatus=\'open\' AND exchange=\'binance\'');
-      const sellOrders = await selectColumnsFrom('cry_order_sell', 'orderId, symbol', 'orderStatus=\'open\' AND exchange=\'binance\'');
+      const buyOrders = await selectColumnsFrom('cry_order_buy', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 1');
+      const sellOrders = await selectColumnsFrom('cry_order_sell', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 1');
       for (const order of sellOrders) {
-        const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
-        if (res.status === 'closed') {
-          updateTable(
-              'cry_order_sell', `fee=${res.fee}, filled=${res.filled}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-          );
-        }
-        if (res.status === 'canceled') {
-          updateTable(
-              'cry_order_sell', `orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-          );
+        try {
+          const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
+          if (res.status === 'closed') {
+            if (!res.fee) {
+              sproc_UpdateOrderSell({
+                filled: res.filled,
+                cost: res.cost,
+                orderStatus: res.orderStatus,
+                tradeStatus: res.tradeStatus,
+                orderId: res.orderId,
+              });
+            }
+          }
+          if (res.status === 'canceled') {
+            sproc_UpdateOrderSell({
+              orderStatus: res.orderStatus,
+              tradeStatus: res.tradeStatus,
+              orderId: res.orderId,
+            });
+          }
+        } catch (error) {
+          ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
         }
       }
       for (const order of buyOrders) {
-        const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
-        if (res.status !== 'open') {
-          updateTable(
-              'cry_order_buy', `fee=${res.fee}, cost='${res.cost}', orderStatus='${res.status}', tradeStatus='${res.info.status}'`, `orderId=${order.orderId}`,
-          );
+        try {
+          const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
+          if (res.status === 'canceled' || res.status === 'closed') {
+            sproc_UpdateOrderBuy({
+              orderStatus: res.status,
+              tradeStatus: res.info.status,
+              orderId: res.orderId,
+              fee: res.fee,
+              cost: res.cost,
+            });
+          }
+        } catch (error) {
+          ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
         }
       }
     } catch (error) {
@@ -60,8 +83,24 @@ class BinanceClass {
     }
   }
 
+  loadSymbols() {
+    try {
+      for (const market of Object.keys(this.markets)) {
+        const actualSymbol = this.markets[market].info.symbol;
+        this.symbolList.push(actualSymbol);
+        sproc_AddSymbolToDatabase(actualSymbol, 1);
+      }
+    } catch (error) {
+      ApplicationLog.warn(`Loading symbols failed...${error.stack}`);
+    }
+  }
+
   createMarketBuyOrder(conObj) {
     new CreateMarketBuyOrder(this.exchangeObj, conObj).createOrder();
+  }
+
+  createLimitBuyOrder(conObj) {
+    new CreateLimitBuyOrder(this.exchangeObj, conObj).createOrder();
   }
 }
 
