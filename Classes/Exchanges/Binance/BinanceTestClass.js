@@ -84,6 +84,9 @@ class BinanceTestClass {
   }
 
   loadSymbols() {
+    if (this.symbolList.length !== 0) {
+      this.symbolList = [];
+    }
     try {
       for (const market of Object.keys(this.markets)) {
         this.symbolList.push(this.markets[market].info.symbol);

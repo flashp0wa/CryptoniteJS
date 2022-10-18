@@ -15,6 +15,17 @@ export async function loadSymbols() {
       const option = document.querySelectorAll('#symbol option');
       option.forEach((o) => o.remove());
     }
+    const newOption = document.createElement('option');
+    newOption.innerHTML = 'All';
+    newOption.id = 'all-symbol';
+    newOption.value = 'all';
+    symbols.appendChild(newOption);
+
+    const newOptionUSDT = document.createElement('option');
+    newOptionUSDT.innerHTML = 'AllUSDT';
+    newOptionUSDT.id = 'all-symbolusdt';
+    newOptionUSDT.value = 'allUSDT';
+    symbols.appendChild(newOptionUSDT);
 
     const symbolResponse = await (await fetch(url)).json();
     symbolResponse.forEach((symbol) => {
@@ -22,11 +33,6 @@ export async function loadSymbols() {
       newOption.innerHTML = symbol;
       symbols.appendChild(newOption);
     });
-    const newOption = document.createElement('option');
-    newOption.innerHTML = 'All';
-    newOption.id = 'all-symbol';
-    newOption.value = 'all';
-    symbols.appendChild(newOption);
   } catch (error) {
     console.log(`Error while loading symbols. ${error}`);
   }

@@ -85,6 +85,9 @@ class BinanceClass {
 
   loadSymbols() {
     try {
+      if (this.symbolList.length !== 0) {
+        this.symbolList = [];
+      }
       for (const market of Object.keys(this.markets)) {
         const actualSymbol = this.markets[market].info.symbol;
         this.symbolList.push(actualSymbol);

@@ -15,6 +15,7 @@ async function downloadHistoryData(inObj) {
     let dates;
     let url;
 
+
     const datesArr = [];
     const yesterday = new Date().setDate(new Date().getDate() -1);
     let startDate;
@@ -133,6 +134,11 @@ async function downloadHistoryData(inObj) {
           }
         }
       } catch (error) {
+        if (util.inspect(error.message).includes('404')) {
+          ApplicationLog.info('Symbol does not exist');
+          resolve(true);
+          return;
+        }
         BncHistoryDownloadLog.error(`Error while downloading. ${error}`);
         continue;
       }

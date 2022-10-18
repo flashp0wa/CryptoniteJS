@@ -4,11 +4,16 @@ const Shell = require('node-powershell');
  * @param {string} psCommand
  * @return {object} // Command payload
  */
+
+let ps;
+
 async function runPsCommand(psCommand) {
-  const ps = new Shell({
-    executionPolicy: 'Bypass',
-    noProfile: true,
-  });
+  if (!ps) {
+    ps = new Shell({
+      executionPolicy: 'Bypass',
+      noProfile: true,
+    });
+  }
 
   ps.addCommand(psCommand);
   return await ps.invoke();
