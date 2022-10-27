@@ -7,7 +7,13 @@ const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
 
 (async () => {
   
-  const results = await sqlConnector.updateTable('cry_order_sell','orderStatus=\'cancelled\'', 'orderId=2701443' );
+  const results = await sqlConnector.sproc_GatherSymbolTAData({
+    symbol: 'ADAUSDT',
+    timeFrame: '1h',
+    dataPeriod: 10,
+    macdDataPeriod: 5010,
+    aroonDataPeriod: 14,
+  });
   console.log(results);
 
 })();

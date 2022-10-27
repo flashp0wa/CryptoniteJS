@@ -1,11 +1,10 @@
 const download = require('download');
 const _ = require('lodash');
 const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
-const {BncHistoryDownloadLog, ApplicationLog} = require('./Logger.js');
-const fs = require('fs');
+const {BncHistoryDownloadLog} = require('./Logger.js');
 const util = require('util');
-const {runPsCommand} = require('./PowerShell.js');
-const {sproc_ImportBinanceCsv} = require('../DatabaseConnection/SQLConnector.js');
+const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
+const {execSync} = require('child_process');
 
 async function downloadHistoryData(inObj) {
   return new Promise(async (resolve, reject) => {
@@ -55,18 +54,15 @@ async function downloadHistoryData(inObj) {
 
       dates = _.flatten(datesArr);
     }
-    let fileProcessDone;
-    let firstRun = true;
-    let index = 0;
+
+    const csvFileNameLength = 8;
 
     for (const date of dates) {
-      if (date.length < 8) {
+      if (date.length < csvFileNameLength) {
         inObj.timeFrame = 'monthly';
       } else {
         inObj.timeFrame = 'daily';
       }
-
-      index++;
 
       if (inObj.tradeType === 'klines') {
         fileName = `${inObj.symbol}-${inObj.klinesTimeFrame}-${date}.zip`;
@@ -80,62 +76,9 @@ async function downloadHistoryData(inObj) {
         BncHistoryDownloadLog.info(`Downloading from URL: ${url} to ${downloadPath}`);
         await download(url, downloadPath);
         BncHistoryDownloadLog.info('Download completed.');
-
-        if (index === dates.length) {
-          await fileProcessDone;
-        }
-
-        async function processDownloadedData() {
-          const filesRaw = fs.readdirSync(downloadPath);
-          const files = [];
-          for (const file of filesRaw) {
-            if (file.includes('zip')) {
-              files.push(file);
-            }
-          }
-          if (files.length > 0) {
-            for (const file of files) {
-              BncHistoryDownloadLog.info(`Unzipping ${file}...`);
-              try {
-                await runPsCommand(`Expand-Archive -Path '${downloadPath}\\${file}' -DestinationPath '${downloadPath}' -Force`);
-                fs.unlinkSync(`${downloadPath}\\${file}`);
-                BncHistoryDownloadLog.info(`Deleting ${file}...`);
-                if (inObj.klinesTimeFrame) {
-                  BncHistoryDownloadLog.info('Importing CSV to database...');
-                  const csvFile = `${file.split('.')[0]}.csv`;
-                  const path = `${downloadPath}\\${csvFile}`;
-                  try {
-                    await sproc_ImportBinanceCsv(inObj.symbol, inObj.klinesTimeFrame, path);
-                    fs.unlinkSync(`${downloadPath}\\${csvFile}`);
-                    BncHistoryDownloadLog.info(`Deleting ${csvFile}...`);
-                  } catch (error) {
-                    BncHistoryDownloadLog.error(`Error during CSV import...${error.stack}`);
-                  }
-                }
-              } catch (error) {
-                BncHistoryDownloadLog.error(`Could not unzip ${file}. ${error.stack}`);
-              }
-            }
-          }
-
-          return new Promise((resolve, reject) => {
-            resolve(true);
-          });
-        }
-        if (dates.length === 1) {
-          await processDownloadedData();
-        } else if (firstRun) {
-          fileProcessDone = processDownloadedData();
-          firstRun = false;
-        } else if (!util.inspect(fileProcessDone).includes('pending')) {
-          fileProcessDone = processDownloadedData();
-          if (index === dates.length) {
-            await fileProcessDone;
-          }
-        }
       } catch (error) {
         if (util.inspect(error.message).includes('404')) {
-          ApplicationLog.info('Symbol does not exist');
+          BncHistoryDownloadLog.info('Symbol does not exist');
           resolve(true);
           return;
         }
@@ -143,11 +86,65 @@ async function downloadHistoryData(inObj) {
         continue;
       }
     }
-    ApplicationLog.info('Download finished....');
     resolve(true);
   });
 }
 
+async function binanceHistoryData(inObj) {
+  let counter = 1;
+  const klinesArr = [
+    '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo',
+  ];
+  const symbols = [...getExchanges()['binance'].symbolList];
+
+  if (inObj.symbol === 'all' && inObj.klinesTimeFrame === 'all') {
+    for (const symbol of symbols) {
+      for (const kline of klinesArr) {
+        counter++;
+        BncHistoryDownloadLog.info(`Current: ${counter} / ${symbols.length * klinesArr.length}`);
+        inObj.symbol = symbol;
+        inObj.klinesTimeFrame = kline;
+        await downloadHistoryData(inObj);
+      }
+    }
+  } else if (inObj.symbol === 'all') {
+    for (const symbol of symbols) {
+      counter++;
+      BncHistoryDownloadLog.info(`Current: ${counter} / ${symbols.length}`);
+      inObj.symbol = symbol;
+      await downloadHistoryData(inObj);
+    }
+  } else if (inObj.symbol === 'allUSDT') {
+    const usdtSymbols = [];
+
+    for (const symbol of symbols) {
+      if (symbol.match(/.*USDT/)) {
+        usdtSymbols.push(symbol);
+      }
+    }
+
+    for (const symbol of usdtSymbols) {
+      BncHistoryDownloadLog.info(`Current: ${counter} / ${usdtSymbols.length}`);
+      counter++;
+      inObj.symbol = symbol;
+      await downloadHistoryData(inObj);
+    }
+  } else if (inObj.klinesTimeFrame === 'all') {
+    for (const kline of klinesArr) {
+      counter++;
+      BncHistoryDownloadLog.info(`Current: ${counter} / ${klinesArr.length}`);
+      inObj.klinesTimeFrame = kline;
+      await downloadHistoryData(inObj);
+    }
+  } else {
+    await downloadHistoryData(inObj);
+  }
+
+  BncHistoryDownloadLog.info('Processing downloaded files...');
+  execSync('Cryptonite.CryptoniteJS.BinanceHistoryData', {'shell': 'pwsh.exe', 'stdio': 'ignore'});
+  BncHistoryDownloadLog.info('Data has been successfully imported');
+}
+
 module.exports = {
-  downloadHistoryData,
+  binanceHistoryData,
 };

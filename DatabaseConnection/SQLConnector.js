@@ -351,6 +351,36 @@ const sproc_InsertIntoOrderSell = async (inObj) => {
     DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
   }
 };
+const sproc_GatherSymbolTAData = async (inObj) => {
+  try {
+    await poolConnect;
+    DatabaseLog.silly('Running stored procedure Gather Symbol TA Data');
+    const request = await pool.request()
+        .input('symbol', inObj.symbol)
+        .input('timeFrame', inObj.timeFrame)
+        .input('dataPeriod', inObj.dataPeriod)
+        .input('macdDataPeriod', inObj.macdDataPeriod)
+        .input('aroonDataPeriod', inObj.aroonDataPeriod)
+        .input('eventTime', inObj.eventTime)
+        .output('smaOut', sql.Decimal(19, 8))
+        .output('emaOut', sql.Decimal(19, 8))
+        .output('supportOut', sql.Decimal(19, 8))
+        .output('resistanceOut', sql.Decimal(19, 8))
+        .output('aroonUpOut', sql.Decimal(19, 8))
+        .output('aroonDownOut', sql.Decimal(19, 8))
+        .output('adiOut', sql.Decimal(19, 8))
+        .output('adxOut', sql.Decimal(19, 8))
+        .output('macdOut', sql.Decimal(19, 8))
+        .output('obvOut', sql.Decimal(19, 8))
+        .output('rsiOut', sql.Decimal(19, 8))
+        .output('lastPriceOut', sql.Decimal(19, 8))
+        .execute('GatherSymbolTAData');
+
+    return request.output;
+  } catch (error) {
+    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+  }
+};
 // #endregion
 
 
@@ -358,6 +388,7 @@ module.exports = {
   writeToDatabase,
   streamRead,
   singleRead,
+  sproc_GatherSymbolTAData,
   sproc_ImportBinanceCsv,
   sproc_AddSymbolToDatabase,
   sproc_InsertIntoOrderBuy,

@@ -1,10 +1,12 @@
 const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
-const {ApiLog, ApplicationLog} = require('../../Toolkit/Logger.js');
+const {ApiLog} = require('../../Toolkit/Logger.js');
 const _ = require('lodash');
 const {getExchanges} = require('../../Classes/Exchanges/ExchangesClass');
-const {downloadHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
+const {binanceHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
+const {sproc_GatherSymbolTAData} = require('../../DatabaseConnection/SQLConnector.js');
+
 
 router.route('/:exchange/getSymbols').get((req, res) => {
   try {
@@ -55,50 +57,12 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
 });
 
 router.route('/binance/historyDataDownload').post(async (req, res) => {
-  let counter = 0;
-  const klinesArr = [
-    '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo',
-  ];
+  binanceHistoryData(req.body);
+});
 
-  if (req.body.symbol === 'all' && req.body.klinesTimeFrame === 'all') {
-    const symbols = [...getExchanges()['binance'].symbolList];
-    for (const symbol of symbols) {
-      for (const kline of klinesArr) {
-        counter++;
-        ApplicationLog.info(`Current: ${counter} / ${symbols.length * klinesArr.length}`);
-        req.body.symbol = symbol;
-        req.body.klinesTimeFrame = kline;
-        await downloadHistoryData(req.body);
-      }
-    }
-  } else if (req.body.symbol === 'all') {
-    const symbols = [...getExchanges()['binance'].symbolList];
-    for (const symbol of symbols) {
-      counter++;
-      ApplicationLog.info(`Current: ${counter} / ${symbols.length}`);
-      req.body.symbol = symbol;
-      await downloadHistoryData(req.body);
-    }
-  } else if (req.body.symbol === 'allUSDT') {
-    const symbols = [...getExchanges()['binance'].symbolList];
-    for (const symbol of symbols) {
-      counter++;
-      ApplicationLog.info(`Current: ${counter} / ${symbols.length}`);
-      if (symbol.match(/.*USDT/)) {
-        req.body.symbol = symbol;
-        await downloadHistoryData(req.body);
-      }
-    }
-  } else if (req.body.klinesTimeFrame === 'all') {
-    for (const kline of klinesArr) {
-      counter++;
-      ApplicationLog.info(`Current: ${counter} / ${klinesArr.length}`);
-      req.body.klinesTimeFrame = kline;
-      await downloadHistoryData(req.body);
-    }
-  } else {
-    downloadHistoryData(req.body);
-  }
+router.route('/binance/coinTAData').post(async (req, res) => {
+  const result = await sproc_GatherSymbolTAData(req.body);
+  res.send(result);
 });
 
 module.exports = router;

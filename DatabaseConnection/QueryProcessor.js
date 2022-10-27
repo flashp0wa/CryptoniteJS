@@ -4,7 +4,7 @@ const {DatabaseLog, ApplicationLog} = require('../Toolkit/Logger.js');
 const _ = require('lodash');
 const {returnEmitter} = require('../Loaders/EventEmitter.js');
 const fs = require('fs');
-const {runPsCommand} = require('../Toolkit/PowerShell.js');
+// const {runPsCommand} = require('../Toolkit/PowerShell.js');
 const dataBank = require('../Loaders/LoadDataBank.js');
 
 // @ts-check
@@ -73,7 +73,7 @@ async function getAvailableCurrencies(processorFunction) {
   (async () => {
     let result;
     try {
-      result = await runPsCommand('Cryptonite.Cmc.QuotesLatest -CryptoniteJS');
+      // result = await runPsCommand('Cryptonite.Cmc.QuotesLatest -CryptoniteJS');
     } catch (error) {
       ApplicationLog.error(`Run PowerShell command "Cryptonite.Cmc.QuotesLatest -CryptoniteJS failed". ${error.stack}`);
     }

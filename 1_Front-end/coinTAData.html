@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Cryptonite</title>
+    <script type="module" src="./JS/coinTAData.js"></script>
+    <body>
+      </head>
+        <label for="symbol">
+          Symbol
+          <select name="symbol" id="symbol"></select>
+        </label>
+        <p>
+          <label for="dataperiod">
+            Dataperiod
+            <select name="dataPeriod" id="dataPeriod">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="200">200</option>
+            </select>
+          </label>
+          <p>
+            <label for="macdDataperiod">
+              MACD Dataperiod
+              <select name="macdDataperiod" id="macdDataperiod">
+                <option value="5010">5010</option>
+              </select>
+            </label>
+          </p>
+          <p>
+            <label for="aroonDataPeriod">
+              Aroon Dataperiod
+              <select name="aroonDataPeriod" id="aroonDataPeriod">
+                <option value="14">14</option>
+                <option value="25">25</option>
+              </select>
+            </label>
+          </p>
+          <p>
+            <label for="timeFrame">
+              Timeframe
+              <select name="timeFrame" id="timeFrame"></select>
+            </label>
+          </p>
+          <p>
+            <label for="calendar">
+              Date
+              <input type="datetime-local" name="calendar" id="calendar">
+            </label>
+          </p>
+          <p>
+            <button type="submit" id="btnGet">Get</button>
+          </p>
+        </p>
+        <p>
+          <textarea name="resultText" id="resultText" cols="60" rows="20"></textarea>
+        </p>
+        <p><a href="index.html">Back to Home</a></p>
+  </body>
+</html>

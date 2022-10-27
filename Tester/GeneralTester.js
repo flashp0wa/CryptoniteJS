@@ -1,6 +1,5 @@
-const fetch = require('node-fetch');
+const a = 'david';
 
-(async () => {
-  let stuff = await fetch('https://data.binance.vision/?prefix=data/spot/daily/klines/DNTETH');
-  console.log(stuff.status);
-})();
+if (a.match('avis')) {
+  console.log('david');
+}
