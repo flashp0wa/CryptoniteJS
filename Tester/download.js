@@ -1,12 +1,8 @@
-require('dotenv').config({path: '.env'});
-const download = require('download');
+async function lol() {
+  await new Promise((resolve) => setTimeout(() => {
+    resolve(console.log('David'));
+  }, 10000));
+}
 
-// Url of the image
-const file = 'https://data.binance.vision/data/spot/daily/klines/1INCHBTC/12h/1INCHBTC-12h-2022-04-13.zip';
-// Path at which image will get downloaded
-const filePath = `${process.env.CRYPTONITE_ROOT}/Inboxes/BinanceData`;
+lol();
 
-download(file, filePath)
-    .then(() => {
-      console.log('Download Completed');
-    });

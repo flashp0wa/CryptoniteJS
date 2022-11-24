@@ -1,7 +1,21 @@
 /* eslint-disable */
-
+require('dotenv').config({path: '.env'});
 const fs = require('fs');
 
-const files = fs.readdirSync('C:/Users/wd976098/OneDrive - Siemens Healthineers/GitHub/JS/Cryptonite/Inboxes/BinanceData');
+const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
+const alreadyDownloaded = [];
 
-console.log(files);
+fs.readdirSync(downloadPath).forEach(file => {
+  alreadyDownloaded.push(file);
+});
+
+console.log(alreadyDownloaded);
+
+switch (key) {
+  case value:
+    
+    break;
+
+  default:
+    break;
+}

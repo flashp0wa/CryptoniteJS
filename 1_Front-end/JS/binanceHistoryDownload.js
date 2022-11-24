@@ -8,11 +8,22 @@ const radioRange = document.getElementById('radio-range');
 const endDate = document.getElementById('end-date');
 const klines = document.getElementById('dropdown-klines');
 const labelKlines = document.getElementById('label-klines');
+const radioMonthly = document.getElementById('radio-monthly');
+const radioDaily = document.getElementById('radio-daily');
+
 radioDate.checked = true;
 endDate.disabled = true;
+radioDaily.checked = true;
 
 klines.hidden = true;
 labelKlines.hidden = true;
+
+function toggleDaily() {
+  radioMonthly.checked = false;
+}
+function toggleMonthly() {
+  radioDaily.checked = false;
+}
 
 function toggleSpecificDate() {
   endDate.disabled = true;
@@ -64,6 +75,12 @@ async function download() {
   bodyObj.tradeType = document.getElementById('trade-type').value;
   bodyObj.klinesTimeFrame = document.getElementById('dropdown-klines').value;
   bodyObj.startDate = document.getElementById('start-date').value;
+  if (radioDaily.checked === true) {
+    bodyObj.timeFrame = document.getElementById('radio-daily').value;
+  } else {
+    bodyObj.timeFrame = document.getElementById('radio-monthly').value;
+  }
+
   if (radioRange.checked) {
     bodyObj.endDate = document.getElementById('end-date').value;
   }
@@ -78,15 +95,10 @@ async function download() {
   });
 }
 
-function dataScan() {
-  const url = `${config.BACKEND_URL}/dataScan/binance/coinDataImport`;
-  fetch(url);
-}
-
 document.getElementById('download').addEventListener('click', download);
-document.getElementById('database-import').addEventListener('click', dataScan);
 document.getElementById('trade-type').addEventListener('change', toggleTradeType);
 radioRange.addEventListener('change', toggleRange);
 radioDate.addEventListener('change', toggleSpecificDate);
-
+radioDaily.addEventListener('change', toggleDaily);
+radioMonthly.addEventListener('change', toggleMonthly);
 

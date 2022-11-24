@@ -5,11 +5,15 @@ const {BncHistoryDownloadLog} = require('./Logger.js');
 const util = require('util');
 const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
 const {execSync} = require('child_process');
+const fs = require('fs');
 
 async function downloadHistoryData(inObj) {
   return new Promise(async (resolve, reject) => {
     const baseUrl = 'https://data.binance.vision/data/spot';
     const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
+    const alreadyDownloaded = [];
+    let oneSuccessfulDownload = false;
+    let alreadyDownloadedFile = false;
     let fileName;
     let dates;
     let url;
@@ -29,41 +33,23 @@ async function downloadHistoryData(inObj) {
     }
     if (!endDate) {
       dates = [startDate.toISOString().split('T')[0]];
-    } else if ((endDate.getMonth() - startDate.getMonth()) === 0) {
-      dates = getDatesArray(startDate, endDate, 'days');
     } else {
-      const startYear = startDate.getFullYear();
-      const startMonth = startDate.getMonth();
-      const lastDay = new Date(startYear, startMonth +1, 1);
-      let tempArray = getDatesArray(startDate, lastDay, 'days');
-      datesArr.push(tempArray);
-
-      const endYear = endDate.getFullYear();
-      const endMonth = endDate.getMonth() + 1;
-      let firstDay;
-      if (endMonth <= 9) {
-        firstDay = new Date(`${endYear}-0${endMonth}-01`);
+      if (inObj.timeFrame === 'daily') {
+        tempArray = getDatesArray(startDate, endDate, 'days');
+        datesArr.push(tempArray);
       } else {
-        firstDay = new Date(`${endYear}-${endMonth}-01`);
+        tempArray = getDatesArray(startDate, endDate, 'months');
+        datesArr.push(tempArray);
       }
-      tempArray = getDatesArray(firstDay, endDate, 'days');
-      datesArr.push(tempArray);
-
-      tempArray = getDatesArray(new Date(startYear, startMonth +2), new Date(endYear, endMonth -1 ), 'months');
-      datesArr.push(tempArray);
-
       dates = _.flatten(datesArr);
     }
 
-    const csvFileNameLength = 8;
+    fs.readdirSync(downloadPath).forEach((file) => {
+      alreadyDownloaded.push(file);
+    });
+
 
     for (const date of dates) {
-      if (date.length < csvFileNameLength) {
-        inObj.timeFrame = 'monthly';
-      } else {
-        inObj.timeFrame = 'daily';
-      }
-
       if (inObj.tradeType === 'klines') {
         fileName = `${inObj.symbol}-${inObj.klinesTimeFrame}-${date}.zip`;
         url = `${baseUrl}/${inObj.timeFrame}/${inObj.tradeType}/${inObj.symbol}/${inObj.klinesTimeFrame}/${fileName}`;
@@ -72,15 +58,40 @@ async function downloadHistoryData(inObj) {
         url = `${baseUrl}/${inObj.timeFrame}/${inObj.tradeType}/${inObj.symbol}/${fileName}`;
       }
 
+      if (alreadyDownloaded.length > 0) {
+        for (const file of alreadyDownloaded) {
+          if (file === fileName) {
+            alreadyDownloadedFile = true;
+            break;
+          }
+        }
+
+        if (alreadyDownloadedFile) {
+          BncHistoryDownloadLog.info(`${fileName} already downloaded`);
+          alreadyDownloadedFile = false;
+          continue;
+        }
+      }
+
+
       try {
-        BncHistoryDownloadLog.info(`Downloading from URL: ${url} to ${downloadPath}`);
+        BncHistoryDownloadLog.silly(`Downloading from URL: ${url} to ${downloadPath}`);
+        BncHistoryDownloadLog.info(`Downloading: ${fileName}`);
         await download(url, downloadPath);
+        oneSuccessfulDownload = true;
         BncHistoryDownloadLog.info('Download completed.');
       } catch (error) {
         if (util.inspect(error.message).includes('404')) {
-          BncHistoryDownloadLog.info('Symbol does not exist');
-          resolve(true);
-          return;
+          BncHistoryDownloadLog.info('Date does not exist');
+          // BncHistoryDownloadLog.info('Symbol does not exist');
+          // resolve(true);
+          // return;
+          if (oneSuccessfulDownload) {
+            BncHistoryDownloadLog.info('Symbol discontinued...');
+            resolve(true);
+            return;
+          }
+          continue;
         }
         BncHistoryDownloadLog.error(`Error while downloading. ${error}`);
         continue;
