@@ -44,13 +44,3 @@
 
 // someFunctionWithACallback((result) => doStuffWith(result));
 
-
-const candle1 = 3;
-const candle2 = 5;
-
-switch (true) {
-  case 2 > candle1 > 0:
-  console.log('david');
-  default:
-    break;
-}

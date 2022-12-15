@@ -24,6 +24,7 @@ Once any of the functions will be called,
 connecection pool will be created,
 so connection can be kept alive till the application is running.
 */
+
 if (!pool) {
   (async () => {
     try {

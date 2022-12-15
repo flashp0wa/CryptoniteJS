@@ -1,3 +1,4 @@
+require('dotenv').config({path: '.env'});
 const {loadEventListeners} = require('./Loaders/Events.js');
 const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
 const {startApi} = require('./API/Api.js');
