@@ -18,7 +18,10 @@ class Order {
   processOrderResponse() {
     throw new Error('This function must be overridden.');
   }
-
+  /**
+   * Function decides which side's stored procedure to call based on the input object's side property
+   * @param {object} databaseObj Object with values will be written to the database
+   */
   writeToDatabase(databaseObj) {
     if (databaseObj.side === 'buy') {
       sproc_InsertIntoOrderBuy(databaseObj);

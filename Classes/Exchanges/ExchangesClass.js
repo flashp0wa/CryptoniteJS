@@ -7,6 +7,9 @@ class Exchanges {
     this.binanceTest = new BinanceTestClass();
   }
 
+  /**
+   * Load all exchange's market data
+   */
   async loadAllMarkets() {
     await this.binance.loadMarkets();
     await this.binanceTest.loadMarkets();
@@ -14,6 +17,9 @@ class Exchanges {
     this.binanceTest.loadSymbols();
   }
 
+  /**
+   * Check all exchange's order status
+   */
   checkOrderStatus() {
     this.binance.checkOrderStatus();
     this.binanceTest.checkOrderStatus();
@@ -21,6 +27,10 @@ class Exchanges {
 }
 
 let exchanges = new Exchanges();
+/**
+ * Creates the Exchanges class if does not exists and returns it. If already exists returns it.
+ * @return {class} Exchanges class object
+ */
 function getExchanges() {
   if (!exchanges) {
     return exchanges = new Exchanges();

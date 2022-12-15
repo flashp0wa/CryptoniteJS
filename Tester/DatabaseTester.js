@@ -1,19 +1,34 @@
 /* eslint-disable */
 
 require('dotenv').config({path: '.env'});
-const { result } = require('lodash');
 const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
 
 
 (async () => {
   
-  const results = await sqlConnector.sproc_GatherSymbolTAData({
-    symbol: 'ADAUSDT',
-    timeFrame: '1h',
-    dataPeriod: 10,
-    macdDataPeriod: 5010,
-    aroonDataPeriod: 14,
-  });
-  console.log(results);
+// const result = await sqlConnector.selectEverythingFrom('cry_candle_types');
+// console.log(result);
+
+const val1 = 1
+const val2 = 3
+
+switch (val1) {
+  case 1:
+
+    switch (val2) {
+      case 2 :
+      case 3 :
+        console.log('David');
+        break;
+    
+      default:
+        break;
+    }
+    
+    break;
+
+  default:
+    break;
+}
 
 })();

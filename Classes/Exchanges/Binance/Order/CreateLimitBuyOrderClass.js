@@ -1,12 +1,19 @@
 const {Order} = require('./OrderClass');
 
 class CreateLimitBuyOrder extends Order {
+  /**
+   *
+   * @param {object} excObj Exchange object
+   * @param {object} conObj Constructor object
+   */
   constructor(excObj, conObj) {
     super(excObj, conObj);
     this.limitOrderResponse;
     this.buyPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.buyPrice));
   }
-
+  /**
+   * Writes order response to database.
+   */
   processOrderResponse() {
     this.traderLog.info('Processing limit order response...');
     const limitDataObj = {
@@ -26,7 +33,9 @@ class CreateLimitBuyOrder extends Order {
 
     super.writeToDatabase(limitDataObj);
   }
-
+  /**
+   * Creates limit buy order and writes order response to database.
+   */
   async createOrder() {
     this.traderLog.info(`New limit order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.buyPrice}`);
     try {

@@ -12,7 +12,10 @@ binanceTst.secret = process.env.BNCT_SECKEY;
 binanceTst.options.adjustForTimeDifference = true;
 binanceTst.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all open orders only 1 / 10 seconds
 
+const bncFutures = 'binancecoinm';
+const binanceFut = new ccxt[bncFutures];
 
+console.log(binanceFut.rateLimit);
 
 (async () => {
   // const res = await binanceTst.fetchFreeBalance();
@@ -57,7 +60,7 @@ binanceTst.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all op
   
 // const res = await binanceTst.limit
 //await binanceTst.loadMarkets()
-console.log(await binanceTst.fetchClosedOrders());
+// console.log(await binanceTst.fetchClosedOrders());
 
 })();
 

@@ -18,6 +18,15 @@ module.exports = class binancecoinm extends binance {
                     'https://binance-docs.github.io/apidocs/spot/en',
                 ],
             },
+            'has': {
+                'CORS': undefined,
+                'spot': false,
+                'margin': false,
+                'swap': true,
+                'future': true,
+                'option': undefined,
+                'createStopMarketOrder': true,
+            },
             'options': {
                 'defaultType': 'delivery',
                 'leverageBrackets': undefined,

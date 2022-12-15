@@ -37,12 +37,18 @@ if (!pool) {
   })();
 };
 
-// Close connection at application close
+/**
+ *
+ * Close connection to database at application close
+ */
 const closePool = () => {
   pool.close();
   DatabaseLog.info('Connection pool closed.');
 };
 
+/**
+ * Sends and email when database error occures and exits the application
+ */
 pool.once('error', (error) => {
   DatabaseLog.error(`The following database error occured: ${error.stack}`);
   globalEvent.emit('SendEmail', `The following database error occured: ${error}`);
@@ -174,7 +180,12 @@ const singleRead = async (query) => {
   }
 };
 
-
+/**
+ * Selects everything from specified table. Where parameter is optional.
+ * @param {string} tableName
+ * @param {string} where
+ * @return {object}
+ */
 async function selectEverythingFrom(tableName, where) {
   try {
     await poolConnect;

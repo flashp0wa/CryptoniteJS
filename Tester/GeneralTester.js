@@ -45,7 +45,12 @@
 // someFunctionWithACallback((result) => doStuffWith(result));
 
 
-console.table({
-  Name: "David",
-  Sex: "Wish I would have some",
-});
+const candle1 = 3;
+const candle2 = 5;
+
+switch (true) {
+  case 2 > candle1 > 0:
+  console.log('david');
+  default:
+    break;
+}

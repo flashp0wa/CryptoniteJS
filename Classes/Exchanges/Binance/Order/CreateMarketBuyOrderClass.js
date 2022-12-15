@@ -12,7 +12,9 @@ class CreateMarketBuyOrder extends Order {
    *  side,
    *  orderType,
    *  orderAmount,
-   *  buy,
+   *  buyPrice,
+   *  stopPrice,
+   *  sellPrice,
    * }
    */
   constructor(excObj, conObj) {
@@ -21,7 +23,10 @@ class CreateMarketBuyOrder extends Order {
     this.buyPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.buyPrice));
     this.marketOrderResponse;
   }
-
+  /**
+   * Write order response data to database
+   * @param {object} inObj Input object
+   */
   processOrderResponse(inObj) {
     this.traderLog.info('Processing market order response...');
     const marketDataObj = {
@@ -44,7 +49,9 @@ class CreateMarketBuyOrder extends Order {
     };
     super.writeToDatabase(marketDataObj);
   }
-
+  /**
+   * Creates the market order with it's corresponding OCO order and then writes the response to the database.
+   */
   async createOrder() {
     this.traderLog.info(`New market order. Symbol: ${this.symbol}, Side: ${this.side}, Amount: ${this.orderAmount}, Price: ${this.buyPrice}`);
     let ocoId;

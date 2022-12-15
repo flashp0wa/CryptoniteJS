@@ -2,57 +2,16 @@
 // and pushes incoming data to database.
 
 const WebSocket = require('websocket').w3cwebsocket;
-const ProcessStream = require('../ProcessStream.js');
+// const ProcessStream = require('../ProcessStream.js');
 const {ApplicationLog} = require('../../Toolkit/Logger.js');
 // const sendMail = require('../../Toolkit/Mailer.js');
 // const {ReturnEmitter} = require('../../Loaders/EventEmitter.js');
 
 
-const streamsToListen2 = [
-  'adausdt@ticker', 'adausdt@trade',
-  'btcusdt@ticker', 'btcusdt@trade',
-  'ethusdt@ticker', 'ethusdt@trade',
-  'dotusdt@ticker', 'dotusdt@trade',
-  'dashusdt@ticker', 'dashusdt@trade',
-  'bnbusdt@ticker', 'bnbusdt@trade',
-  'dogeusdt@ticker', 'dogeusdt@trade',
-  'solusdt@ticker', 'solusdt@trade',
-  'uniusdt@ticker', 'uniusdt@trade',
-  'linkusdt@ticker', 'linkusdt@trade',
-  'ltcusdt@ticker', 'ltcusdt@trade',
-  'lunausdt@ticker', 'lunausdt@trade',
-  'maticusdt@ticker', 'maticusdt@trade',
-  'xlmusdt@ticker', 'xlmusdt@trade',
-  'vetusdt@ticker', 'vetusdt@trade',
-  'usdttry@ticker',
-  'busdusdt@ticker',
-  'usdtrub@ticker',
-  'eurusdt@ticker',
-  'usdtbrl@ticker',
-  'usdcusdt@ticker',
-  'audusdt@ticker',
-  'gbpusdt@ticker',
-  'tusdusdt@ticker',
-  'xrpusdt@ticker',
-  'usdtbidr@ticker',
-  'xrpbidr@ticker',
-  'xrptry@ticker',
-  'xrpbusd@ticker',
-  'xrprub@ticker',
-  'xrpeur@ticker',
-  'xrpbrl@ticker',
-  'xrpusdc@ticker',
-  'xrpaud@ticker',
-  'xrpgbp@ticker',
-  'xrptusd@ticker',
-  'xrpbnb@ticker',
-  'xrpeth@ticker',
-  'xrpbtc@ticker',
-];
-
 const streamsToListen = [
-  'tctusdt@ticker',
-  'troyusdt@ticker',
+  'btcusdt@kline_1m',
+  // 'btcusdt@ticker',
+  // 'ethusdt@ticker',
 ];
 
 /**
@@ -62,7 +21,7 @@ const streamsToListen = [
 function streamKicker(streams) {
   // Build URL
   let url;
-  const baseUrl = 'wss://stream.binance.com:9443/';
+  const baseUrl = process.env.BNC_WSS_URL;
 
   if (!streams) {
     ApplicationLog.error('No streams have been defined. Could not build URL.');
@@ -94,7 +53,8 @@ function streamKicker(streams) {
   // Making it JSON and writing to database
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    ProcessStream.wssJsonStream2Object(data);
+    console.log(data);
+    // ProcessStream.wssJsonStream2Object(data);
   };
   // Connection closed. Will try reconnecting
   ws.onclose = () => {
@@ -123,6 +83,8 @@ function restartStream() {
   ApplicationLog.info('Stream restart initiated');
   streamKicker(streamsToListen);
 }
+
+startStream();
 
 module.exports = {
   startStream,

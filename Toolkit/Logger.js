@@ -26,6 +26,31 @@ const ApplicationLog = winston.createLogger({
   ),
 });
 
+const SupportResistanceCandleTreeLog = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: '../Log/SupportResistanceCandleTree.log',
+    }),
+  ],
+  format: winston.format.combine(
+      winston.format.label({
+        label: `SRCandleTree🏷️`,
+      }),
+      winston.format.timestamp({
+        format: 'MMM-DD-YYYY HH:mm:ss',
+      }),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
+  ),
+});
+
 const DatabaseLog = winston.createLogger({
   transports: [
     new winston.transports.Console({
@@ -158,5 +183,6 @@ module.exports = {
   QueryProcessorLog,
   TraderLog,
   ApiLog,
+  SupportResistanceCandleTreeLog,
   BncHistoryDownloadLog,
 };

@@ -1,6 +1,11 @@
 const {Order} = require('./OrderClass.js');
 
 class CreateOcoOrder extends Order {
+  /**
+   *
+   * @param {object} excObj Exchange object
+   * @param {object} conObj Constructor object
+   */
   constructor(excObj, conObj) {
     super(excObj, conObj);
     this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopPrice);
@@ -9,7 +14,9 @@ class CreateOcoOrder extends Order {
     this.parentOrderId;
     this.ocoOrderResponse;
   }
-
+  /**
+   * Write order response data to database
+   */
   processOrderResponse() {
     this.traderLog.info('Processing OCO order response...');
 
@@ -47,7 +54,7 @@ class CreateOcoOrder extends Order {
     super.writeToDatabase(ocoStopLossDataObj);
   }
   /**
-   *
+   * Creates OCO order
    * @return {Object} //Returns Limit and StopLimit orderID
    */
   async createOrder() {
