@@ -1,8 +1,6 @@
-// The modules initializes a WebSocket stream
-// and pushes incoming data to database.
-
+// require('dotenv').config({path: '.env'});
 const WebSocket = require('websocket').w3cwebsocket;
-// const ProcessStream = require('../ProcessStream.js');
+const ProcessStream = require('../ProcessStream.js');
 const {ApplicationLog} = require('../../Toolkit/Logger.js');
 // const sendMail = require('../../Toolkit/Mailer.js');
 // const {ReturnEmitter} = require('../../Loaders/EventEmitter.js');
@@ -53,8 +51,8 @@ function streamKicker(streams) {
   // Making it JSON and writing to database
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
-    // ProcessStream.wssJsonStream2Object(data);
+    // console.log(data);
+    ProcessStream.wssJsonStream2Object(data);
   };
   // Connection closed. Will try reconnecting
   ws.onclose = () => {

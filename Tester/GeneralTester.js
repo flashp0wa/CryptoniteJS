@@ -44,3 +44,20 @@
 
 // someFunctionWithACallback((result) => doStuffWith(result));
 
+class Test {
+  constructor() {
+    this.array = {lol: {bol: {pol: 2}}};
+  }
+
+  add() {
+    function add2(params) {
+      params.lol.bol.pol = 3;
+    }
+
+    add2(this.array);
+  }
+}
+
+const a = new Test();
+a.add();
+console.log(a.array);

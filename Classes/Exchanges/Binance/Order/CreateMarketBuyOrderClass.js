@@ -37,7 +37,6 @@ class CreateMarketBuyOrder extends Order {
       side: this.marketOrderResponse.side,
       price: this.marketOrderResponse.price,
       amount: this.marketOrderResponse.amount,
-      fee: this.marketOrderResponse.fee.cost * this.marketOrderResponse.price, // convert fee to USD
       filled: this.marketOrderResponse.filled,
       remaining: this.marketOrderResponse.remaining,
       orderStatus: this.marketOrderResponse.status,
@@ -47,6 +46,12 @@ class CreateMarketBuyOrder extends Order {
       ocoLimitId: inObj.ocoLimitId,
       ocoStopLossLimitId: inObj.ocoStopLossLimitId,
     };
+    if (typeof this.marketOrderResponse.fee === 'undefined') {
+      marketDataObj.fee = 0;
+    } else {
+      marketDataObj.fee = this.marketOrderResponse.fee.cost * this.marketOrderResponse.price; // convert fee to USD
+    }
+
     super.writeToDatabase(marketDataObj);
   }
   /**
@@ -60,21 +65,21 @@ class CreateMarketBuyOrder extends Order {
       this.marketOrderResponse = await this.exchangeObj.createMarketOrder(this.symbol, this.side, this.orderAmount, this.buyPrice);
       this.traderLog.info(`New market order has been created.`);
       this.ocoOrder.parentOrderId = this.marketOrderResponse.id;
+
+      try {
+        ocoId = await this.ocoOrder.createOrder();
+      } catch (error) {
+        this.traderLog.error('Oco order creation failed.');
+      }
+
+      try {
+        this.processOrderResponse(ocoId);
+        this.traderLog.info('Market order response has been processed');
+      } catch (error) {
+        this.traderLog.error(`Failed to write order response to database. ${error.stack}`);
+      }
     } catch (error) {
       this.traderLog.error(`Market order creation failed. ${error.stack}`);
-    }
-
-    try {
-      ocoId = await this.ocoOrder.createOrder();
-    } catch (error) {
-      this.traderLog.error('Oco order creation failed.');
-    }
-
-    try {
-      this.processOrderResponse(ocoId);
-      this.traderLog.info('Market order response has been processed');
-    } catch (error) {
-      this.traderLog.error(`Failed to write order response to database. ${error.stack}`);
     }
   }
 }

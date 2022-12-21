@@ -1,34 +1,58 @@
 /* eslint-disable */
 
 require('dotenv').config({path: '.env'});
+const { TechnicalIndicatorClass } = require('../Classes/TechnicalIndicatorClass.js');
 const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
 
 
 (async () => {
-  
-// const result = await sqlConnector.selectEverythingFrom('cry_candle_types');
-// console.log(result);
 
-const val1 = 1
-const val2 = 3
+  const kline1 = {
+    closePrice: 3000,
+    closeTime: '2022-12-21 22:22:22',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
+  const kline2 = {
+    closePrice: 2000,
+    closeTime: '2022-12-21 22:22:23',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
+  const kline3 = {
+    closePrice: 1000,
+    closeTime: '2022-12-21 22:22:24',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
+  const kline4 = {
+    closePrice: 2000,
+    closeTime: '2022-12-21 22:22:25',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
+  const kline5 = {
+    closePrice: 3000,
+    closeTime: '2022-12-21 22:22:26',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
+  const kline6 = {
+    closePrice: 5000,
+    closeTime: '2022-12-21 22:22:26',
+    symbol: 'BTCUSDT',
+    timeFrame: '5m',
+    closed: true,
+  }
 
-switch (val1) {
-  case 1:
-
-    switch (val2) {
-      case 2 :
-      case 3 :
-        console.log('David');
-        break;
-    
-      default:
-        break;
-    }
-    
-    break;
-
-  default:
-    break;
-}
+  const ta = new TechnicalIndicatorClass();
+  await ta.loadValues();
+  console.log(ta.supportResistance);
+  console.log(ta.averageTrueRange);
 
 })();

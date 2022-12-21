@@ -5,19 +5,20 @@ const _ = require('lodash');
 const ccxt = require('ccxt');
 
 const bncTst = 'binance';
-const binanceTst = new ccxt[bncTst]();
+const binanceTst = new ccxt.pro.binance();
 binanceTst.set_sandbox_mode(true);
 binanceTst.apiKey = process.env.BNCT_APIKEY;
 binanceTst.secret = process.env.BNCT_SECKEY;
 binanceTst.options.adjustForTimeDifference = true;
 binanceTst.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all open orders only 1 / 10 seconds
 
-const bncFutures = 'binancecoinm';
-const binanceFut = new ccxt[bncFutures];
 
-console.log(binanceFut.rateLimit);
+console.log(ccxt.version);
+
 
 (async () => {
+  
+  // console.log(await binanceTst.watchMyTrades('XRPUSDT'));
   // const res = await binanceTst.fetchFreeBalance();
   // const res = await binanceTst.fetchTicker('ADAUSDT');
   // console.log(res);

@@ -4,6 +4,8 @@
 // const {ApplicationLog} = require('../../Toolkit/Logger.js');
 // const dataBank = require('../../Loaders/LoadDataBank.js');
 
+const {ApplicationLog} = require('../../Toolkit/Logger');
+
 // const globalEvent = returnEmitter();
 
 const vs_TTQAV = {};
@@ -222,7 +224,7 @@ function stream_getCandleType(inObj) {
   const co = inObj.closePrice - inObj.openPrice;
   const hl = inObj.highPrice - inObj.lowPrice;
   const hc = inObj.highPrice - inObj.closePrice;
-  const ol = inObj.openPrice - inObj.lowPr2ice;
+  const ol = inObj.openPrice - inObj.lowPrice;
   const ho = inObj.highPrice - inObj.openPrice;
   const cl = inObj.closePrice - inObj.lowPrice;
   const oc = inObj.openPrice - inObj.closePrice;
@@ -237,48 +239,50 @@ function stream_getCandleType(inObj) {
       inObj.candleTypeId = 12;
       return inObj;
 
-    case (0.2 < (co) / (hl)) && ((co) / (hl) < 0.8):
+    case (0.2 <= (co) / (hl)) && ((co) / (hl) <= 0.8):
       inObj.candleTypeId = 1;
       return inObj;
 
-    case (0 < (co) / (hl)) && ((co) / (hl) < 0.2) && ((hc) / (ol)) < 0.25:
+    case (0 <= (co) / (hl)) && ((co) / (hl) <= 0.2) && ((hc) / (ol)) <= 0.25:
       inObj.candleTypeId = 2;
       return inObj;
 
-    case (0 < (co) / (hl)) && ((co) / (hl) < 0.2) && ((hc) / (ol)) > 4:
+    case (0 <= (co) / (hl)) && ((co) / (hl) <= 0.2) && ((hc) / (ol)) >= 4:
       inObj.candleTypeId = 3;
       return inObj;
 
-    case (0 < (co) / (hl)) && ((co) / (hl) < 0.2) && (0.25 < (hc) / (ol)) && ((hc) / (ol) < 4):
+    case ((0 <= (co) / (hl)) && ((co) / (hl) <= 0.2)) && ((0.25 <= (hc) / (ol)) && ((hc) / (ol) <= 4)):
       inObj.candleTypeId = 4;
       return inObj;
 
-    case ((co) / (hl)) > 0.8:
+    case (co) / (hl) >= 0.8:
       inObj.candleTypeId = 5;
       return inObj;
 
-    case (0.2 < (oc) / (hl)) && ((oc) / (hl) < 0.8):
+    case (0.2 <= (oc) / (hl)) && ((oc) / (hl) <= 0.8):
       inObj.candleTypeId = 6;
       return inObj;
 
-    case (0 < (oc) / (hl)) && ((oc) / (hl) < 0.2) && ((hc) / (ol)) < 0.25:
+    case (0 <= (oc) / (hl)) && ((oc) / (hl) <= 0.2) && (hc) / (ol) <= 0.25:
       inObj.candleTypeId = 7;
       return inObj;
 
-    case (0 < (oc) / (hl)) && ((oc) / (hl) < 0.2) && ((hc) / (ol)) > 4:
+    case (0 <= (oc) / (hl)) && ((oc) / (hl) <= 0.2) && (hc) / (ol) >= 4:
       inObj.candleTypeId = 8;
       return inObj;
 
-    case (0 < (oc) / (hl)) && ((oc) / (hl) < 0.2) && (0.25 < (hc) / (ol)) && ((hc) / (ol) < 4):
+    case (0 <= (oc) / (hl)) && ((oc) / (hl) <= 0.2) && (0.25 <= (ho) / (cl)) && ((ho) / (cl) <= 4):
       inObj.candleTypeId = 9;
       return inObj;
 
-    case ((oc) / (hl)) > 0.8:
+    case (oc) / (hl) >= 0.8:
       inObj.candleTypeId = 0;
       return inObj;
 
     default:
-      break;
+      ApplicationLog.warn(`No candle type has been identified: ${inObj}`);
+      inObj.candleTypeId = 'none';
+      return inObj;
   }
 }
 

@@ -181,52 +181,6 @@ const singleRead = async (query) => {
   }
 };
 
-/**
- * Selects everything from specified table. Where parameter is optional.
- * @param {string} tableName
- * @param {string} where
- * @return {object}
- */
-async function selectEverythingFrom(tableName, where) {
-  try {
-    await poolConnect;
-    let query;
-    if (!where) {
-      query = `SELECT * FROM ${tableName}`;
-    } else {
-      query = `SELECT * FROM ${tableName} WHERE ${where}`;
-    }
-    DatabaseLog.silly(`Reading from database. Query: ${query}`);
-    const result = await pool.request().query(query);
-    return result.recordset;
-  } catch (error) {
-    DatabaseLog.error(`An error occured while reading from the database: ${error.stack}`);
-  }
-}
-/**
- *
- * @param {string} tableName|
- * @param {string} columns // comma separated string value (value1, value2)
- * @param {string} where // columnName='stuff'
- * @return {object}
- */
-async function selectColumnsFrom(tableName, columns, where) {
-  try {
-    await poolConnect;
-    let query;
-    if (!where) {
-      query = `SELECT ${columns} FROM ${tableName}`;
-    } else {
-      query = `SELECT ${columns} FROM ${tableName} WHERE ${where}`;
-    }
-    DatabaseLog.silly(`Reading from database. Query: ${query}`);
-    const result = await pool.request().query(query);
-    return result.recordset;
-  } catch (error) {
-    DatabaseLog.error(`An error occured while reading from the database: ${error.stack}`);
-  }
-}
-
 async function updateTable(tableName, set, where) {
   try {
     await poolConnect;
@@ -363,6 +317,38 @@ const sproc_InsertIntoOrderSell = async (inObj) => {
     DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
   }
 };
+const sproc_InsertIntoAverageTrueRange = async (inObj) => {
+  try {
+    await poolConnect;
+    DatabaseLog.silly('Running stored procedure Insert Into Average True Range');
+    const request = await pool.request()
+        .input('eventTime', inObj.eventTime)
+        .input('symbol', inObj.symbol)
+        .input('timeFrame', inObj.timeFrame)
+        .input('atr', inObj.atr)
+        .execute('InsertIntoAverageTrueRange');
+
+    return request;
+  } catch (error) {
+    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+  }
+};
+const sproc_InsertIntoSupportResistance = async (inObj) => {
+  try {
+    await poolConnect;
+    DatabaseLog.silly('Running stored procedure Insert Into Support Resistance');
+    const request = await pool.request()
+        .input('eventTime', inObj.eventTime)
+        .input('symbol', inObj.symbol)
+        .input('timeFrame', inObj.timeFrame)
+        .input('support', inObj.support)
+        .input('resistance', inObj.resistance)
+        .execute('InsertIntoSupportResistance');
+    return request;
+  } catch (error) {
+    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+  }
+};
 const sproc_GatherSymbolTAData = async (inObj) => {
   try {
     await poolConnect;
@@ -405,10 +391,10 @@ module.exports = {
   sproc_AddSymbolToDatabase,
   sproc_InsertIntoOrderBuy,
   sproc_InsertIntoOrderSell,
+  sproc_InsertIntoAverageTrueRange,
+  sproc_InsertIntoSupportResistance,
   sproc_UpdateOrderBuy,
   sproc_UpdateOrderSell,
   closePool,
-  selectEverythingFrom,
-  selectColumnsFrom,
   updateTable,
 };

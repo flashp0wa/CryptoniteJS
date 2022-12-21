@@ -1,39 +1,26 @@
-const ccxt = require('ccxt');
 const {CreateMarketBuyOrder} = require('./Order/CreateMarketBuyOrderClass');
 const {CreateLimitBuyOrder} = require('./Order/CreateLimitBuyOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
-const {selectColumnsFrom, sproc_AddSymbolToDatabase, sproc_UpdateOrderSell, sproc_UpdateOrderBuy} = require('../../../DatabaseConnection/SQLConnector');
+const {sproc_AddSymbolToDatabase, sproc_UpdateOrderSell, sproc_UpdateOrderBuy, singleRead} = require('../../../DatabaseConnection/SQLConnector');
 // const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
 
-// Later on this should be the base class for spot and futures trading (just take out the configure exchange part to a separate class)
 
 class BinanceClass {
-  constructor() {
-    this.exchangeObj = this.configureExchange();
+  constructor(exchangeName) {
+    this.exchangeName = exchangeName;
     this.markets;
     this.symbolList = [];
+    this.exchangeId;
   }
-  /**
-   * Configures the exchange object for use. Sets API key, secret key, adjust for time difference and warn on fetch open orders without symbol options.
-   * @return {object} Binance CCXT Object
-   */
-  configureExchange() {
-    ApplicationLog.info('Loading binance...');
-    const exchangeName = 'binance';
-    const binance = new ccxt[exchangeName]();
-    binance.apiKey = process.env.BNC_APIKEY;
-    binance.secret = process.env.BNC_SECKEY;
-    binance.options.adjustForTimeDifference = true;
-    binance.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call all open orders only 1 / 10 seconds
-    return binance;
-  }
+
   /**
    * Loads current open orders from the database and checks it's states fetching binance. If state changed updates database.
    */
   async checkOrderStatus() {
     try {
-      const buyOrders = await selectColumnsFrom('cry_order_buy', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 1');
-      const sellOrders = await selectColumnsFrom('cry_order_sell', 'orderId, symbolId', 'orderStatus = \'open\' AND exchangeId = 1');
+      this.exchangeId = await this.getExchangeId();
+      const buyOrders = await singleRead(`select * from itvf_ReturnBuyOrders('closed', ${this.exchangeId})`);
+      const sellOrders = await singleRead(`select * from itvf_ReturnSellOrders('closed', ${this.exchangeId})`);
       for (const order of sellOrders) {
         try {
           const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
@@ -83,7 +70,7 @@ class BinanceClass {
    * Loads CCXT exchange market data
    */
   async loadMarkets() {
-    ApplicationLog.info('Loading binance markets...');
+    ApplicationLog.info(`Loading ${this.exchangeName} markets...`);
     try {
       this.markets = await this.exchangeObj.loadMarkets();
     } catch (error) {
@@ -101,7 +88,7 @@ class BinanceClass {
       for (const market of Object.keys(this.markets)) {
         const actualSymbol = this.markets[market].info.symbol;
         this.symbolList.push(actualSymbol);
-        sproc_AddSymbolToDatabase(actualSymbol, 1);
+        sproc_AddSymbolToDatabase(actualSymbol, this.exchangeId);
       }
     } catch (error) {
       ApplicationLog.warn(`Loading symbols failed...${error.stack}`);
@@ -122,6 +109,14 @@ class BinanceClass {
    */
   createLimitBuyOrder(conObj) {
     new CreateLimitBuyOrder(this.exchangeObj, conObj).createOrder();
+  }
+  /**
+   *
+   * @return {int} Returns the exchange ID
+   */
+  async getExchangeId() {
+    const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
+    return response[0].exchangeId;
   }
 }
 

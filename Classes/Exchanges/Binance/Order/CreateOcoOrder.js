@@ -19,7 +19,6 @@ class CreateOcoOrder extends Order {
    */
   processOrderResponse() {
     this.traderLog.info('Processing OCO order response...');
-
     const ocoStopLossDataObj = {
       symbol: this.ocoOrderResponse['orderReports'][0].symbol,
       orderId: this.ocoOrderResponse['orderReports'][0].orderId,

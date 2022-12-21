@@ -1,10 +1,10 @@
-const {BinanceClass} = require('./Binance/BinanceClass.js');
+const {BinanceSpotClass} = require('./Binance/BinanceSpotClass.js');
 const {BinanceTestClass} = require('./Binance/BinanceTestClass.js');
 
 class Exchanges {
   constructor() {
-    this.binance = new BinanceClass();
-    this.binanceTest = new BinanceTestClass();
+    this.binance = new BinanceSpotClass('binance');
+    this.binanceTest = new BinanceTestClass('binanceTest');
   }
 
   /**
