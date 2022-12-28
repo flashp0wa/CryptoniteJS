@@ -3,68 +3,59 @@
 require('dotenv').config({path: '.env'});
 const _ = require('lodash');
 const ccxt = require('ccxt');
+const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/BinanceFuturesTestClass');
+const { CreateOrder } = require('../Classes/Exchanges/Binance/Order/CreateOrderClass');
+const { BinanceSpotTestClass } = require('../Classes/Exchanges/Binance/BinanceSpotTestClass');
 
-const bncTst = 'binance';
-const binanceTst = new ccxt.pro.binance();
-binanceTst.set_sandbox_mode(true);
-binanceTst.apiKey = process.env.BNCT_APIKEY;
-binanceTst.secret = process.env.BNCT_SECKEY;
-binanceTst.options.adjustForTimeDifference = true;
-binanceTst.options["warnOnFetchOpenOrdersWithoutSymbol"] = false; // Call all open orders only 1 / 10 seconds
-
-
-console.log(ccxt.version);
-
+// const futures = new BinanceFuturesTestClass('binanceFuturesTest');
+const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
-  
-  // console.log(await binanceTst.watchMyTrades('XRPUSDT'));
-  // const res = await binanceTst.fetchFreeBalance();
-  // const res = await binanceTst.fetchTicker('ADAUSDT');
-  // console.log(res);
-  // await binanceTst.createOrder('LUNAUSDT', 'stop_loss_limit', 'sell', 0.5, 29, {'stopPrice': 31})
-  // binanceTst.createLimitSellOrder(symbol, amount, price)
-  // const markets = await binanceTst.loadMarkets();
-  // const res = binanceTst.symbols
-  // console.log(markets['ETH/BTC'].info.filters);
+  try {
 
-  // await binanceTst.createLimitSellOrder('BTCUSDT', 0.2, 50000)
-  // await binanceTst.createLimitSellOrder('XRPUSDT', 100, 1)
-  // await binanceTst.createLimitSellOrder('ETHUSDT', 0.2, 3000)
-  // const openOrders = await binanceTst.fetchOpenOrders();
-  
-  // binanceTst.defineRestApi()
+  await spotTest.loadExchangeId();
+  spotTest.loadOpenOrders();
+  await spotTest.loadMarkets();
+  const orderObj = {
+    symbol: 'BTCUSDT',
+    type: 'market',
+    side: 'buy',
+    price: 16700,
+    stopPrice: 16000,
+    limitPrice: 18000,
+    orderAmount: 0.01,
+  }
+  // const order = new CreateOrder(spotTest, orderObj).createOrder();
 
+  spotTest.openOrders.checkOrderStatus();
+
+  // console.log(await binanceTst.fetchOrder(3267846654, 'BTCUSDT'));
+    // await binanceTst.cancelOrder(3267846667, 'BTCUSDT');
+  // console.log(binanceTst.id);
   // await binanceTst.loadMarkets();
+  // console.log(binanceTst.markets);
+  // console.log(await binanceTst.fetchBalance());
 
-  // const rees = binanceTst.priceToPrecision('XRPUSDT', 0.45898);
-  // console.log(rees);
-  
-  // const res = await binance.privatePostOrderOco({
-  //   symbol: 'XRPUSDT',
-  //   side: 'sell',
-  //   quantity: 20,
-  //   price: 0.48,
-  //   stopPrice: 0.35,
-  //   stopLimitPrice: 0.37,
-  //   stopLimitTimeInForce: 'GTC'
-  // })
-  // console.log(res);
+  // const resp = await binanceTst.createOrder('BTCUSDT', 'stop', 'sell', 0.01, 16300, {
+  //   stopPrice: 16500,
+  // })  
 
-  // binanceTst.createLimitOrder(symbol, side, amount, price)
-  // console.log(binanceTst.name);
-  // binanceTst.fetchp
-  // console.log(await getExchanges().binanceTest.exchangeObj.loadMarkets())   
-  // market = await exchange.loadMarkets();
+  // const resp0 = await binanceTst.createOrder('BTCUSDT', 'market', 'buy', 0.02, 16800);  
+  // const resp1 = await binanceTst.createOrder('BTCUSDT', 'market', 'buy', 0.03, 16800);  
+  // const resp2 = await binanceTst.createOrder('BTCUSDT', 'take_profit_market', 'sell', 0.02, 16300, {
+  //   stopPrice: 17000,
+    // closePosition: true,
+  // })  
 
-  // console.log(bncTst)
-  
-// const res = await binanceTst.limit
-//await binanceTst.loadMarkets()
-// console.log(await binanceTst.fetchClosedOrders());
+  // console.log(resp2);
+} catch (error) {
+  console.log(error);
+}
+  // console.log(await binanceTst.fetchTicker('BTC/USDT'));
+
 
 })();
 
-
+console.log()
 
 

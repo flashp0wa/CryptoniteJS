@@ -181,25 +181,13 @@ const singleRead = async (query) => {
   }
 };
 
-async function updateTable(tableName, set, where) {
-  try {
-    await poolConnect;
-    const query = `UPDATE ${tableName} SET ${set} WHERE ${where}`;
-    const result = await pool.request().query(query);
-    return result.recordset;
-  } catch (error) {
-    DatabaseLog.error(`An error occured while updating table: ${error}`);
-  }
-}
-
-
 // #endregion
 // #region stored procedures
 
 const sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Import Binance Csv');
+    DatabaseLog.silly('Running stored procedure sproc_ImportBinanceCsv');
     const request = await pool.request()
         .input('symbol', symbol)
         .input('timeFrame', timeFrame)
@@ -208,13 +196,13 @@ const sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_ImportBinanceCsv'. ${error.stack}`);
   }
 };
 const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Add Symbol');
+    DatabaseLog.silly('Running stored procedure sproc_AddSymbolToDatabase');
     const request = await pool.request()
         .input('symbol', symbol)
         .input('exchangeId', exchangeId)
@@ -222,99 +210,66 @@ const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_AddSymbolToDatabase'. Object: ${inObj} ${error.stack}`);
   }
 };
-const sproc_UpdateOrderBuy = async (inObj) => {
+const sproc_UpdateOrder = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Add Symbol');
+    DatabaseLog.silly('Running stored procedure sproc_UpdateOrder');
     const request = await pool.request()
-        .input('fee', inObj.fee)
-        .input('cost', inObj.cost )
-        .input('orderStatus', inObj.orderStatus)
-        .input('tradeStatus', inObj.tradeStatus)
-        .input('orderId', inObj.orderId)
-        .execute('UpdateOrderBuy');
-
-    return request;
-  } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
-  }
-};
-const sproc_UpdateOrderSell = async (inObj) => {
-  try {
-    await poolConnect;
-    DatabaseLog.silly('Running stored procedure Add Symbol');
-    const request = await pool.request()
-        .input('fee', inObj.fee)
-        .input('cost', inObj.cost )
-        .input('orderStatus', inObj.orderStatus)
-        .input('tradeStatus', inObj.tradeStatus)
-        .input('orderId', inObj.orderId)
         .input('filled', inObj.filled)
-        .execute('UpdateOrderSell');
+        .input('cost', inObj.cost )
+        .input('orderStatus', inObj.orderStatus)
+        .input('tradeStatus', inObj.tradeStatus)
+        .input('orderId', inObj.orderId)
+        .input('fee', inObj.fee)
+        .input('exchangeId', inObj.exchangeId)
+        .input('updateTime', inObj.updateTime)
+        .execute('UpdateOrder');
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_UpdateOrder'. Object: ${inObj} ${error.stack}`);
   }
 };
-const sproc_InsertIntoOrderBuy = async (inObj) => {
+const sproc_InsertIntoOrder = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Insert Into Order Buy');
+    DatabaseLog.silly('Running stored procedure Insert Into Order');
     const request = await pool.request()
         .input('symbol', inObj.symbol)
+        .input('updateTime', inObj.updateTime)
         .input('orderId', inObj.orderId)
         .input('eventTime', inObj.eventTime)
         .input('orderType', inObj.orderType)
         .input('side', inObj.side)
         .input('price', inObj.price)
-        .input('amount', inObj.amount)
-        .input('orderStatus', inObj.orderStatus)
-        .input('tradeStatus', inObj.tradeStatus)
-        .input('cost', inObj.cost)
-        .input('exchange', inObj.exchange)
-        .input('filled', inObj.filled)
-        .input('remaining', inObj.remaining)
-        .input('fee', inObj.fee)
-        .input('ocoLimitId', inObj.ocoLimitId)
-        .input('ocoStopLossLimitId', inObj.ocoStopLossLimitId)
-        .execute('InsertIntoOrderBuy');
-
-    return request;
-  } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
-  }
-};
-const sproc_InsertIntoOrderSell = async (inObj) => {
-  try {
-    await poolConnect;
-    DatabaseLog.silly('Running stored procedure Insert Into Order Buy');
-    const request = await pool.request()
-        .input('symbol', inObj.symbol)
-        .input('orderId', inObj.orderId)
-        .input('eventTime', inObj.eventTime)
-        .input('orderType', inObj.orderType)
-        .input('side', inObj.side)
-        .input('price', inObj.price)
-        .input('amount', inObj.amount)
-        .input('orderStatus', inObj.orderStatus)
-        .input('tradeStatus', inObj.tradeStatus)
-        .input('cost', inObj.cost)
-        .input('exchange', inObj.exchange)
-        .input('filled', inObj.filled)
-        .input('remaining', inObj.remaining)
-        .input('fee', inObj.fee)
         .input('stopPrice', inObj.stopPrice)
+        .input('timeInForce', inObj.timeInForce)
+        .input('postOnly', inObj.postOnly)
+        .input('reduceOnly', inObj.reduceOnly)
+        .input('priceProtect', inObj.priceProtect)
+        .input('workingType', inObj.workingType)
+        .input('positionSide', inObj.positionSide)
+        .input('amount', inObj.amount)
+        .input('orderStatus', inObj.orderStatus)
+        .input('tradeStatus', inObj.tradeStatus)
+        .input('cost', inObj.cost)
+        .input('exchange', inObj.exchange)
+        .input('filled', inObj.filled)
+        .input('remaining', inObj.remaining)
+        .input('fee', inObj.fee)
+        .input('oco', inObj.oco)
+        .input('ocoLimitId', inObj.ocoLimitId)
+        .input('ocoStopLossLimitId', inObj.ocoLimitId)
         .input('parentOrderId', inObj.parentOrderId)
         .input('siblingOrderId', inObj.siblingOrderId)
-        .execute('InsertIntoOrderSell');
+        .execute('InsertIntoOrder');
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoOrder' Object: ${inObj}. ${error.stack}`);
   }
 };
 const sproc_InsertIntoAverageTrueRange = async (inObj) => {
@@ -330,7 +285,7 @@ const sproc_InsertIntoAverageTrueRange = async (inObj) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoAverageTrueRange' Object: ${inObj}. ${error.stack}`);
   }
 };
 const sproc_InsertIntoSupportResistance = async (inObj) => {
@@ -346,7 +301,7 @@ const sproc_InsertIntoSupportResistance = async (inObj) => {
         .execute('InsertIntoSupportResistance');
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoSupportREsistance'. Object: ${inObj} ${error.stack}`);
   }
 };
 const sproc_GatherSymbolTAData = async (inObj) => {
@@ -376,7 +331,7 @@ const sproc_GatherSymbolTAData = async (inObj) => {
 
     return request.output;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running stored procedure. ${error.stack}`);
+    DatabaseLog.error(`Encountered an error running 'sproc_GatherSymbolTAData. Object: ${inObj} ${error.stack}`);
   }
 };
 // #endregion
@@ -389,12 +344,9 @@ module.exports = {
   sproc_GatherSymbolTAData,
   sproc_ImportBinanceCsv,
   sproc_AddSymbolToDatabase,
-  sproc_InsertIntoOrderBuy,
-  sproc_InsertIntoOrderSell,
+  sproc_InsertIntoOrder,
   sproc_InsertIntoAverageTrueRange,
   sproc_InsertIntoSupportResistance,
-  sproc_UpdateOrderBuy,
-  sproc_UpdateOrderSell,
+  sproc_UpdateOrder,
   closePool,
-  updateTable,
 };

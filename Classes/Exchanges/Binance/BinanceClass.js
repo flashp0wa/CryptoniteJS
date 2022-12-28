@@ -1,7 +1,11 @@
-const {CreateMarketBuyOrder} = require('./Order/CreateMarketBuyOrderClass');
-const {CreateLimitBuyOrder} = require('./Order/CreateLimitBuyOrderClass');
+const {CreateOrder} = require('./Order/CreateOrderClass');
+const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
-const {sproc_AddSymbolToDatabase, sproc_UpdateOrderSell, sproc_UpdateOrderBuy, singleRead} = require('../../../DatabaseConnection/SQLConnector');
+const WebSocket = require('websocket').w3cwebsocket;
+const {
+  sproc_AddSymbolToDatabase,
+  singleRead,
+} = require('../../../DatabaseConnection/SQLConnector');
 // const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
 
 
@@ -10,61 +14,15 @@ class BinanceClass {
     this.exchangeName = exchangeName;
     this.markets;
     this.symbolList = [];
-    this.exchangeId;
+    this.exchangeObj;
+    this.openOrders;
   }
-
   /**
-   * Loads current open orders from the database and checks it's states fetching binance. If state changed updates database.
+   * Loads open orders for exchagne
    */
-  async checkOrderStatus() {
-    try {
-      this.exchangeId = await this.getExchangeId();
-      const buyOrders = await singleRead(`select * from itvf_ReturnBuyOrders('closed', ${this.exchangeId})`);
-      const sellOrders = await singleRead(`select * from itvf_ReturnSellOrders('closed', ${this.exchangeId})`);
-      for (const order of sellOrders) {
-        try {
-          const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
-          if (res.status === 'closed') {
-            if (!res.fee) {
-              sproc_UpdateOrderSell({
-                filled: res.filled,
-                cost: res.cost,
-                orderStatus: res.orderStatus,
-                tradeStatus: res.tradeStatus,
-                orderId: res.orderId,
-              });
-            }
-          }
-          if (res.status === 'canceled') {
-            sproc_UpdateOrderSell({
-              orderStatus: res.orderStatus,
-              tradeStatus: res.tradeStatus,
-              orderId: res.orderId,
-            });
-          }
-        } catch (error) {
-          ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
-        }
-      }
-      for (const order of buyOrders) {
-        try {
-          const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
-          if (res.status === 'canceled' || res.status === 'closed') {
-            sproc_UpdateOrderBuy({
-              orderStatus: res.status,
-              tradeStatus: res.info.status,
-              orderId: res.orderId,
-              fee: res.fee,
-              cost: res.cost,
-            });
-          }
-        } catch (error) {
-          ApplicationLog.error(`Could not fetch orders to check trade status. ${error.stack}`);
-        }
-      }
-    } catch (error) {
-      ApplicationLog.error(`Error while checking order status: ${error.stack}`);
-    }
+  loadOpenOrders() {
+    ApplicationLog.info(`Loading open orders on ${this.exchangeName}`);
+    this.openOrders = new OpenOrder(this.exchangeObj, this.exchangeName);
   }
   /**
    * Loads CCXT exchange market data
@@ -76,6 +34,14 @@ class BinanceClass {
     } catch (error) {
       ApplicationLog.error(`Loading binance market data failed...${error.stack}`);
     }
+  }
+  /**
+   *
+   * @return {int} Returns the exchange ID
+   */
+  async loadExchangeId() {
+    const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
+    this.exchangeObj.id = response[0].exchangeId;
   }
   /**
    * Loads symbols available on the exchange
@@ -99,24 +65,155 @@ class BinanceClass {
    * @param {object} conObj Constructor object containing order details
    * { symbol, side, orderType, orderAmount, buyPrice, }
    */
-  createMarketBuyOrder(conObj) {
-    new CreateMarketBuyOrder(this.exchangeObj, conObj).createOrder();
+  createOrder(conObj) {
+    new CreateOrder(this.exchangeObj, conObj).createOrder();
   }
-  /**
-   *
-   * @param {object} conObj Constructor object containing order details
-   * { symbol, side, orderType, orderAmount, buyPrice, }
-   */
-  createLimitBuyOrder(conObj) {
-    new CreateLimitBuyOrder(this.exchangeObj, conObj).createOrder();
-  }
-  /**
-   *
-   * @return {int} Returns the exchange ID
-   */
-  async getExchangeId() {
-    const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
-    return response[0].exchangeId;
+
+  startWss() {
+    /**
+    *
+    * @param {object} jsonStreamObj
+    */
+    function wssJsonStream2Object(jsonStreamObj) {
+      const streamType = jsonStreamObj['e'];
+      // const eventUnixTime = jsonStreamObj['data']['E'];
+      let processedStream = {};
+
+      switch (streamType) {
+        // case '24hrTicker': {
+        //   processedStream.EventType = jsonStreamObj['data']['e'];
+        //   processedStream.EventTime = new Date(eventUnixTime).toISOString();
+        //   processedStream.Symbol = jsonStreamObj['data']['s'];
+        //   processedStream.PriceChange = jsonStreamObj['data']['p'];
+        //   processedStream.PriceChangePercent = jsonStreamObj['data']['P'];
+        //   processedStream.WeightedAveragePrice = jsonStreamObj['data']['w'];
+        //   processedStream.FirstTradePrice = jsonStreamObj['data']['x'];
+        //   processedStream.LastPrice = jsonStreamObj['data']['c'];
+        //   processedStream.LastQuantity = jsonStreamObj['data']['Q'];
+        //   processedStream.BestBidPrice = jsonStreamObj['data']['b'];
+        //   processedStream.BestBidQuantity = jsonStreamObj['data']['B'];
+        //   processedStream.BestAskPrice = jsonStreamObj['data']['a'];
+        //   processedStream.BestAskQuantity = jsonStreamObj['data']['A'];
+        //   processedStream.OpenPrice = jsonStreamObj['data']['o'];
+        //   processedStream.HighPrice = jsonStreamObj['data']['h'];
+        //   processedStream.LowPrice = jsonStreamObj['data']['l'];
+        //   processedStream.TotalTradedBaseAssetVolume = jsonStreamObj['data']['v'];
+        //   processedStream.TotalTradedQuoteAssetVolume = jsonStreamObj['data']['q'];
+        //   processedStream.StatisticsTimeOpen = jsonStreamObj['data']['O'];
+        //   processedStream.StatisticsCloseTime = jsonStreamObj['data']['C'];
+        //   processedStream.FirstTradeId = jsonStreamObj['data']['F'];
+        //   processedStream.LastTradeId = jsonStreamObj['data']['L'];
+        //   processedStream.TotalTrades = jsonStreamObj['data']['n'];
+
+        //   processedStream.sqlInsertString = `INSERT INTO IndividualSymbolTickerStream VALUES (\'${processedStream.PriceChange}\',\'${processedStream.PriceChangePercent}\',\'${processedStream.WeightedAveragePrice}\',\'${processedStream.FirstTradePrice}\',\'${processedStream.LastPrice}\',\'${processedStream.LastQuantity}\',\'${processedStream.BestBidPrice}\',\'${processedStream.BestBidQuantity}\',\'${processedStream.BestAskPrice}\',\'${processedStream.BestAskQuantity}\',\'${processedStream.OpenPrice}\',\'${processedStream.HighPrice}\',\'${processedStream.LowPrice}\',\'${processedStream.TotalTradedBaseAssetVolume}\',\'${processedStream.TotalTradedQuoteAssetVolume}\',\'${processedStream.StatisticsTimeOpen}\',\'${processedStream.StatisticsCloseTime}\',\'${processedStream.FirstTradeId}\',\'${processedStream.LastTradeId}\',\'${processedStream.TotalTrades}\',\'${processedStream.EventType}\',\'${processedStream.EventTime}\',\'${processedStream.Symbol}\')`;
+        //   writeToDatabase(processedStream.sqlInsertString);
+        //   onMessageOperations.stream_TotalTradedQuoteAssetVolume(processedStream);
+        //   onMessageOperations.stream_CalculateCoinPairPriceGap(processedStream);
+        //   onMessageOperations.stream_PriceWatch(processedStream);
+
+        //   break;
+        // }
+        case 'kline': {
+          processedStream.openTime = new Date(jsonStreamObj['k']['t']);
+          processedStream.closeTime = new Date(jsonStreamObj['k']['T']);
+          processedStream.symbol = jsonStreamObj['k']['s'];
+          processedStream.timeFrame = jsonStreamObj['k']['i'];
+          processedStream.FirstTradeId = jsonStreamObj['k']['f'];
+          processedStream.LastTradeId = jsonStreamObj['k']['L'];
+          processedStream.openPrice = parseFloat(jsonStreamObj['k']['o']);
+          processedStream.closePrice = parseFloat(jsonStreamObj['k']['c']);
+          processedStream.highPrice = parseFloat(jsonStreamObj['k']['h']);
+          processedStream.lowPrice = parseFloat(jsonStreamObj['k']['l']);
+          processedStream.baseAssetVolume = parseFloat(jsonStreamObj['k']['v']);
+          processedStream.numberOfTrades = jsonStreamObj['k']['n'];
+          processedStream.closed = jsonStreamObj['k']['x'];
+          processedStream.quoteAssetVolume = parseFloat(jsonStreamObj['k']['q']);
+          processedStream.takerBuyBaseAssetVolume = parseFloat(jsonStreamObj['k']['V']);
+          processedStream.takerBuyQuoteAssetVolume = parseFloat(jsonStreamObj['k']['Q']);
+          processedStream.ignore = parseInt(jsonStreamObj['k']['B']);
+
+          processedStream = stream_getCandleType(processedStream);
+          console.log(processedStream);
+        }
+
+        // case 'trade': {
+        //   processedStream.EventType = jsonStreamObj['data']['e'];
+        //   processedStream.EventTime = new Date(eventUnixTime).toISOString();
+        //   processedStream.Symbol = jsonStreamObj['data']['s'];
+        //   processedStream.TradeId = jsonStreamObj['data']['t'];
+        //   processedStream.Price = jsonStreamObj['data']['p'];
+        //   processedStream.Quantity = jsonStreamObj['data']['q'];
+        //   processedStream.BuyerOrderId = jsonStreamObj['data']['b'];
+        //   processedStream.SellerOrderId = jsonStreamObj['data']['a'];
+        //   processedStream.TradeTime = new Date(eventUnixTime).toISOString();
+        //   processedStream.IsBuyerMarketMaker = jsonStreamObj['data']['m'];
+        //   processedStream.Ignore = jsonStreamObj['data']['M'];
+
+        //   processedStream.sqlInsertString = `INSERT INTO Trades VALUES (\'${processedStream.TradeId}\',\'${processedStream.Price}\',\'${processedStream.Quantity}\',\'${processedStream.BuyerOrderId}\',\'${processedStream.SellerOrderId}\',\'${processedStream.TradeTime}\',\'${processedStream.IsBuyerMarketMaker}\',\'${processedStream.Ignore}\',\'${processedStream.EventType}\',\'${processedStream.EventTime}\',\'${processedStream.Symbol}\')`;
+        //   writeToDatabase(processedStream.sqlInsertString);
+        //   break;
+        // }
+        default:
+          break;
+      }
+    }
+
+    const streams = [
+      'btcusdt@kline_1m',
+      // 'btcusdt@ticker',
+      // 'ethusdt@ticker',
+    ];
+
+    // Build URL
+    let url;
+    const baseUrl = process.env.BNC_WSS_URL;
+
+    if (!streams) {
+      ApplicationLog.error('No streams have been defined. Could not build URL.');
+      throw new Error('No streams have been defined.');
+    } else if (streams.length === 1) {
+      url = baseUrl + 'ws/' + streams;
+    } else {
+      url = `${baseUrl}stream?streams=`;
+      for (let index = 0; index < streams.length; index++) {
+        url += streams[index] + '/';
+        // Do not place forward slash at the end of the URL
+        if (streams.length === index + 1) {
+          url += streams[index];
+        }
+      }
+    }
+
+    ApplicationLog.info('URL build succeeded');
+    ApplicationLog.info(`Stream URL: ${url}`);
+
+    const ws = new WebSocket(url);
+
+    // Connection established message
+    ws.onopen = () => {
+      ApplicationLog.info('Connection established with the stream server');
+    };
+
+    // Data received from server as string...
+    // Making it JSON and writing to database
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // console.log(data);
+      wssJsonStream2Object(data);
+    };
+    // Connection closed. Will try reconnecting
+    ws.onclose = () => {
+      ApplicationLog.info('Stream connection has been closed... trying to reconnect');
+      setTimeout(() => {
+        this.startWss();
+      }, 3);
+    };
+
+    // Error establishing connection
+    ws.onerror = (error) => {
+      ApplicationLog.error(`Connection could not be established with the stream server. Message: ${error.message}. Type: ${error.name}`);
+      throw new Error(`Connection could not be established: ${error.message}`);
+    };
   }
 }
 

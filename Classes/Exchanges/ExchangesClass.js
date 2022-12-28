@@ -1,28 +1,33 @@
+const {BinanceFuturesTestClass} = require('./Binance/BinanceFuturesTestClass.js');
 const {BinanceSpotClass} = require('./Binance/BinanceSpotClass.js');
-const {BinanceTestClass} = require('./Binance/BinanceTestClass.js');
+const {BinanceSpotTestClass} = require('./Binance/BinanceSpotTestClass.js');
 
 class Exchanges {
   constructor() {
     this.binance = new BinanceSpotClass('binance');
-    this.binanceTest = new BinanceTestClass('binanceTest');
+    this.binanceSpotTest = new BinanceSpotTestClass('binanceSpotTest');
+    this.binanceFuturesTest = new BinanceFuturesTestClass('binanceFuturesTest');
   }
 
   /**
    * Load all exchange's market data
    */
-  async loadAllMarkets() {
-    await this.binance.loadMarkets();
-    await this.binanceTest.loadMarkets();
-    this.binance.loadSymbols();
-    this.binanceTest.loadSymbols();
+  async loadExchange() {
+    for (const exchange of Object.keys(getExchanges())) {
+      await this[exchange].loadMarkets();
+      await this[exchange].loadExchangeId();
+      this[exchange].loadSymbols();
+      this[exchange].loadOpenOrders();
+    }
   }
 
   /**
    * Check all exchange's order status
    */
   checkOrderStatus() {
-    this.binance.checkOrderStatus();
-    this.binanceTest.checkOrderStatus();
+    for (const exchange of Object.keys(getExchanges())) {
+      this[exchange].openOrders.checkOrderStatus();
+    }
   }
 }
 

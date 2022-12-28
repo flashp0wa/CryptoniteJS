@@ -68,6 +68,7 @@ function streamKicker(streams) {
     throw new Error(`Connection could not be established: ${error.message}`);
   };
 }
+
 /**
  *
  */

@@ -8,49 +8,52 @@ class CreateOcoOrder extends Order {
    */
   constructor(excObj, conObj) {
     super(excObj, conObj);
-    this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopPrice);
-    this.stopLimitPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.stopPrice - conObj.stopPrice * 0.05));
-    this.sellPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.sellPrice);
     this.parentOrderId;
-    this.ocoOrderResponse;
   }
   /**
    * Write order response data to database
    */
   processOrderResponse() {
-    this.traderLog.info('Processing OCO order response...');
-    const ocoStopLossDataObj = {
-      symbol: this.ocoOrderResponse['orderReports'][0].symbol,
-      orderId: this.ocoOrderResponse['orderReports'][0].orderId,
-      eventTime: new Date(Number(this.ocoOrderResponse['orderReports'][0].transactTime)).toISOString(),
-      orderType: (this.ocoOrderResponse['orderReports'][0].type).toLowerCase(),
-      side: (this.ocoOrderResponse['orderReports'][0].side).toLowerCase(),
-      price: this.ocoOrderResponse['orderReports'][0].price,
-      stopPrice: this.ocoOrderResponse['orderReports'][0].stopPrice,
-      amount: this.ocoOrderResponse['orderReports'][0].origQty,
-      orderStatus: 'open',
-      tradeStatus: this.ocoOrderResponse['orderReports'][0].status,
-      exchange: this.exchangeName,
-      parentOrderId: this.parentOrderId,
-      siblingOrderId: this.ocoOrderResponse['orderReports'][1].orderId,
-    };
-    const ocoLimitDataObj = {
-      symbol: this.ocoOrderResponse['orderReports'][1].symbol,
-      orderId: this.ocoOrderResponse['orderReports'][1].orderId,
-      eventTime: new Date(Number(this.ocoOrderResponse['orderReports'][1].transactTime)).toISOString(),
-      orderType: (this.ocoOrderResponse['orderReports'][1].type).toLowerCase(),
-      side: (this.ocoOrderResponse['orderReports'][1].side).toLowerCase(),
-      price: this.ocoOrderResponse['orderReports'][1].price,
-      amount: this.ocoOrderResponse['orderReports'][1].origQty,
-      orderStatus: 'open',
-      tradeStatus: this.ocoOrderResponse['orderReports'][1].status,
-      exchange: this.exchangeName,
-      parentOrderId: this.parentOrderId,
-      siblingOrderId: this.ocoOrderResponse['orderReports'][0].orderId,
-    };
+    try {
+      this.traderLog.info('Processing OCO order response...');
+      const ocoStopLossDataObj = {
+        symbol: this.orderResponse['orderReports'][0].symbol,
+        orderId: this.orderResponse['orderReports'][0].orderId,
+        eventTime: new Date(Number(this.orderResponse['orderReports'][0].transactTime)).toISOString(),
+        orderType: (this.orderResponse['orderReports'][0].type).toLowerCase(),
+        side: (this.orderResponse['orderReports'][0].side).toLowerCase(),
+        price: this.orderResponse['orderReports'][0].price,
+        stopPrice: this.orderResponse['orderReports'][0].stopPrice,
+        amount: this.orderResponse['orderReports'][0].origQty,
+        orderStatus: 'open',
+        tradeStatus: this.orderResponse['orderReports'][0].status,
+        exchange: this.exchangeName,
+        parentOrderId: this.parentOrderId,
+        siblingOrderId: this.orderResponse['orderReports'][1].orderId,
+        oco: true,
+      };
+      const ocoLimitDataObj = {
+        symbol: this.orderResponse['orderReports'][1].symbol,
+        orderId: this.orderResponse['orderReports'][1].orderId,
+        eventTime: new Date(Number(this.orderResponse['orderReports'][1].transactTime)).toISOString(),
+        orderType: (this.orderResponse['orderReports'][1].type).toLowerCase(),
+        side: (this.orderResponse['orderReports'][1].side).toLowerCase(),
+        price: this.orderResponse['orderReports'][1].price,
+        amount: this.orderResponse['orderReports'][1].origQty,
+        orderStatus: 'open',
+        tradeStatus: this.orderResponse['orderReports'][1].status,
+        exchange: this.exchangeName,
+        parentOrderId: this.parentOrderId,
+        siblingOrderId: this.orderResponse['orderReports'][0].orderId,
+        oco: true,
+      };
 
-    super.writeToDatabase(ocoLimitDataObj);
-    super.writeToDatabase(ocoStopLossDataObj);
+      super.writeToDatabase(ocoLimitDataObj);
+      super.writeToDatabase(ocoStopLossDataObj);
+      this.traderLog.info('OCO order response has been processed');
+    } catch (error) {
+      this.traderLog.error(`Could not process OCO order response. ${error.stack}`);
+    }
   }
   /**
    * Creates OCO order
@@ -60,32 +63,27 @@ class CreateOcoOrder extends Order {
     try {
       this.traderLog.info(`New OCO order. \
         Symbol: ${this.symbol}, Side: Sell, \
-        Order Amount: ${this.orderAmount}, Price: ${this.sellPrice}, \
+        Order Amount: ${this.orderAmount}, Limit Price: ${this.limitPrice}, \
         Stop-Price: ${this.stopPrice}, Stop-Limit-Price: ${this.stopLimitPrice}`,
       );
 
-      this.ocoOrderResponse = await this.exchangeObj.privatePostOrderOco({
+      this.orderResponse = await this.exchangeObj.privatePostOrderOco({
         symbol: this.symbol,
         side: 'sell',
         quantity: this.orderAmount,
-        price: this.sellPrice,
+        price: this.limitPrice,
         stopPrice: this.stopPrice,
         stopLimitPrice: this.stopLimitPrice,
         stopLimitTimeInForce: 'GTC',
       });
 
       this.traderLog.info('OCO order has been created.');
-      try {
-        this.processOrderResponse();
-        this.traderLog.info('OCO order response has been processed');
-        return {
-          ocoLimitId: this.ocoOrderResponse['orderReports'][1].orderId,
-          ocoStopLossLimitId: this.ocoOrderResponse['orderReports'][0].orderId,
-          ocoOrderListId: this.ocoOrderResponse.orderListId,
-        };
-      } catch (error) {
-        this.traderLog.error(`Could not process OCO order response. ${error.stack}`);
-      }
+      this.processOrderResponse();
+      return {
+        ocoLimitId: this.orderResponse['orderReports'][1].orderId,
+        ocoStopLossLimitId: this.orderResponse['orderReports'][0].orderId,
+        ocoOrderListId: this.orderResponse.orderListId,
+      };
     } catch (error) {
       this.traderLog.error(`OCO order creation failed. ${error.stack}`);
     }

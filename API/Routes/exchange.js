@@ -13,7 +13,7 @@ router.route('/:exchange/getSymbols').get((req, res) => {
     const symbols = getExchanges()[req.params.exchange].symbolList;
     res.send(symbols);
   } catch (error) {
-    ApiLog.error(`Could not retrieve symbols. ${error}`);
+    ApiLog.error(`'exchange.js' | Could not retrieve symbols. ${error}`);
   }
 });
 
@@ -28,7 +28,7 @@ router.route('/:exchange/getAccountInfo').get(async (req, res) => {
     response.openOrders = openOrders;
     res.send(response);
   } catch (error) {
-    ApiLog.error(`Could not retrieve account info. ${error}`);
+    ApiLog.error(`'exchange.js' | Could not retrieve account info. ${error}`);
   }
 });
 
@@ -52,7 +52,7 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
       ApiLog.info(`Orders for ${req.params.symbol} has been canceled.`);
     }
   } catch (error) {
-    ApiLog.error(`Cannot cancel orders. ${error}`);
+    ApiLog.error(`'exchange.js' | Cannot cancel orders. ${error}`);
   }
 });
 
@@ -61,8 +61,12 @@ router.route('/binance/historyDataDownload').post(async (req, res) => {
 });
 
 router.route('/binance/coinTAData').post(async (req, res) => {
-  const result = await sproc_GatherSymbolTAData(req.body);
-  res.send(result);
+  try {
+    const result = await sproc_GatherSymbolTAData(req.body);
+    res.send(result);
+  } catch (error) {
+    ApiLog.error(`'exchange.js' | Cannot retrieve coind data.`);
+  }
 });
 
 module.exports = router;
