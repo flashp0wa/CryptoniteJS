@@ -2,15 +2,15 @@ const {TraderLog} = require('../../../../Toolkit/Logger.js');
 const {sproc_InsertIntoOrder} = require('../../../../DatabaseConnection/SQLConnector.js');
 
 class Order {
-  constructor(exchangeClass, conObj) {
-    this.exchangeObj = exchangeClass.exchangeObj;
-    this.exchangeName = exchangeClass.exchangeName;
+  constructor(excObj, excName, conObj) {
+    this.exchangeObj = excObj;
+    this.exchangeName = excName;
     this.symbol = conObj.symbol;
     this.type = conObj.type;
     this.side = conObj.side;
     this.orderAmount = conObj.orderAmount ? this.exchangeObj.decimalToPrecision(conObj.orderAmount, 'ROUND', 2, 'DECIMAL_PLACES') : false;
-    this.price = this.exchangeObj.priceToPrecision(this.symbol, (conObj.price));
-    this.limitPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.limitPrice));
+    this.price = this.exchangeObj.priceToPrecision(this.symbol, conObj.price);
+    this.limitPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.limitPrice);
     this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopPrice);
     this.stopLimitPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.stopPrice - conObj.stopPrice * 0.01));
     this.orderResponse;

@@ -6,6 +6,7 @@ const {
   sproc_AddSymbolToDatabase,
   singleRead,
 } = require('../../../DatabaseConnection/SQLConnector');
+const {StrategyClass} = require('../../StrategyClass');
 // const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
 
 
@@ -16,6 +17,7 @@ class BinanceClass {
     this.symbolList = [];
     this.exchangeObj;
     this.openOrders;
+    this.strategy = new StrategyClass(this.exchangeObj, this.exchangeName);
   }
   /**
    * Loads open orders for exchagne
@@ -66,13 +68,23 @@ class BinanceClass {
    * { symbol, side, orderType, orderAmount, buyPrice, }
    */
   createOrder(conObj) {
-    new CreateOrder(this.exchangeObj, conObj).createOrder();
+    new CreateOrder(this.exchangeObj, this.exchangeName, conObj).createOrder();
+  }
+  /**
+   * Loads exchange data
+   */
+  async loadExchange() {
+    this.loadOpenOrders();
+    await this.loadMarkets();
+    await this.loadExchangeId();
+    this.loadSymbols();
   }
 
   startWss() {
     /**
     *
     * @param {object} jsonStreamObj
+    * @return {object} Returns the processed object
     */
     function wssJsonStream2Object(jsonStreamObj) {
       const streamType = jsonStreamObj['e'];
@@ -133,7 +145,7 @@ class BinanceClass {
           processedStream.ignore = parseInt(jsonStreamObj['k']['B']);
 
           processedStream = stream_getCandleType(processedStream);
-          console.log(processedStream);
+          return processedStream;
         }
 
         // case 'trade': {

@@ -4,10 +4,11 @@ class CreateOcoOrder extends Order {
   /**
    *
    * @param {object} excObj Exchange object
+   * @param {string} excName Exchange string
    * @param {object} conObj Constructor object
    */
-  constructor(excObj, conObj) {
-    super(excObj, conObj);
+  constructor(excObj, excName, conObj) {
+    super(excObj, excName, conObj);
     this.parentOrderId;
   }
   /**

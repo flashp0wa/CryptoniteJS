@@ -75,7 +75,7 @@ async function downloadHistoryData(inObj) {
 
 
       try {
-        BncHistoryDownloadLog.silly(`Downloading from URL: ${url} to ${downloadPath}`);
+        BncHistoryDownloadLog.info(`Downloading from URL: ${url} to ${downloadPath}`);
         BncHistoryDownloadLog.info(`Downloading: ${fileName}`);
         await download(url, downloadPath);
         oneSuccessfulDownload = true;

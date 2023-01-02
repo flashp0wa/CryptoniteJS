@@ -22,6 +22,9 @@ const ApplicationLog = winston.createLogger({
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
       }),
   ),
 });
@@ -46,6 +49,9 @@ const SupportResistanceCandleTreeLog = winston.createLogger({
         }
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
       }),
   ),
@@ -75,6 +81,9 @@ const DatabaseLog = winston.createLogger({
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
       }),
   ),
 });
@@ -99,6 +108,9 @@ const QueryProcessorLog = winston.createLogger({
         }
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
       }),
   ),
@@ -125,6 +137,9 @@ const TraderLog = winston.createLogger({
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
       }),
   ),
 });
@@ -148,6 +163,9 @@ const ApiLog = winston.createLogger({
         }
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
       }),
   ),
@@ -173,6 +191,63 @@ const BncHistoryDownloadLog = winston.createLogger({
         if (info.level === 'error') {
           return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
         }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
+  ),
+});
+const StrategyHandlerLog = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: '../Log/StrategyHandler.log ',
+    }),
+  ],
+  format: winston.format.combine(
+      winston.format.label({
+        label: `StrategyHandler🏷️`,
+      }),
+      winston.format.timestamp({
+        format: 'MMM-DD-YYYY HH:mm:ss',
+      }),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+      }),
+  ),
+});
+const DiscordApiLog = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: '../Log/DiscordApi.log ',
+    }),
+  ],
+  format: winston.format.combine(
+      winston.format.label({
+        label: `DiscordAPI🏷️`,
+      }),
+      winston.format.timestamp({
+        format: 'MMM-DD-YYYY HH:mm:ss',
+      }),
+      winston.format.printf((info) => {
+        if (info.level === 'info') {
+          return `${chalk.green(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.green(info.message)}`;
+        }
+        if (info.level === 'error') {
+          return `${chalk.red(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
+        if (info.level === 'warn') {
+          return `${chalk.yellow(info.level)}: ${chalk.magenta(info.label)}: ${chalk.yellow([info.timestamp])}: ${chalk.red(info.message)}`;
+        }
       }),
   ),
 });
@@ -185,4 +260,6 @@ module.exports = {
   ApiLog,
   SupportResistanceCandleTreeLog,
   BncHistoryDownloadLog,
+  StrategyHandlerLog,
+  DiscordApiLog,
 };

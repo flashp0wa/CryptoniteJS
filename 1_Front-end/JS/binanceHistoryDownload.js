@@ -47,7 +47,22 @@ function toggleTradeType() {
       klines.hidden = false;
       labelKlines.hidden = false;
       const klinesArr = [
-        '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo',
+        '1m',
+        '3m',
+        '5m',
+        '15m',
+        '30m',
+        '1h',
+        '2h',
+        '4h',
+        '6h',
+        '8h',
+        '12h',
+        '1d',
+        '3d',
+        '1w',
+        '1mo',
+        '1s',
       ];
       klinesArr.forEach((kline) => {
         const newOption = document.createElement('option');

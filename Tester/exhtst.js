@@ -7,27 +7,27 @@ const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/Binanc
 const { CreateOrder } = require('../Classes/Exchanges/Binance/Order/CreateOrderClass');
 const { BinanceSpotTestClass } = require('../Classes/Exchanges/Binance/BinanceSpotTestClass');
 
-// const futures = new BinanceFuturesTestClass('binanceFuturesTest');
-const spotTest = new BinanceSpotTestClass('binanceSpotTest');
+const futures = new BinanceFuturesTestClass('binanceFuturesTest');
+// const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
   try {
+    console.log((await futures.exchangeObj.fetchBalance()).free.USDT);
+  // await futures.loadExchangeId();
+  // // futures.loadOpenOrders();
+  // await futures.loadMarkets();
+  // const orderObj = {
+  //   symbol: 'BTCUSDT',
+  //   type: 'market',
+  //   side: 'buy',
+  //   price: 16700,
+  //   stopPrice: 16000,
+  //   limitPrice: 18000,
+  //   orderAmount: 0.01,
+  // }
+  // const order = new CreateOrder(futures, orderObj).createOrder();
 
-  await spotTest.loadExchangeId();
-  spotTest.loadOpenOrders();
-  await spotTest.loadMarkets();
-  const orderObj = {
-    symbol: 'BTCUSDT',
-    type: 'market',
-    side: 'buy',
-    price: 16700,
-    stopPrice: 16000,
-    limitPrice: 18000,
-    orderAmount: 0.01,
-  }
-  // const order = new CreateOrder(spotTest, orderObj).createOrder();
-
-  spotTest.openOrders.checkOrderStatus();
+  // spotTest.openOrders.checkOrderStatus();
 
   // console.log(await binanceTst.fetchOrder(3267846654, 'BTCUSDT'));
     // await binanceTst.cancelOrder(3267846667, 'BTCUSDT');

@@ -12,12 +12,9 @@ class Exchanges {
   /**
    * Load all exchange's market data
    */
-  async loadExchange() {
+  async loadExchanges() {
     for (const exchange of Object.keys(getExchanges())) {
-      await this[exchange].loadMarkets();
-      await this[exchange].loadExchangeId();
-      this[exchange].loadSymbols();
-      this[exchange].loadOpenOrders();
+      await this[exchange].loadExchange();
     }
   }
 
@@ -29,7 +26,16 @@ class Exchanges {
       this[exchange].openOrders.checkOrderStatus();
     }
   }
+  /**
+   * Reload all exchange's market data
+   */
+  async reloadMarkets() {
+    for (const exchange of Object.keys(getExchanges())) {
+      await this[exchange].loadMarkets();
+    }
+  }
 }
+
 
 let exchanges = new Exchanges();
 /**

@@ -6,20 +6,21 @@ class CreateOrder extends Order {
   /**
    *
    * @param {object} excObj
+   * @param {string} excName
    * @param {object} conObj
    * {
    *  symbol,
    *  side,
-   *  orderType,
+   *  type,
    *  orderAmount,
-   *  buyPrice,
+   *  price,
    *  stopPrice,
-   *  sellPrice,
+   *  limitPrice,
    * }
    */
-  constructor(excObj, conObj) {
-    super(excObj, conObj);
-    this.ocoOrder = new CreateOcoOrder(excObj, conObj);
+  constructor(excObj, excName, conObj) {
+    super(excObj, excName, conObj);
+    this.ocoOrder = new CreateOcoOrder(excObj, excName, conObj);
   }
   /**
    * Write order response data to database
@@ -115,6 +116,7 @@ class CreateOrder extends Order {
                   this.price,
                   {stopPrice: this.stopPrice},
               );
+              stopMarketResponse.parentOrderId = this.orderResponse.id;
               this.traderLog.info(`Stop market order has been created with ID: ${stopMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`);
             } catch (error) {
               this.traderLog.error(`Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`);
@@ -129,20 +131,25 @@ class CreateOrder extends Order {
                   this.price,
                   {stopPrice: this.limitPrice},
               );
-
+              takeProfitMarketResponse.parentOrderId = this.orderResponse.id;
               this.traderLog.info(`Take profit market order has been created with ID: ${takeProfitMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`);
             } catch (error) {
-              this.traderLog.error(`Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`);
+              this.traderLog.error(`Take profit order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`);
             }
 
-            stopMarketResponse.parentOrderId = this.orderResponse.id;
-            stopMarketResponse.siblingOrderId = takeProfitMarketResponse.id;
-            takeProfitMarketResponse.parentOrderId = this.orderResponse.id;
-            takeProfitMarketResponse.siblingOrderId = stopMarketResponse.id;
-            this.orderResponse = stopMarketResponse;
-            this.processOrderResponse();
-            this.orderResponse = takeProfitMarketResponse;
-            this.processOrderResponse();
+            if (stopMarketResponse && takeProfitMarketResponse) {
+              stopMarketResponse.siblingOrderId = takeProfitMarketResponse.id;
+              takeProfitMarketResponse.siblingOrderId = stopMarketResponse.id;
+            };
+
+            if (stopMarketResponse) {
+              this.orderResponse = stopMarketResponse;
+              this.processOrderResponse();
+            }
+            if (takeProfitMarketResponse) {
+              this.orderResponse = takeProfitMarketResponse;
+              this.processOrderResponse();
+            }
           }
         } catch (error) {
           this.traderLog.error(`Order creation failed. ${error.stack}`);

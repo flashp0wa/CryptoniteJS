@@ -17,6 +17,7 @@ export function loadTimeframes() {
     '3d',
     '1w',
     '1mo',
+    '1s',
   ];
 
   klinesArr.forEach((element) => {

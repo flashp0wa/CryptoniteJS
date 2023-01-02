@@ -1,4 +1,5 @@
-// const arr = [1, 2, 3, 4, 5];
+/*eslint-disable*/
+
 // let first = true;
 
 // for (let i = 0; i < arr.length; i++) {
@@ -44,9 +45,8 @@
 
 // someFunctionWithACallback((result) => doStuffWith(result));
 
-const a = 'lol';
-const b = 'bol';
+const a = 2 > 3;
 
-if ('lol' in a || b) {
-  console.log('David');
+if (!a) {
+  console.log('fuck you');
 }

@@ -30,7 +30,7 @@ function startIntervals() {
 
   // #endregion
   setInterval(() => {
-    getExchanges().loadAllMarkets();
+    getExchanges().reloadMarkets();
   }, 300000);
 
   setInterval(() => {

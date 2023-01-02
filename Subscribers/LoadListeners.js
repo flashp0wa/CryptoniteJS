@@ -9,6 +9,7 @@ function loadListeners(emitter) {
   emitter.on('SendEmail', sendEmail);
   emitter.on('SendNewCurrencyEmail', sendNewCurrencyEmail);
   emitter.on('CreateOrder', (conObj) => {
+    console.log(conObj);
     getExchanges()[conObj.exchange].createOrder(conObj);
   });
 }

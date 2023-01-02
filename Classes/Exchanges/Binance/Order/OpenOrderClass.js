@@ -11,17 +11,17 @@ class OpenOrder {
    */
   async checkOrderStatus() {
     try {
-      ApplicationLog.info(`Checking order status on ${this.exchangeName}...`);
+      ApplicationLog.silly(`Checking order status on ${this.exchangeName}...`);
       this.openOrders = await singleRead(`select * from itvf_ReturnOrders('open', ${this.exchangeObj.id})`);
       for (const order of this.openOrders) {
         try {
           const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
           if ((res.status === 'closed' || res.status === 'canceled') && order.oco === false) {
             if (order.siblingOrderId && res.status === 'closed') {
-              ApplicationLog.info(`Order ${order.orderId} has been closed, canceling sibling order ${order.siblingOrderId}`);
+              ApplicationLog.silly(`Order ${order.orderId} has been closed, canceling sibling order ${order.siblingOrderId}`);
               try {
                 await this.exchangeObj.cancelOrder(order.siblingOrderId, order.symbol);
-                ApplicationLog.info(`Sibling order ${order.siblingOrderId} has been canceled`);
+                ApplicationLog.silly(`Sibling order ${order.siblingOrderId} has been canceled`);
               } catch (error) {
                 ApplicationLog.error(`Could not cancel sibling order ${order.siblingOrderId}. ${error}`);
               }
@@ -44,7 +44,7 @@ class OpenOrder {
     } catch (error) {
       ApplicationLog.error(`Error while checking order status on ${this.exchangeName}: ${error.stack}`);
     }
-    ApplicationLog.info(`Order status check finished on ${this.exchangeName}`);
+    ApplicationLog.silly(`Order status check finished on ${this.exchangeName}`);
   }
 }
 
