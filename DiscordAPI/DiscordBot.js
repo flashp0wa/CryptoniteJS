@@ -1,10 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
-// Require the necessary discord.js classes
 const {Client, Events, Collection, GatewayIntentBits} = require('discord.js');
-const {DiscordApiLog} = require('../Toolkit/Logger');
+const {DiscordApiLog} = require('../Toolkit/DiscordLogger');
 
 let client;
+
 
 async function loadDiscordApi() {
   return new Promise((resolve, reject) => {
@@ -54,8 +54,8 @@ async function loadDiscordApi() {
   });
 }
 
-
-function getServerChannel(id) {
+async function getServerChannel(id) {
+  if (!client) await loadDiscordApi();
   return client.channels.cache.get(id);
 }
 

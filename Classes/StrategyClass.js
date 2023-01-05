@@ -5,9 +5,9 @@ const {returnEmitter} = require('../Loaders/EventEmitter');
 
 class StrategyClass {
   constructor(exchangeObj, exchangeName) {
-    this.exchangeObj = exchangeObj;
-    this.exchangeName = exchangeName;
-    this.globalEvent = returnEmitter();
+    this.exchangeObj = exchangeObj; // CCXT Exchange object
+    this.exchangeName = exchangeName; // Exchange name
+    this.globalEvent = returnEmitter(); // Global event object
     this.technicalIndicators = getTechnicalIndicators();
     this.srCandleTree = {};
   }
@@ -17,7 +17,7 @@ class StrategyClass {
    * @param {object} klineObj
    * @return {void}
    */
-  async supportResistanceCandleTree(klineObj) {
+  async run_srCandleTree(klineObj) {
     if (klineObj.closed === false) return;
 
     let timeFrameObj;
@@ -25,7 +25,6 @@ class StrategyClass {
     if (this.srCandleTree[klineObj.symbol]) {
       timeFrameObj = this.srCandleTree[klineObj.symbol][klineObj.timeFrame];
     }
-
 
     StrategyHandlerLog.info('Support/Resistance strategy initiated...');
 
@@ -481,7 +480,6 @@ class StrategyClass {
       timeFrameObj.candleTypeIds = [];
       timeFrameObj.activator = null;
     }
-
     /**
      * Calculates order details then placing it.
      * @param {string} symbol
@@ -567,12 +565,12 @@ class StrategyClass {
           stopPrice: stop,
           limitPrice: limit,
           exchange: exchangeName,
+          orderSource: 'Support Resistance Candle Tree',
         });
 
-        StrategyHandlerLog.info('Order has been placed.');
+        StrategyHandlerLog.info('Order initiated...');
       }
     }
-
 
     const support = this.technicalIndicators.supportResistance[klineObj.symbol][klineObj.timeFrame].support;
     const resistance = this.technicalIndicators.supportResistance[klineObj.symbol][klineObj.timeFrame].resistance;
@@ -580,10 +578,6 @@ class StrategyClass {
     const resistanceWTolerance = resistance - (resistance * process.env.SR_TOLERANCE);
 
     let activator;
-
-    // console.log(`Support: ${supportWTolerance}`);
-    // console.log(`Resistance: ${resistanceWTolerance}`);
-    // console.log(timeFrameObj);
 
     // Activate candle tree decision
     if (klineObj.lowPrice <= supportWTolerance ||

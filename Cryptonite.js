@@ -1,21 +1,29 @@
 'use strict';
 require('dotenv').config({path: '.env'});
-const {loadEventListeners} = require('./Loaders/Events.js');
-const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
-const {startApi} = require('./API/Api.js');
-const {startIntervals} = require('./Intervals.js');
-const {getTechnicalIndicators} = require('./Classes/TechnicalIndicatorClass.js');
-const {loadDiscordApi, getServerChannel} = require('./DiscordAPI/DiscordBot.js');
-
 (async () => {
+  const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
+  await loadDiscordApi();
+
+  const {ApplicationLog} = require('./Toolkit/Logger');
+  const {loadEventListeners} = require('./Loaders/Events');
+  const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
+  const {startApi} = require('./API/Api');
+  const {startIntervals} = require('./Intervals');
+  const {getTechnicalIndicators} = require('./Classes/TechnicalIndicatorClass');
+
   await getExchanges().loadExchanges();
   await getTechnicalIndicators().loadValues();
-  await loadDiscordApi();
   loadEventListeners();
-  startApi();
   startIntervals();
+  startApi();
   // getExchanges().binance.startWss();
-  getServerChannel(process.env.DSCRD_CHNL_THEFIELD).send('Application online, let the money shower!');
+  ApplicationLog.log({
+    discord: 'gumiszoba',
+    level: 'info',
+    message: 'Application online, let the money shower!',
+    senderFunction: 'Crypt0nite',
+    file: 'Cryptonite.js',
+  });
 })();
 
 

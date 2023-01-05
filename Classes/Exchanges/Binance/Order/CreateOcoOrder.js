@@ -16,7 +16,12 @@ class CreateOcoOrder extends Order {
    */
   processOrderResponse() {
     try {
-      this.traderLog.info('Processing OCO order response...');
+      this.traderLog.log({
+        level: 'info',
+        message: 'Processing OCO order response...',
+        senderFunction: 'processOrderResponse',
+        file: 'CreateOcoOrder.js',
+      });
       const ocoStopLossDataObj = {
         symbol: this.orderResponse['orderReports'][0].symbol,
         orderId: this.orderResponse['orderReports'][0].orderId,
@@ -49,11 +54,39 @@ class CreateOcoOrder extends Order {
         oco: true,
       };
 
+      this.traderLog.log({
+        level: 'info',
+        message: 'One-Cancles-the-Other || LIMIT',
+        senderFunction: 'processOrderResponse',
+        file: 'CreateOcoOrder.js',
+        obj: ocoLimitDataObj,
+        discord: 'successful-orders',
+      });
+      this.traderLog.log({
+        level: 'info',
+        message: 'One-Cancles-the-Other || STOP',
+        senderFunction: 'processOrderResponse',
+        file: 'CreateOcoOrder.js',
+        obj: ocoStopLossDataObj,
+        discord: 'successful-orders',
+      });
+
       super.writeToDatabase(ocoLimitDataObj);
       super.writeToDatabase(ocoStopLossDataObj);
-      this.traderLog.info('OCO order response has been processed');
+      this.traderLog.log({
+        level: 'info',
+        message: 'OCO order response has been processed',
+        senderFunction: 'processOrderResponse',
+        file: 'CreateOcoOrder.js',
+      });
     } catch (error) {
-      this.traderLog.error(`Could not process OCO order response. ${error.stack}`);
+      this.traderLog.log({
+        level: 'error',
+        message: `Could not process OCO order response. ${error.message}`,
+        senderFunction: 'createOrder',
+        file: 'CreateOcoOrder.js',
+        discord: 'application-errors',
+      });
     }
   }
   /**
@@ -62,13 +95,15 @@ class CreateOcoOrder extends Order {
    */
   async createOrder() {
     try {
-      this.traderLog.info(`New OCO order. \
-        Symbol: ${this.symbol}, Side: Sell, \
-        Order Amount: ${this.orderAmount}, Limit Price: ${this.limitPrice}, \
-        Stop-Price: ${this.stopPrice}, Stop-Limit-Price: ${this.stopLimitPrice}`,
-      );
+      this.traderLog.log({
+        level: 'info',
+        message: 'New OCO order',
+        senderFunction: 'createOrder',
+        file: 'CreateOcoOrder.js',
+      });
 
-      this.orderResponse = await this.exchangeObj.privatePostOrderOco({
+
+      const orderObj = {
         symbol: this.symbol,
         side: 'sell',
         quantity: this.orderAmount,
@@ -76,9 +111,15 @@ class CreateOcoOrder extends Order {
         stopPrice: this.stopPrice,
         stopLimitPrice: this.stopLimitPrice,
         stopLimitTimeInForce: 'GTC',
-      });
+      };
 
-      this.traderLog.info('OCO order has been created.');
+      this.orderResponse = await this.exchangeObj.privatePostOrderOco(orderObj);
+      this.traderLog.log({
+        level: 'info',
+        message: 'OCO order has been created.',
+        senderFunction: 'createOrder',
+        file: 'CreateOcoOrder.js',
+      });
       this.processOrderResponse();
       return {
         ocoLimitId: this.orderResponse['orderReports'][1].orderId,
@@ -86,7 +127,14 @@ class CreateOcoOrder extends Order {
         ocoOrderListId: this.orderResponse.orderListId,
       };
     } catch (error) {
-      this.traderLog.error(`OCO order creation failed. ${error.stack}`);
+      this.traderLog.error(`OCO order creation failed. ${error.message}`);
+      this.traderLog.log({
+        level: 'error',
+        message: `OCO order creation failed. ${error.message}`,
+        senderFunction: 'createOrder',
+        file: 'CreateOcoOrder.js',
+        discord: 'failed-orders',
+      });
     }
   }
 }

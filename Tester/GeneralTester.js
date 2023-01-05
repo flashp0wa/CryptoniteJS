@@ -1,5 +1,10 @@
 /*eslint-disable*/
 
+const { ApplicationLog } = require("../Toolkit/Logger");
+const {spawn} = require('child_process');
+const {pause} = require('../Toolkit/Pause');
+
+
 // let first = true;
 
 // for (let i = 0; i < arr.length; i++) {
@@ -45,8 +50,24 @@
 
 // someFunctionWithACallback((result) => doStuffWith(result));
 
-const a = 2 > 3;
+// const date = info.timestamp.split(' ')[0];
+// const time = info.timestamp.split(' ')[1];
+// const severity = info.level;
+// const message = info.message;
+// const component = info.label;
+// const context = info.function;
+// const file = info.file;
 
-if (!a) {
-  console.log('fuck you');
-}
+
+ApplicationLog.log({
+  discord: 'gumiszoba',
+  timestamp: '2222-22-22 23:23:23',
+  level: 'error',
+  message: 'Szius',
+  label: 'Application',
+  function: 'Teszt',
+  file: 'GeneralTester',
+})
+
+
+

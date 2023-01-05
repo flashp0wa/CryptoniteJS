@@ -11,7 +11,12 @@ class BinanceSpotTestClass extends BinanceClass {
    * Configures the exchange object for use. Sets API key, secret key, adjust for time difference and warn on fetch open orders without symbol options.
    */
   configureExchange() {
-    ApplicationLog.info(`Loading ${this.exchangeName}...`);
+    ApplicationLog.log({
+      level: 'info',
+      message: `Loading ${this.exchangeName}`,
+      senderFunction: 'configureExchange',
+      file: 'BinanceSpotTestClass.js',
+    });
     const binance = new ccxt.pro.binance();
     binance.apiKey = process.env.BNCT_APIKEY;
     binance.secret = process.env.BNCT_SECKEY;

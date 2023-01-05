@@ -23,18 +23,34 @@ class BinanceClass {
    * Loads open orders for exchagne
    */
   loadOpenOrders() {
-    ApplicationLog.info(`Loading open orders on ${this.exchangeName}`);
+    ApplicationLog.log({
+      level: 'info',
+      message: `Loading open orders on ${this.exchangeName}`,
+      senderFunction: 'loadOpenOrders',
+      file: 'BinanceClass.js',
+    });
     this.openOrders = new OpenOrder(this.exchangeObj, this.exchangeName);
   }
   /**
    * Loads CCXT exchange market data
    */
   async loadMarkets() {
-    ApplicationLog.info(`Loading ${this.exchangeName} markets...`);
+    ApplicationLog.log({
+      level: 'info',
+      message: `Loading ${this.exchangeName} markets...`,
+      senderFunction: 'loadMarkets',
+      file: 'BinanceClass.js',
+    });
     try {
       this.markets = await this.exchangeObj.loadMarkets();
     } catch (error) {
-      ApplicationLog.error(`Loading binance market data failed...${error.stack}`);
+      ApplicationLog.log({
+        level: 'error',
+        message: `Loading binance market data failed...${error.message}`,
+        senderFunction: 'loadMarkets',
+        file: 'BinanceClass.js',
+        discord: 'application-error',
+      });
     }
   }
   /**
@@ -42,14 +58,36 @@ class BinanceClass {
    * @return {int} Returns the exchange ID
    */
   async loadExchangeId() {
-    const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
-    this.exchangeObj.id = response[0].exchangeId;
+    try {
+      ApplicationLog.log({
+        level: 'info',
+        message: `Loading exchange ID on ${this.exchangeName}`,
+        senderFunction: 'loadExchangeId',
+        file: 'BinanceClass.js',
+      });
+      const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
+      this.exchangeObj.id = response[0].exchangeId;
+    } catch (error) {
+      ApplicationLog.log({
+        level: 'error',
+        message: `Could not load exchange ID. ${error.message}`,
+        senderFunction: 'loadExchangeId',
+        file: 'BinanceClass.js',
+        discord: 'application-error',
+      });
+    }
   }
   /**
    * Loads symbols available on the exchange
    */
   loadSymbols() {
     try {
+      ApplicationLog.log({
+        level: 'info',
+        message: `Loading symbols on ${this.exchangeName}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
       if (this.symbolList.length !== 0) {
         this.symbolList = [];
       }

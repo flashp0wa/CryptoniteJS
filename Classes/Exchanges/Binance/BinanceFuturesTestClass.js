@@ -9,7 +9,12 @@ class BinanceFuturesTestClass extends BinanceClass {
   }
 
   configureExchange() {
-    ApplicationLog.info(`Loading ${this.exchangeName}...`);
+    ApplicationLog.log({
+      level: 'info',
+      message: `Loading ${this.exchangeName} !`,
+      senderFunction: 'configureExchange',
+      file: 'BinanceFuturesTestClass.js',
+    });
     const binance = new ccxt.pro.binanceusdm;
     binance.apiKey = process.env.BNCFT_APIKEY;
     binance.secret = process.env.BNCFT_SECKEY;
