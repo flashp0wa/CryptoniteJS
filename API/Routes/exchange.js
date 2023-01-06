@@ -13,7 +13,12 @@ router.route('/:exchange/getSymbols').get((req, res) => {
     const symbols = getExchanges()[req.params.exchange].symbolList;
     res.send(symbols);
   } catch (error) {
-    ApiLog.error(`'exchange.js' | Could not retrieve symbols. ${error}`);
+    ApiLog.log({
+      level: 'error',
+      message: `Could not retrieve symbols. ${error}`,
+      senderFunction: 'route-getSymbols',
+      file: 'exchange.js',
+    });
   }
 });
 
@@ -28,7 +33,12 @@ router.route('/:exchange/getAccountInfo').get(async (req, res) => {
     response.openOrders = openOrders;
     res.send(response);
   } catch (error) {
-    ApiLog.error(`'exchange.js' | Could not retrieve account info. ${error}`);
+    ApiLog.log({
+      level: 'error',
+      message: `Could not retrieve account info. ${error}`,
+      senderFunction: 'route-getAccountInfo',
+      file: 'Api.js',
+    });
   }
 });
 
@@ -46,13 +56,28 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
       for (const symbol of uniqueSymbols) {
         exchange.cancelAllOrders(symbol);
       }
-      ApiLog.info('All orders have been canceled.');
+      ApiLog.log({
+        level: 'info',
+        message: 'All order have been canceled',
+        senderFunction: 'route-cancelOrders',
+        file: 'Api.js',
+      });
     } else {
       exchange.cancelAllOrders(req.params.symbol);
-      ApiLog.info(`Orders for ${req.params.symbol} has been canceled.`);
+      ApiLog.log({
+        level: 'info',
+        message: `Orders for ${req.params.symbol} has been canceled`,
+        senderFunction: 'route-cancelOrders',
+        file: 'Api.js',
+      });
     }
   } catch (error) {
-    ApiLog.error(`'exchange.js' | Cannot cancel orders. ${error}`);
+    ApiLog.log({
+      level: 'error',
+      message: `Cannot cancel orders. ${error}`,
+      senderFunction: 'route-cancelOrders',
+      file: 'Api.js',
+    });
   }
 });
 
@@ -65,7 +90,12 @@ router.route('/binance/coinTAData').post(async (req, res) => {
     const result = await sproc_GatherSymbolTAData(req.body);
     res.send(result);
   } catch (error) {
-    ApiLog.error(`'exchange.js' | Cannot retrieve coind data.`);
+    ApiLog.log({
+      level: 'info',
+      message: `Cannot retrieve coin data. ${error}`,
+      senderFunction: 'route-coinData',
+      file: 'Api.js',
+    });
   }
 });
 

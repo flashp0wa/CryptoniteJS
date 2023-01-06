@@ -52,6 +52,9 @@ class Discord extends Transport {
         case 'strategy-events':
           (await getServerChannel(process.env.DSCRD_CHNL_STRATEGY_EVENTS)).send(info.message);
           break;
+        case 'application-warnings':
+          (await getServerChannel(process.env.DSCRD_CHNL_APPLICATION_WARNINGS)).send(info.message);
+          break;
         default:
           break;
       }

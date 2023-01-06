@@ -1,6 +1,5 @@
 /*eslint-disable*/
 require('dotenv').config({path: '.env'});
-const {loadDiscordApi, getServerChannel} = require('../DiscordAPI/DiscordBot');
 const { ApplicationLog } = require('../Toolkit/Logger');
 
 const a = {

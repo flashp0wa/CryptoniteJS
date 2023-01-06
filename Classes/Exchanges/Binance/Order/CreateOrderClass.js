@@ -87,7 +87,7 @@ class CreateOrder extends Order {
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Failed to write order response to database. ${error.message}`,
+        message: `Failed to write order response to database. ${error}`,
         senderFunction: 'processOrderResponse',
         file: 'CreateOrderClass.js',
         discord: 'application-errors',
@@ -141,7 +141,7 @@ class CreateOrder extends Order {
             } catch (error) {
               this.traderLog.log({
                 level: 'error',
-                message: `Oco order creation failed on ${this.exchangeName} for order ${this.orderResponse.id}. ${error.message}`,
+                message: `Oco order creation failed on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
                 senderFunction: 'createOrder',
                 file: 'CreateOrderClass.js',
                 discord: 'failed-orders',
@@ -180,7 +180,7 @@ class CreateOrder extends Order {
             } catch (error) {
               this.traderLog.log({
                 level: 'error',
-                message: `Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error.message}`,
+                message: `Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
                 senderFunction: 'createOrder',
                 file: 'CreateOrderClass.js',
                 discord: 'failed-orders',
@@ -204,7 +204,6 @@ class CreateOrder extends Order {
                 file: 'CreateOrderClass.js',
               });
             } catch (error) {
-              this.traderLog.error();
               this.traderLog.log({
                 level: 'error',
                 message: `Take profit order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
@@ -231,7 +230,7 @@ class CreateOrder extends Order {
         } catch (error) {
           this.traderLog.log({
             level: 'error',
-            message: `Market order creation failed. ${error.message}`,
+            message: `Market order creation failed. ${error}`,
             senderFunction: 'createOrder',
             file: 'CreateOrderClass.js',
             discord: 'failed-orders',

@@ -26,7 +26,12 @@ function startApi() {
   app.use('/dataScan ', dataScan);
 
   app.listen(port, () => {
-    ApiLog.info(`API started on port: ${process.env.CRYPTONITE_API_PORT}`);
+    ApiLog.log({
+      level: 'info',
+      message: `API started on port: ${process.env.CRYPTONITE_API_PORT}`,
+      senderFunction: 'startApi',
+      file: 'Api.js',
+    });
   });
 }
 

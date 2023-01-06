@@ -1,31 +1,106 @@
-{"level":"info","message":"Loading binance","senderFunction":"configureExchange","file":"BinanceSpotClass.js","label":"Application","timestamp":"2023-01-05 21:59:37.552"}
-{"level":"info","message":"Loading binanceSpotTest","senderFunction":"configureExchange","file":"BinanceSpotTestClass.js","label":"Application","timestamp":"2023-01-05 21:59:37.568"}
-{"level":"info","message":"Loading binanceFuturesTest !","senderFunction":"configureExchange","file":"BinanceFuturesTestClass.js","label":"Application","timestamp":"2023-01-05 21:59:37.575"}
-{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:38.593"}
-{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:38.593"}
-{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:40.641"}
-{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:40.672"}
-{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:40.748"}
-{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 21:59:40.748"}
-{"level":"info","message":"Loading binance","senderFunction":"configureExchange","file":"BinanceSpotClass.js","label":"Application","timestamp":"2023-01-05 22:08:38.655"}
-{"level":"info","message":"Loading binanceSpotTest","senderFunction":"configureExchange","file":"BinanceSpotTestClass.js","label":"Application","timestamp":"2023-01-05 22:08:38.671"}
-{"level":"info","message":"Loading binanceFuturesTest !","senderFunction":"configureExchange","file":"BinanceFuturesTestClass.js","label":"Application","timestamp":"2023-01-05 22:08:38.681"}
-{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:39.676"}
-{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:39.677"}
-{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:41.453"}
-{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:41.480"}
-{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:41.550"}
-{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:41.551"}
-{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:43.667"}
-{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:45.878"}
-{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:45.880"}
-{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:45.880"}
-{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:47.470"}
-{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-05 22:08:47.473"}
-{"discord":"gumiszoba","level":"info","message":"Application online, let the money shower!","senderFunction":"Main","file":"Cryptonite.js","label":"Application","timestamp":"2023-01-05 22:08:48.413"}
-{"level":"info","message":"Checking order status on binance...","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.410"}
-{"level":"info","message":"Checking order status on binanceSpotTest...","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.411"}
-{"level":"info","message":"Checking order status on binanceFuturesTest...","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.411"}
-{"level":"info","message":"Order status check finished on binance","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.414"}
-{"level":"info","message":"Order status check finished on binanceSpotTest","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.414"}
-{"level":"info","message":"Order status check finished on binanceFuturesTest","senderFunction":"checkOrderStatus","file":"OpenOrderClass.js","label":"Application","timestamp":"2023-01-05 22:08:58.415"}
+{"level":"info","message":"Loading binance...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 02:57:47.716"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:47.716"}
+{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:47.717"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:47.717"}
+{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.753"}
+{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.792"}
+{"level":"info","message":"Loading binanceSpotTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.877"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.878"}
+{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.878"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:50.878"}
+{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:53.226"}
+{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:54.788"}
+{"level":"info","message":"Loading binanceFuturesTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 02:57:54.794"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:54.794"}
+{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:54.794"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:54.794"}
+{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:56.365"}
+{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 02:57:56.367"}
+{"level":"info","message":"Loading technical indicator values","senderFunction":"loadValues","file":"TechnicalIndicatorClass.js","label":"Application","timestamp":"2023-01-06 02:57:56.403"}
+{"level":"info","message":"Application online, let the money shower!","senderFunction":"Crypt0nite","file":"Cryptonite.js","discord":"gumiszoba","label":"Application","timestamp":"2023-01-06 02:57:57.280"}
+{"level":"info","message":"Loading binance...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:00:22.999"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:22.999"}
+{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:23.000"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:23.000"}
+{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.731"}
+{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.760"}
+{"level":"info","message":"Loading binanceSpotTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.870"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.871"}
+{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.871"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:24.871"}
+{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:26.543"}
+{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:29.213"}
+{"level":"info","message":"Loading binanceFuturesTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:00:29.215"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:29.215"}
+{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:29.216"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:29.216"}
+{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:31.034"}
+{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:00:31.039"}
+{"level":"info","message":"Loading technical indicator values","senderFunction":"loadValues","file":"TechnicalIndicatorClass.js","label":"Application","timestamp":"2023-01-06 03:00:31.047"}
+{"level":"info","message":"Application online, let the money shower!","senderFunction":"Crypt0nite","file":"Cryptonite.js","discord":"gumiszoba","label":"Application","timestamp":"2023-01-06 03:00:32.602"}
+{"level":"info","message":"Loading binance...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:02:11.920"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:11.921"}
+{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:11.921"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:11.922"}
+{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.583"}
+{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.611"}
+{"level":"info","message":"Loading binanceSpotTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.718"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.719"}
+{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.719"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:14.719"}
+{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:16.929"}
+{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:20.460"}
+{"level":"info","message":"Loading binanceFuturesTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 03:02:20.462"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:20.462"}
+{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:20.463"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:20.463"}
+{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:22.063"}
+{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 03:02:22.072"}
+{"level":"info","message":"Loading technical indicator values","senderFunction":"loadValues","file":"TechnicalIndicatorClass.js","label":"Application","timestamp":"2023-01-06 03:02:22.091"}
+{"level":"info","message":"Application online, let the money shower!","senderFunction":"Crypt0nite","file":"Cryptonite.js","discord":"gumiszoba","label":"Application","timestamp":"2023-01-06 03:02:23.803"}
+{"level":"info","message":"Loading binance...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:42:05.161"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:05.162"}
+{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:05.162"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:05.163"}
+{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.469"}
+{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.508"}
+{"level":"info","message":"Loading binanceSpotTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.650"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.651"}
+{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.651"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:08.651"}
+{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:10.983"}
+{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:13.274"}
+{"level":"info","message":"Loading binanceFuturesTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:42:13.276"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:13.278"}
+{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:13.279"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:13.279"}
+{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:14.417"}
+{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:42:14.420"}
+{"level":"info","message":"Loading technical indicator values","senderFunction":"loadValues","file":"TechnicalIndicatorClass.js","label":"Application","timestamp":"2023-01-06 04:42:14.425"}
+{"level":"info","message":"Application online, let the money shower!","senderFunction":"Crypt0nite","file":"Cryptonite.js","discord":"gumiszoba","label":"Application","timestamp":"2023-01-06 04:42:15.740"}
+{"level":"info","message":"Reloading market on binance","senderFunction":"reloadMarkets","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.741"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.742"}
+{"level":"info","message":"Reloading market on binanceSpotTest","senderFunction":"reloadMarkets","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.742"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.743"}
+{"level":"info","message":"Reloading market on binanceFuturesTest","senderFunction":"reloadMarkets","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.743"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:47:15.744"}
+{"level":"info","message":"Loading binance...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:49:15.640"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:15.642"}
+{"level":"info","message":"Loading open orders on binance","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:15.643"}
+{"level":"info","message":"Loading binance markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:15.645"}
+{"level":"info","message":"Loading exchange ID on binance","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:17.936"}
+{"level":"info","message":"Loading symbols on binance","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:18.008"}
+{"level":"info","message":"Loading binanceSpotTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:49:18.283"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:18.283"}
+{"level":"info","message":"Loading open orders on binanceSpotTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:18.284"}
+{"level":"info","message":"Loading binanceSpotTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:18.284"}
+{"level":"info","message":"Loading exchange ID on binanceSpotTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:20.175"}
+{"level":"info","message":"Loading symbols on binanceSpotTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:25.959"}
+{"level":"info","message":"Loading binanceFuturesTest...","senderFunction":"loadExchanges","file":"ExchangesClass.js","label":"Application","timestamp":"2023-01-06 04:49:25.962"}
+{"level":"info","message":"Loading exchanges...","senderFunction":"loadExchange","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:25.962"}
+{"level":"info","message":"Loading open orders on binanceFuturesTest","senderFunction":"loadOpenOrders","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:25.963"}
+{"level":"info","message":"Loading binanceFuturesTest markets...","senderFunction":"loadMarkets","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:25.963"}
+{"level":"info","message":"Loading exchange ID on binanceFuturesTest","senderFunction":"loadExchangeId","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:27.157"}
+{"level":"info","message":"Loading symbols on binanceFuturesTest","senderFunction":"loadSymbols","file":"BinanceClass.js","label":"Application","timestamp":"2023-01-06 04:49:27.164"}
+{"level":"info","message":"Loading technical indicator values","senderFunction":"loadValues","file":"TechnicalIndicatorClass.js","label":"Application","timestamp":"2023-01-06 04:49:27.174"}
+{"level":"info","message":"Application online, let the money shower!","senderFunction":"Crypt0nite","file":"Cryptonite.js","discord":"gumiszoba","label":"Application","timestamp":"2023-01-06 04:49:29.287"}

@@ -1,4 +1,4 @@
-const {sendEmail, sendNewCurrencyEmail} = require('./SendEmail.js');
+const {sendEmail, sendNewCurrencyEmail} = require('../Trash/SendEmail.js');
 const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
 
 /**

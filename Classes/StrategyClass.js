@@ -26,7 +26,12 @@ class StrategyClass {
       timeFrameObj = this.srCandleTree[klineObj.symbol][klineObj.timeFrame];
     }
 
-    StrategyHandlerLog.info('Support/Resistance strategy initiated...');
+    StrategyHandlerLog.log({
+      level: 'info',
+      message: 'Support/Resistance strategy initiated...',
+      senderFunction: 'run_srCandleTree',
+      file: 'StrategyClass.js',
+    });
 
     /**
    * Returns an object with the trade side (buy/sell), strategy id and candle stack. If no match found returns an empty object
@@ -39,7 +44,12 @@ class StrategyClass {
    * @return {object}
    */
     function candleTree(activator, candle1, candle2, candle3, candle4, candle5) {
-      StrategyHandlerLog.info('Initiating candle tree decision...');
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: 'Initiating candle tree decision...',
+        senderFunction: 'candleTree',
+        file: 'StrategyClass.js',
+      });
 
       switch (activator) {
         case 'resistance':
@@ -47,7 +57,12 @@ class StrategyClass {
             case 3:
               switch (true) {
                 case (candle2 === 6 && candle3 === 6 || 9 || 0 || 8 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1366');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1366',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1366,
@@ -58,13 +73,23 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {};
               }
             case 4:
               switch (true) {
                 case (candle2 === 6 && candle3 === 6 || 9 || 0 || 8 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1466');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1466',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1466,
@@ -76,7 +101,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 6 && candle3 === 1 || 2 || 5 && candle4 === 5 || 1 || 7 && candle5 === 5 || 1 || 7 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 246155');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 246155',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 2,
                     id: 246155,
@@ -90,7 +120,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 9 && candle3 === 6 || 8 || 0 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1496');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1496',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1496,
@@ -102,7 +137,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 0 && candle3 === 6 || 8 || 0 || 9 || 7 || 3 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1406');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1406',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1406,
@@ -113,13 +153,23 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {};
               }
             case 2:
               switch (true) {
                 case (candle2 === 6 && candle3 === 6 || 9 || 0 || 8):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1266');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1266',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1266,
@@ -131,7 +181,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 0 && candle3 === 6 || 8 || 0 || 9 || 7 || 3):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1206');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1206',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1206,
@@ -142,13 +197,23 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {};
               }
             case 5:
               switch (true) {
                 case (candle2 === 6 && candle3 === 1 || 2 || 5 && candle4 === 5 || 1 || 7 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 25615');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 25615',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 2,
                     id: 25615,
@@ -161,7 +226,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 0 && candle3 === 6 || 8 || 0 || 9 || 7 || 3 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1506');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1506',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1506,
@@ -172,7 +242,12 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 0 && candle3 === 5 || 2 || 1 || 4 && candle4 === 1 || 5 || 7 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 25051');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 25051',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 2,
                     id: 25051,
@@ -184,13 +259,23 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {};
               }
             case 1:
               switch (true) {
                 case (candle2 === 6 && candle3 === 6 || 9 || 0 || 8 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1166');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1166',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1166,
@@ -202,7 +287,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 6 && candle3 === 3 || 4 || 0 && candle4 === 6 || 8 || 9 || 0 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 11636');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 11636',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 11636,
@@ -215,7 +305,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 6 && candle3 === 1 || 2 || 5 && candle4 === 5 || 1 || 7 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 21615');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 21615',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 2,
                     id: 21615,
@@ -228,7 +323,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 9 && candle3 === 6 || 8 || 0 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1196');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1196',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1196,
@@ -240,7 +340,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 0 && candle3 === 6 || 8 || 0 || 9 || 7 || 3 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1106');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1106',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1106,
@@ -252,7 +357,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 0 && candle3 === 5 || 2 || 1 && candle4 === 6 || 8 || 0 || 9 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 11056');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 11056',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 11056,
@@ -265,11 +375,21 @@ class StrategyClass {
                   };
 
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {};
               }
             default:
-              StrategyHandlerLog.info('No match found');
+              StrategyHandlerLog.log({
+                level: 'info',
+                message: 'No match found',
+                senderFunction: 'candleTree',
+                file: 'StrategyClass.js',
+              });
               return {};
           }
         case 'support':
@@ -277,7 +397,12 @@ class StrategyClass {
             case 9:
               switch (true) {
                 case (candle2 === 1 && candle3 === 1 || 4 || 5 || 2 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1911');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1911',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1911,
@@ -289,7 +414,12 @@ class StrategyClass {
                   };
 
                 case (candle2 === 4 && candle3 === 1 || 5 || 2 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1941');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1941',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
                   return {
                     side: 1,
                     id: 1941,
@@ -301,7 +431,13 @@ class StrategyClass {
                   };
 
                 case (candle2 === 5 && candle3 === 1 || 4 || 5 || 2 || 3 || 7 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1951');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1951',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1951,
@@ -312,13 +448,25 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {};
               }
             case 7:
               switch (true) {
                 case (candle2 === 1 && candle3 === 1 || 4 || 5 || 2 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1711');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1711',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1711,
@@ -329,13 +477,25 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {};
               }
             case 8:
               switch (true) {
                 case (candle2 === 1 && candle3 === 1 || 4 || 5 || 2 ):
-                  StrategyHandlerLog.info('Match found. Side: 1 | ID: 1811');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1811',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1811,
@@ -346,13 +506,25 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {};
               }
             case 0:
               switch (true) {
                 case (candle2 === 1 && candle3 === 6 || 8 || 0 && candle4 === 0 || 6 || 3 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 20160');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 20160',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 2,
                     id: 20160,
@@ -365,7 +537,13 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 5 && candle3 === 6 || 8 || 0 || 9 && candle4 === 0 || 6 || 3 ):
-                  StrategyHandlerLog.info('Match found. Side: 2 | ID: 20506');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 20506',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 2,
                     id: 20506,
@@ -378,13 +556,25 @@ class StrategyClass {
                     },
                   };
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {};
               }
             case 6:
               switch (true) {
                 case (candle2 === 1 && candle3 === 1 || 4 || 5 || 2 ):
-                  StrategyHandlerLog('Match found. Side: 1 | ID: 1611');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1611',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1611,
@@ -395,7 +585,13 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 1 && candle3 === 7 || 9 || 5 && candle4 === 1 || 2 || 4 || 5 ):
-                  StrategyHandlerLog('Match found. Side: 1 | ID: 16171');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 16171',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 16171,
@@ -407,7 +603,13 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 1 && candle3 === 6 || 8 || 0 && candle4 === 0 || 6 || 3 ):
-                  StrategyHandlerLog('Match found. Side: 2 | ID: 26160');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 2 | ID: 26160',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 2,
                     id: 26160,
@@ -420,7 +622,13 @@ class StrategyClass {
                   };
 
                 case (candle2 === 4 && candle3 === 1 || 2 || 5 ):
-                  StrategyHandlerLog('Match found. Side: 1 | ID: 1641');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1641',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1641,
@@ -431,7 +639,13 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 5 && candle3 === 1 || 2 || 5 || 4 || 3 || 7 ):
-                  StrategyHandlerLog('Match found. Side: 1 | ID: 1651');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 1651',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 1651,
@@ -442,7 +656,13 @@ class StrategyClass {
                     },
                   };
                 case (candle2 === 5 && candle3 === 0 || 8 || 6 && candle4 === 1 || 2 || 5 || 4 ):
-                  StrategyHandlerLog('Match found. Side: 1 | ID: 16501');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'Match found. Side: 1 | ID: 16501',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {
                     side: 1,
                     id: 16501,
@@ -455,11 +675,23 @@ class StrategyClass {
                   };
 
                 default:
-                  StrategyHandlerLog.info('No match found');
+                  StrategyHandlerLog.log({
+                    level: 'info',
+                    message: 'No match found',
+                    senderFunction: 'candleTree',
+                    file: 'StrategyClass.js',
+                  });
+
                   return {};
               }
             default:
-              StrategyHandlerLog.info('No match found');
+              StrategyHandlerLog.log({
+                level: 'info',
+                message: 'No match found',
+                senderFunction: 'candleTree',
+                file: 'StrategyClass.js',
+              });
+
               return {};
           }
         default:
@@ -471,7 +703,12 @@ class StrategyClass {
      * @param {object} timeFrameObj
      */
     function resetTimeFrameObj(timeFrameObj) {
-      StrategyHandlerLog.info('Reseting timeframe values');
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: 'Reseting timeframe values',
+        senderFunction: 'resetTimeFrameObj',
+        file: 'StrategyClass.js',
+      });
       timeFrameObj.isActive = false;
       timeFrameObj.closePrices = [];
       timeFrameObj.openPrices = [];
@@ -494,7 +731,13 @@ class StrategyClass {
      * @return {void}
      */
     function placeOrder(symbol, exchangeName, side, atr, support, resistance, timeFrameObj, capital, event) {
-      StrategyHandlerLog.info('Placing order...');
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: 'Placing order...',
+        senderFunction: 'placeOrder',
+        file: 'StrategyClass.js',
+      });
+
       let orderSide;
       let stop;
       let limit;
@@ -532,29 +775,49 @@ class StrategyClass {
       const margin = positionSize * openEntryCandle / leverage;
       const criteria = margin < (capital * process.env.POS_CRITERIA * leverage) / openEntryCandle;
 
-      StrategyHandlerLog.info(`
-      Capital: ${capital}
-      ABS-Low: ${absLow}
-      ABS-High: ${absHigh}
-      Entry Candle Open Price: ${openEntryCandle}
-      Entry Candle Close Price: ${closeEntryCandle}
-      Risk: ${risk}
-      Leverage: ${leverage}
-      Position Size: ${positionSize}
-      Margin: ${margin}
-      Criteria: ${criteria}
-      Order Type: ${orderType}
-      Order Side: ${orderSide}
-      Stop: ${stop}
-      Limit: ${limit} 
-      `);
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: `
+        Capital: ${capital}
+        ABS-Low: ${absLow}
+        ABS-High: ${absHigh}
+        Entry Candle Open Price: ${openEntryCandle}
+        Entry Candle Close Price: ${closeEntryCandle}
+        Risk: ${risk}
+        Leverage: ${leverage}
+        Position Size: ${positionSize}
+        Margin: ${margin}
+        Criteria: ${criteria}
+        Order Type: ${orderType}
+        Order Side: ${orderSide}
+        Stop: ${stop}
+        Limit: ${limit} 
+        `,
+        senderFunction: 'placeOrder',
+        file: 'StrategyClass.js',
+      });
 
       if (closeEntryCandle < resistance) {
-        StrategyHandlerLog.warn('Entry candle close price is lower than resistance level. No order will be placed');
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: 'Entry candle close price is lower than resistance level. No order will be placed',
+          senderFunction: 'placeOrder',
+          file: 'StrategyClass.js',
+        });
       } else if (closeEntryCandle > support) {
-        StrategyHandlerLog.warn('Entry candle close price is higher than support level. No order will be placed');
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: 'Entry candle close price is higher than support level. No order will be placed',
+          senderFunction: 'placeOrder',
+          file: 'StrategyClass.js',
+        });
       } else if (!criteria) {
-        StrategyHandlerLog.warn('Margin value does not meet criteria. No order will be placed');
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: 'Margin value does not meet criteria. No order will be placed',
+          senderFunction: 'placeOrder',
+          file: 'StrategyClass.js',
+        });
       } else {
         event.emit('CreateOrder', {
           symbol: symbol,
@@ -567,8 +830,12 @@ class StrategyClass {
           exchange: exchangeName,
           orderSource: 'Support Resistance Candle Tree',
         });
-
-        StrategyHandlerLog.info('Order initiated...');
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: 'Order placement initiated',
+          senderFunction: 'placeOrder',
+          file: 'StrategyClass.js',
+        });
       }
     }
 
@@ -585,11 +852,21 @@ class StrategyClass {
       timeFrameObj.isActive === true) {
       if (klineObj.lowPrice <= supportWTolerance) {
         activator = 'support';
-        StrategyHandlerLog.info('Candle tree decision activated by support level');
+        StrategyHandlerLog.log({
+          level: 'info',
+          message: 'Candle tree decision activated by support level',
+          senderFunction: 'run_srCandleTree',
+          file: 'StrategyClass.js',
+        });
       }
       if (klineObj.highPrice >= resistanceWTolerance) {
         activator = 'resistance';
-        StrategyHandlerLog.info('Candle tree decision activated by resistance level');
+        StrategyHandlerLog.log({
+          level: 'info',
+          message: 'Candle tree decision activated by resistance level',
+          senderFunction: 'run_srCandleTree',
+          file: 'StrategyClass.js',
+        });
       }
 
       switch (true) {
@@ -606,7 +883,12 @@ class StrategyClass {
               'activator': activator,
             },
           };
-          StrategyHandlerLog.info('#1 OHLC values arrived, two more to go to initiate candle tree decision');
+          StrategyHandlerLog.log({
+            level: 'info',
+            message: '#1 OHLC values arrived, two more to go to initiate candle tree decision',
+            senderFunction: 'run_srCandleTree',
+            file: 'StrategyClass.js',
+          });
           return;
 
         // If time frame does not exit
@@ -620,7 +902,12 @@ class StrategyClass {
             'isActive': true,
             'activator': activator,
           };
-          StrategyHandlerLog.info('#1 OHLC values arrived, two more to initiate candle tree decision');
+          StrategyHandlerLog.log({
+            level: 'info',
+            message: '#1 OHLC values arrived, two more to go to initiate candle tree decision',
+            senderFunction: 'run_srCandleTree',
+            file: 'StrategyClass.js',
+          });
           return;
 
         case timeFrameObj && !timeFrameObj.isActive && !timeFrameObj.activator:
@@ -635,31 +922,55 @@ class StrategyClass {
           timeFrameObj.candleTypeIds.push(klineObj.candleTypeId);
           // There must be a minimum of three candles to run candleTree
           if (timeFrameObj.candleTypeIds.length <= 2) {
-            StrategyHandlerLog.info(`#${timeFrameObj.candleTypeIds.length} OHLC values arrived, ${3 - timeFrameObj.candleTypeIds.length} more to initiate candle tree decision`);
+            StrategyHandlerLog.log({
+              level: 'info',
+              message: `#${timeFrameObj.candleTypeIds.length} OHLC values arrived, ${3 - timeFrameObj.candleTypeIds.length} more to initiate candle tree decision`,
+              senderFunction: 'run_srCandleTree',
+              file: 'StrategyClass.js',
+            });
             return;
           }
           break;
       }
 
-      StrategyHandlerLog.info(`
-      Symbol: ${klineObj.symbol}
-      TimeFrame: ${klineObj.timeFrame}
-      LowPrice: ${klineObj.lowPrice}
-      HighPrice: ${klineObj.highPrice}
-      Support: ${support}
-      Resistance: ${resistance}
-      Support With Tolerance: ${supportWTolerance}
-      Resistance With Tolerance: ${resistanceWTolerance}
-      Activator: ${activator}
-      `);
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: `
+        Symbol: ${klineObj.symbol}
+        TimeFrame: ${klineObj.timeFrame}
+        LowPrice: ${klineObj.lowPrice}
+        HighPrice: ${klineObj.highPrice}
+        Support: ${support}
+        Resistance: ${resistance}
+        Support With Tolerance: ${supportWTolerance}
+        Resistance With Tolerance: ${resistanceWTolerance}
+        Activator: ${activator}
+        `,
+        senderFunction: 'run_srCandleTree',
+        file: 'StrategyClass.js',
+      });
 
       const candleTreeResult = candleTree(timeFrameObj.activator, ...timeFrameObj.candleTypeIds);
       if (!candleTreeResult.side && timeFrameObj.closePrices.length === 5) {
-        StrategyHandlerLog.warn('Candle tree decision did not produce result even with the maximum of 5 candles defined');
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: 'Candle tree decision did not produce result even with the maximum of 5 candles defined',
+          senderFunction: 'run_srCandleTree',
+          file: 'StrategyClass.js',
+          discord: 'application-warnings',
+        });
+
         resetTimeFrameObj(timeFrameObj);
         return;
       } else if (!candleTreeResult.side) {
-        StrategyHandlerLog.warn(`Candle tree decision did not produce result. Number of candles defined: ${timeFrameObj.closePrices.length}`);
+        StrategyHandlerLog.log({
+          level: 'warn',
+          message: `Candle tree decision did not produce result. Number of candles defined: ${timeFrameObj.closePrices.length}`,
+          senderFunction: 'run_srCandleTree',
+          file: 'StrategyClass.js',
+          discord: 'application-warnings',
+        });
+
         return;
       };
       const atr = this.technicalIndicators.averageTrueRange[klineObj.symbol][klineObj.timeFrame].currentAtr;
@@ -668,16 +979,35 @@ class StrategyClass {
 
       while (true) {
         try {
-          StrategyHandlerLog.info('Fetching account balance to determine capital');
+          StrategyHandlerLog.log({
+            level: 'info',
+            message: 'Fetching account balance to determine capital',
+            senderFunction: 'run_srCandleTree',
+            file: 'StrategyClass.js',
+          });
+
           capital = (await this.exchangeObj.fetchBalance()).free.USDT;
           break;
         } catch (error) {
           if (fetchBalanceRetry === 3) {
-            StrategyHandlerLog.error(`Could not fetch account balance. Order cannot be placed without capital. ${error}`);
+            StrategyHandlerLog.log({
+              level: 'error',
+              message: `Could not fetch account balance. Order cannot be placed without capital. ${error}`,
+              senderFunction: 'run_srCandleTree',
+              file: 'StrategyClass.js',
+              discord: 'application-errors',
+            });
+
             resetTimeFrameObj(timeFrameObj);
             return;
           }
-          StrategyHandlerLog.error(`Could not fetch account balance. Order cannot be placed without capital. Rertrying fetch in 30 seconds... ${error}`);
+          StrategyHandlerLog.log({
+            level: 'error',
+            message: `Could not fetch account balance. Order cannot be placed without capital. Rertrying fetch in 30 seconds... ${error}`,
+            senderFunction: 'run_srCandleTree',
+            file: 'StrategyClass.js',
+
+          });
 
           await new Promise((resolve) => setTimeout(() => {
             resolve();

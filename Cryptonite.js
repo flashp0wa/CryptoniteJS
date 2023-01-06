@@ -18,11 +18,11 @@ require('dotenv').config({path: '.env'});
   startApi();
   // getExchanges().binance.startWss();
   ApplicationLog.log({
-    discord: 'gumiszoba',
     level: 'info',
     message: 'Application online, let the money shower!',
     senderFunction: 'Crypt0nite',
     file: 'Cryptonite.js',
+    discord: 'gumiszoba',
   });
 })();
 

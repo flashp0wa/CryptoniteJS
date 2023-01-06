@@ -180,10 +180,6 @@ const BncHistoryDownloadLog = winston.createLogger({
           }),
       ),
     }),
-    new winston.transports.File({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/BncHistoryDownload.log`,
-      format: winston.format.json(),
-    }),
     new Discord({format: discordFilter()}),
   ], format: winston.format.combine(
       winston.format.label({

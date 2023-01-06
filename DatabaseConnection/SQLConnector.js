@@ -1,7 +1,6 @@
 const sql = require('mssql');
 const {DatabaseLog} = require('../Toolkit/Logger.js');
 const {once} = require('events');
-const {returnEmitter} = require('../Loaders/EventEmitter.js');
 
 // #region config
 const config = {
@@ -17,7 +16,6 @@ const config = {
 // #endregion
 let pool;
 let poolConnect;
-const globalEvent = returnEmitter();
 /*
 Prevents multiple pool creation.
 Once any of the functions will be called,
@@ -30,9 +28,20 @@ if (!pool) {
     try {
       pool = new sql.ConnectionPool(config);
       poolConnect = pool.connect();
-      DatabaseLog.info('Connection pool has been created');
+      DatabaseLog.log({
+        level: 'info',
+        message: 'Connection to database has been succesfully established',
+        senderFunction: 'IIF',
+        file: 'SQLConnector.js',
+      });
     } catch (error) {
-      DatabaseLog.error(`The following database error occured while creating pool. ${error.stack}`);
+      DatabaseLog.log({
+        level: 'error',
+        message: `The following database error occured while creating pool. ${error.stack}`,
+        senderFunction: 'IIF',
+        file: 'SQLConnector.js',
+        discord: 'database-errors',
+      });
       process.exit();
     }
   })();
@@ -44,72 +53,29 @@ if (!pool) {
  */
 const closePool = () => {
   pool.close();
-  DatabaseLog.info('Connection pool closed.');
+  DatabaseLog.log({
+    level: 'info',
+    message: 'Database connection has been closed',
+    senderFunction: 'closePool',
+    file: 'SQLConnector.js',
+  });
 };
 
 /**
  * Sends and email when database error occures and exits the application
  */
 pool.once('error', (error) => {
-  DatabaseLog.error(`The following database error occured: ${error.stack}`);
-  globalEvent.emit('SendEmail', `The following database error occured: ${error}`);
+  DatabaseLog.log({
+    level: 'info',
+    message: `The following database error occured: ${error.stack}`,
+    senderFunction: 'poolOnce',
+    file: 'SQLConnector.js',
+    discord: 'database-errors',
+  });
   process.exit();
 });
 
 // #region single I/O operations
-
-/**
- *
- * @param {object} inObj // Keys: dataObj, table, statement, query?
- * @param {object} params // @ INSERT INTO {insertIntoAll: true || false}
- * @return {object} result
- */
-const writeToDatabase = async (inObj) => {
-  try {
-    await poolConnect; // ensures that the pool has been created
-  } catch (error) {
-    DatabaseLog.error(`Connection pool could not be created. ${error.stack}`);
-  }
-  const request = pool.request();
-  let query;
-  switch (inObj.statement) {
-    case 'INSERT INTO':
-      try {
-        query = `INSERT INTO ${inObj.table} `;
-        let tableColumn = '(';
-        let values = ' VALUES (';
-
-        for (const column of Object.keys(inObj.dataObj)) {
-          tableColumn += `${column},`;
-          values += `\'${inObj.dataObj[column]}\',`;
-        }
-
-        tableColumn = tableColumn.slice(0, -1);
-        tableColumn += ')';
-        values = values.slice(0, -1);
-        values += ')';
-
-        query += `${tableColumn} ${values}`;
-
-        DatabaseLog.info(`Writing to database. Query: ${query}`);
-        const result = await request.query(query);
-        return result;
-      } catch (error) {
-        DatabaseLog.error(`SQLConnector : An error occured while 'INSERT INTO' to database. ${error.stack}`);
-      }
-      break;
-    case 'QUERY':
-      try {
-        const result = await request.query(inObj.query);
-        return result;
-      } catch (error) {
-        DatabaseLog.error(`SQLConnector : An error occured while running query. ${error.stack}`);
-      }
-      break;
-    default:
-      break;
-  }
-};
 
 const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
   /*
@@ -140,7 +106,13 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
         try {
           await callbFunction(rowsToProcess);
         } catch (error) {
-          DatabaseLog.error(`Error in running stream read callback function ${error.stack}`);
+          DatabaseLog.log({
+            level: 'error',
+            message: `Error in running stream read callback function ${error.stack}`,
+            senderFunction: 'streamRead',
+            file: 'SQLConnector.js',
+            discord: 'database-errors',
+          });
         }
         rowsProcessed += rowsToProcess.length;
         rowsToProcess = [];
@@ -155,7 +127,13 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
     const returnValue = await callbFunctionOnDone(rowsToProcess);
     return returnValue;
   } catch (error) {
-    DatabaseLog.error(`An error occured while stream reading from the database. ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `An error occured while stream reading from the database. ${error.stack}`,
+      senderFunction: 'streamRead',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 
@@ -173,11 +151,22 @@ const singleRead = async (query) => {
 
   try {
     await poolConnect;
-    DatabaseLog.silly(`Reading from database. Query: ${query}`);
+    DatabaseLog.log({
+      level: 'silly',
+      message: `Reading from database. Query: ${query}`,
+      senderFunction: 'singleRead',
+      file: 'SQLConnector.js',
+    });
     const result = await pool.request().query(query);
     return result.recordset;
   } catch (error) {
-    DatabaseLog.error(`An error occured while reading from the database: ${error}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `An error occured while reading from the database: ${error.stack}`,
+      senderFunction: 'singleRead',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 
@@ -187,7 +176,12 @@ const singleRead = async (query) => {
 const sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure sproc_ImportBinanceCsv');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure sproc_ImportBinanceCsv',
+      senderFunction: 'sproc_ImportBinanceCsv',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('symbol', symbol)
         .input('timeFrame', timeFrame)
@@ -196,13 +190,25 @@ const sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_ImportBinanceCsv'. ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_ImportBinanceCsv'. ${error.stack}`,
+      senderFunction: 'sproc_ImportBinanceCsv',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
   try {
     await poolConnect;
     DatabaseLog.silly('Running stored procedure sproc_AddSymbolToDatabase');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure sproc_AddSymbolToDatabase',
+      senderFunction: 'sproc_AddSymbolToDatabase',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('symbol', symbol)
         .input('exchangeId', exchangeId)
@@ -210,13 +216,24 @@ const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_AddSymbolToDatabase'. Object: ${inObj} ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_AddSymbolToDatabase'. Object: ${inObj} ${error.stack}`,
+      senderFunction: 'sproc_AddSymbolToDatabase',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_UpdateOrder = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure sproc_UpdateOrder');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure sproc_UpdateOrder',
+      senderFunction: 'sproc_UpdateOrder',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('filled', inObj.filled)
         .input('cost', inObj.cost )
@@ -230,13 +247,24 @@ const sproc_UpdateOrder = async (inObj) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_UpdateOrder'. Object: ${inObj} ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_UpdateOrder'. Object: ${inObj} ${error.stack}`,
+      senderFunction: 'sproc_UpdateOrder',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_InsertIntoOrder = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Insert Into Order');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stroed procedure Insert Into Order',
+      senderFunction: 'sproc_InsertIntoOrder',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('symbol', inObj.symbol)
         .input('updateTime', inObj.updateTime)
@@ -269,13 +297,24 @@ const sproc_InsertIntoOrder = async (inObj) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoOrder' Object: ${inObj}. ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_InsertIntoOrder' Object: ${inObj}. ${error.stack}`,
+      senderFunction: 'sproc_InsertIntoOrder',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_InsertIntoAverageTrueRange = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Insert Into Average True Range');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure Insert Into Average True Range',
+      senderFunction: 'sproc_InsertIntoAverageTrueRange',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('eventTime', inObj.eventTime)
         .input('symbol', inObj.symbol)
@@ -285,13 +324,24 @@ const sproc_InsertIntoAverageTrueRange = async (inObj) => {
 
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoAverageTrueRange' Object: ${inObj}. ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_InsertIntoAverageTrueRange' Object: ${inObj}. ${error.stack}`,
+      senderFunction: 'sproc_InsertIntoAverageTrueRange',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_InsertIntoSupportResistance = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Insert Into Support Resistance');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure Insert Into Support Resistance',
+      senderFunction: 'sproc_InsertIntoSupportResistance',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('eventTime', inObj.eventTime)
         .input('symbol', inObj.symbol)
@@ -301,13 +351,24 @@ const sproc_InsertIntoSupportResistance = async (inObj) => {
         .execute('InsertIntoSupportResistance');
     return request;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_InsertIntoSupportREsistance'. Object: ${inObj} ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_InsertIntoSupportResistance'. Object: ${inObj} ${error.stack}`,
+      senderFunction: 'sproc_InsertIntoSupportResistance',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 const sproc_GatherSymbolTAData = async (inObj) => {
   try {
     await poolConnect;
-    DatabaseLog.silly('Running stored procedure Gather Symbol TA Data');
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure Gather Symbol TA Data',
+      senderFunction: 'sproc_GatherSymbolTAData',
+      file: 'SQLConnector.js',
+    });
     const request = await pool.request()
         .input('symbol', inObj.symbol)
         .input('timeFrame', inObj.timeFrame)
@@ -331,14 +392,19 @@ const sproc_GatherSymbolTAData = async (inObj) => {
 
     return request.output;
   } catch (error) {
-    DatabaseLog.error(`Encountered an error running 'sproc_GatherSymbolTAData. Object: ${inObj} ${error.stack}`);
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_GatherSymbolTAData. Object: ${inObj} ${error.stack}`,
+      senderFunction: 'sproc_GatherSymbolTAData',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
   }
 };
 // #endregion
 
 
 module.exports = {
-  writeToDatabase,
   streamRead,
   singleRead,
   sproc_GatherSymbolTAData,

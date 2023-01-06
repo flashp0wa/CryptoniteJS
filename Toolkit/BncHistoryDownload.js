@@ -8,7 +8,7 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 
 async function downloadHistoryData(inObj) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve) => {
     const baseUrl = 'https://data.binance.vision/data/spot';
     const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
     const alreadyDownloaded = [];
@@ -29,7 +29,13 @@ async function downloadHistoryData(inObj) {
     }
 
     if (yesterday < endDate) {
-      throw (new Error('End Date cannot be bigger than yesterdays date.'));
+      BncHistoryDownloadLog.log({
+        level: 'error',
+        message: 'End Date cannot be bigger than yesterdays date',
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+      throw (new Error('End Date cannot be bigger than yesterdays date'));
     }
     if (!endDate) {
       dates = [startDate.toISOString().split('T')[0]];
@@ -67,7 +73,12 @@ async function downloadHistoryData(inObj) {
         }
 
         if (alreadyDownloadedFile) {
-          BncHistoryDownloadLog.info(`${fileName} already downloaded`);
+          BncHistoryDownloadLog.log({
+            level: 'info',
+            message: `${fileName} already downloaded`,
+            senderFunction: 'downloadHistoryData',
+            file: 'BncHistoryDownload.js',
+          });
           alreadyDownloadedFile = false;
           continue;
         }
@@ -75,25 +86,55 @@ async function downloadHistoryData(inObj) {
 
 
       try {
-        BncHistoryDownloadLog.info(`Downloading from URL: ${url} to ${downloadPath}`);
-        BncHistoryDownloadLog.info(`Downloading: ${fileName}`);
+        BncHistoryDownloadLog.log({
+          level: 'info',
+          message: `Downloading from URL: ${url} to ${downloadPath}`,
+          senderFunction: 'downloadHistoryData',
+          file: 'BncHistoryDownload.js',
+        });
+        BncHistoryDownloadLog.log({
+          level: 'info',
+          message: `Downloading: ${fileName}`,
+          senderFunction: 'downloadHistoryData',
+          file: 'BncHistoryDownload.js',
+        });
         await download(url, downloadPath);
         oneSuccessfulDownload = true;
-        BncHistoryDownloadLog.info('Download completed.');
+        BncHistoryDownloadLog.log({
+          level: 'info',
+          message: 'Download completed',
+          senderFunction: 'downloadHistoryData',
+          file: 'BncHistoryDownload.js',
+        });
       } catch (error) {
         if (util.inspect(error.message).includes('404')) {
-          BncHistoryDownloadLog.info('Date does not exist');
+          BncHistoryDownloadLog.log({
+            level: 'info',
+            message: 'Date does not exist',
+            senderFunction: 'downloadHistoryData',
+            file: 'BncHistoryDownload.js',
+          });
           // BncHistoryDownloadLog.info('Symbol does not exist');
           // resolve(true);
           // return;
           if (oneSuccessfulDownload) {
-            BncHistoryDownloadLog.info('Symbol discontinued...');
+            BncHistoryDownloadLog.log({
+              level: 'info',
+              message: 'Symbol discontinued',
+              senderFunction: 'downloadHistoryData',
+              file: 'BncHistoryDownload.js',
+            });
             resolve(true);
             return;
           }
           continue;
         }
-        BncHistoryDownloadLog.error(`Error while downloading. ${error}`);
+        BncHistoryDownloadLog.log({
+          level: 'error',
+          message: `Error while downloading. ${error}`,
+          senderFunction: 'downloadHistoryData',
+          file: 'BncHistoryDownload.js',
+        });
         continue;
       }
     }
@@ -112,7 +153,12 @@ async function binanceHistoryData(inObj) {
     for (const symbol of symbols) {
       for (const kline of klinesArr) {
         counter++;
-        BncHistoryDownloadLog.info(`Current: ${counter} / ${symbols.length * klinesArr.length}`);
+        BncHistoryDownloadLog.log({
+          level: 'info',
+          message: `Current: ${counter} / ${symbols.length * klinesArr.length}`,
+          senderFunction: 'downloadHistoryData',
+          file: 'BncHistoryDownload.js',
+        });
         inObj.symbol = symbol;
         inObj.klinesTimeFrame = kline;
         await downloadHistoryData(inObj);
@@ -121,7 +167,12 @@ async function binanceHistoryData(inObj) {
   } else if (inObj.symbol === 'all') {
     for (const symbol of symbols) {
       counter++;
-      BncHistoryDownloadLog.info(`Current: ${counter} / ${symbols.length}`);
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `Current: ${counter} / ${symbols.length}`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
       inObj.symbol = symbol;
       await downloadHistoryData(inObj);
     }
@@ -135,7 +186,12 @@ async function binanceHistoryData(inObj) {
     }
 
     for (const symbol of usdtSymbols) {
-      BncHistoryDownloadLog.info(`Current: ${counter} / ${usdtSymbols.length}`);
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `Current: ${counter} / ${usdtSymbols.length}`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
       counter++;
       inObj.symbol = symbol;
       await downloadHistoryData(inObj);
@@ -143,7 +199,12 @@ async function binanceHistoryData(inObj) {
   } else if (inObj.klinesTimeFrame === 'all') {
     for (const kline of klinesArr) {
       counter++;
-      BncHistoryDownloadLog.info(`Current: ${counter} / ${klinesArr.length}`);
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `Current: ${counter} / ${klinesArr.length}`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
       inObj.klinesTimeFrame = kline;
       await downloadHistoryData(inObj);
     }
@@ -151,9 +212,19 @@ async function binanceHistoryData(inObj) {
     await downloadHistoryData(inObj);
   }
 
-  BncHistoryDownloadLog.info('Processing downloaded files...');
+  BncHistoryDownloadLog.log({
+    level: 'info',
+    message: 'Processing downloaded files...',
+    senderFunction: 'downloadHistoryData',
+    file: 'BncHistoryDownload.js',
+  });
   execSync('Cryptonite.CryptoniteJS.BinanceHistoryData', {'shell': 'pwsh.exe', 'stdio': 'ignore'});
-  BncHistoryDownloadLog.info('Data has been successfully imported');
+  BncHistoryDownloadLog.log({
+    level: 'info',
+    message: 'Data has been successfully imported',
+    senderFunction: 'downloadHistoryData',
+    file: 'BncHistoryDownload.js',
+  });
 }
 
 module.exports = {

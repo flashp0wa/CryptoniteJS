@@ -46,7 +46,13 @@ class TechnicalIndicatorClass {
 
         this.averageTrueRange = atrObj;
       } catch (error) {
-        ApplicationLog.error(`Could not load values of Average True Range ${error}`);
+        ApplicationLog.log({
+          level: 'error',
+          message: `Could no load values of Average True Range. ${error}`,
+          senderFunction: 'atr',
+          file: 'TechnicalIndicatorClass.js',
+          discord: 'application-errors',
+        });
       }
     } else {
       const prevClosePrice = this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].prevClosePrice;
@@ -132,7 +138,13 @@ class TechnicalIndicatorClass {
 
         this.supportResistance = srObj;
       } catch (error) {
-        ApplicationLog.error(`Could not load values of Support Resistance ${error}`);
+        ApplicationLog.log({
+          level: 'error',
+          message: `Could not load values of Support Resistance. ${error}`,
+          senderFunction: 'sr',
+          file: 'TechnicalIndicatorClass.js',
+          discrod: 'application-errors',
+        });
       }
     } else {
       if (klineObj.closed) {
@@ -149,7 +161,13 @@ class TechnicalIndicatorClass {
             turnpointCheck(timeFrameObj, klineObj);
           }
         } catch (error) {
-          ApplicationLog.error(`Could not check turnpoints. ${error}`);
+          ApplicationLog.log({
+            level: 'error',
+            message: `Could not check turnpoints. ${error}`,
+            senderFunction: 'sr',
+            file: 'TechnicalIndicatorClass.js',
+            discord: 'application-errors',
+          });
         }
       }
     }
@@ -158,8 +176,24 @@ class TechnicalIndicatorClass {
    * Loads values for technical indicator properties from the database
    */
   async loadValues() {
-    await this.atr();
-    await this.sr();
+    try {
+      ApplicationLog.log({
+        level: 'info',
+        message: 'Loading technical indicator values',
+        senderFunction: 'loadValues',
+        file: 'TechnicalIndicatorClass.js',
+      });
+      await this.atr();
+      await this.sr();
+    } catch (error) {
+      ApplicationLog.log({
+        level: 'error',
+        message: `Failed to load technical indicator values. ${error}`,
+        senderFunction: 'loadValues',
+        file: 'TechnicalIndicatorClass.js',
+        discord: 'application-errors',
+      });
+    }
   }
 }
 

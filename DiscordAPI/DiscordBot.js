@@ -5,9 +5,8 @@ const {DiscordApiLog} = require('../Toolkit/DiscordLogger');
 
 let client;
 
-
 async function loadDiscordApi() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
   // Create a new client instance
     client = new Client({intents: [GatewayIntentBits.Guilds]});
     client.commands = new Collection();
@@ -22,13 +21,25 @@ async function loadDiscordApi() {
       if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
       } else {
-        DiscordApiLog.error(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        DiscordApiLog.log({
+          level: 'error',
+          message: `The command at ${filePath} is missing a required "data" or "execute" property.`,
+          senderFunction: 'loadDiscordApi',
+          file: 'DiscordBot.js',
+        });
       }
     }
     // When the client is ready, run this code (only once)
     // We use 'c' for the event parameter to keep it separate from the already defined 'client'
     client.once(Events.ClientReady, (c) => {
-      resolve(DiscordApiLog.info(`Discord bot online as ${c.user.tag}`));
+      resolve(
+          DiscordApiLog.log({
+            level: 'info',
+            message: `Discord bot online as ${c.user.tag}`,
+            senderFunction: 'loadDiscordApi',
+            file: 'DiscordBot.js',
+          }),
+      );
     });
 
     client.on(Events.InteractionCreate, async (interaction) => {
@@ -37,14 +48,24 @@ async function loadDiscordApi() {
       const command = interaction.client.commands.get(interaction.commandName);
 
       if (!command) {
-        DiscordApiLog.error(`No command matching ${interaction.commandName} was found.`);
+        DiscordApiLog.log({
+          level: 'error',
+          message: `No command matching ${interaction.commandName} was found.`,
+          senderFunction: 'loadDiscordApi',
+          file: 'DiscordBot.js',
+        });
         return;
       }
 
       try {
         await command.execute(interaction);
       } catch (error) {
-        DiscordApiLog.error(`An error occured executing the command. ${error}`);
+        DiscordApiLog.log({
+          level: 'error',
+          message: `An error occured executing the command. ${error}`,
+          senderFunction: 'loadDiscordApi',
+          file: 'DiscordBot.js',
+        });
         await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
       }
     });

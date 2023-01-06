@@ -12,7 +12,7 @@ class OpenOrder {
   async checkOrderStatus() {
     try {
       ApplicationLog.log({
-        level: 'info',
+        level: 'silly',
         message: `Checking order status on ${this.exchangeName}...`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
@@ -61,7 +61,7 @@ class OpenOrder {
         } catch (error) {
           ApplicationLog.log({
             level: 'error',
-            message: `Could not fetch open orders on ${this.exchangeName} to check trade status. ${error.stack}`,
+            message: `Could not fetch open orders on ${this.exchangeName} to check trade status. ${error}`,
             senderFunction: 'checkOrderStatus',
             file: 'OpenOrderClass.js',
             discord: 'application-errors',
@@ -71,14 +71,14 @@ class OpenOrder {
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
-        message: `Error while checking order status on ${this.exchangeName}: ${error.stack}`,
+        message: `Error while checking order status on ${this.exchangeName}: ${error}`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
         discord: 'application-error',
       });
     }
     ApplicationLog.log({
-      level: 'info',
+      level: 'silly',
       message: `Order status check finished on ${this.exchangeName}`,
       senderFunction: 'checkOrderStatus',
       file: 'OpenOrderClass.js',

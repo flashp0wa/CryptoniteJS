@@ -97,7 +97,12 @@ class BinanceClass {
         sproc_AddSymbolToDatabase(actualSymbol, this.exchangeId);
       }
     } catch (error) {
-      ApplicationLog.warn(`Loading symbols failed...${error.stack}`);
+      ApplicationLog.log({
+        level: 'warn',
+        message: `Loading symbols failed on ${this.exchangeName}. ${error}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
     }
   }
   /**
@@ -112,10 +117,25 @@ class BinanceClass {
    * Loads exchange data
    */
   async loadExchange() {
-    this.loadOpenOrders();
-    await this.loadMarkets();
-    await this.loadExchangeId();
-    this.loadSymbols();
+    try {
+      ApplicationLog.log({
+        level: 'info',
+        message: 'Loading exchanges...',
+        senderFunction: 'loadExchange',
+        file: 'BinanceClass.js',
+      });
+      this.loadOpenOrders();
+      await this.loadMarkets();
+      await this.loadExchangeId();
+      this.loadSymbols();
+    } catch (error) {
+      ApplicationLog.log({
+        level: 'error',
+        message: `Error while loading exchagnes. ${error}`,
+        senderFunction: 'loadExchange',
+        file: 'BinanceClass.js',
+      });
+    }
   }
 
   startWss() {
@@ -219,7 +239,12 @@ class BinanceClass {
     const baseUrl = process.env.BNC_WSS_URL;
 
     if (!streams) {
-      ApplicationLog.error('No streams have been defined. Could not build URL.');
+      ApplicationLog.log({
+        level: 'info',
+        message: 'No stream have been defined. Could not build URL',
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
       throw new Error('No streams have been defined.');
     } else if (streams.length === 1) {
       url = baseUrl + 'ws/' + streams;
@@ -233,15 +258,23 @@ class BinanceClass {
         }
       }
     }
-
-    ApplicationLog.info('URL build succeeded');
-    ApplicationLog.info(`Stream URL: ${url}`);
+    ApplicationLog.log({
+      level: 'info',
+      message: `URL build succeeded. Stream URL: ${url}`,
+      senderFunction: 'startWss',
+      file: 'BinanceClass.js',
+    });
 
     const ws = new WebSocket(url);
 
     // Connection established message
     ws.onopen = () => {
-      ApplicationLog.info('Connection established with the stream server');
+      ApplicationLog.log({
+        level: 'info',
+        message: 'Connection has been established with the stream server',
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
     };
 
     // Data received from server as string...
@@ -253,7 +286,12 @@ class BinanceClass {
     };
     // Connection closed. Will try reconnecting
     ws.onclose = () => {
-      ApplicationLog.info('Stream connection has been closed... trying to reconnect');
+      ApplicationLog.log({
+        level: 'info',
+        message: 'Stream connection has been closed... trying to reconnect',
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
       setTimeout(() => {
         this.startWss();
       }, 3);
@@ -261,7 +299,12 @@ class BinanceClass {
 
     // Error establishing connection
     ws.onerror = (error) => {
-      ApplicationLog.error(`Connection could not be established with the stream server. Message: ${error.message}. Type: ${error.name}`);
+      ApplicationLog.log({
+        level: 'info',
+        message: `Connection could not be established with the stream server. Message: ${error.message}. Type: ${error.name}`,
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
       throw new Error(`Connection could not be established: ${error.message}`);
     };
   }

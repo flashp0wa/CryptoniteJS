@@ -82,7 +82,7 @@ class CreateOcoOrder extends Order {
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Could not process OCO order response. ${error.message}`,
+        message: `Could not process OCO order response. ${error}`,
         senderFunction: 'createOrder',
         file: 'CreateOcoOrder.js',
         discord: 'application-errors',
@@ -127,10 +127,10 @@ class CreateOcoOrder extends Order {
         ocoOrderListId: this.orderResponse.orderListId,
       };
     } catch (error) {
-      this.traderLog.error(`OCO order creation failed. ${error.message}`);
+      this.traderLog.error(`OCO order creation failed. ${error}`);
       this.traderLog.log({
         level: 'error',
-        message: `OCO order creation failed. ${error.message}`,
+        message: `OCO order creation failed. ${error}`,
         senderFunction: 'createOrder',
         file: 'CreateOcoOrder.js',
         discord: 'failed-orders',

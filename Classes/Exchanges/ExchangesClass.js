@@ -1,6 +1,7 @@
-const {BinanceFuturesTestClass} = require('./Binance/BinanceFuturesTestClass.js');
-const {BinanceSpotClass} = require('./Binance/BinanceSpotClass.js');
-const {BinanceSpotTestClass} = require('./Binance/BinanceSpotTestClass.js');
+const {ApplicationLog} = require('../../Toolkit/Logger');
+const {BinanceFuturesTestClass} = require('./Binance/BinanceFuturesTestClass');
+const {BinanceSpotClass} = require('./Binance/BinanceSpotClass');
+const {BinanceSpotTestClass} = require('./Binance/BinanceSpotTestClass');
 
 class Exchanges {
   constructor() {
@@ -14,7 +15,23 @@ class Exchanges {
    */
   async loadExchanges() {
     for (const exchange of Object.keys(getExchanges())) {
-      await this[exchange].loadExchange();
+      try {
+        ApplicationLog.log({
+          level: 'info',
+          message: `Loading ${exchange}...`,
+          senderFunction: 'loadExchanges',
+          file: 'ExchangesClass.js',
+        });
+        await this[exchange].loadExchange();
+      } catch (error) {
+        ApplicationLog.log({
+          level: 'error',
+          message: `Error while loading ${exchange}. ${error}`,
+          senderFunction: 'configureExchange',
+          file: 'ExchangesClass.js',
+          discord: 'application-errors',
+        });
+      }
     }
   }
 
@@ -31,7 +48,23 @@ class Exchanges {
    */
   async reloadMarkets() {
     for (const exchange of Object.keys(getExchanges())) {
-      await this[exchange].loadMarkets();
+      try {
+        ApplicationLog.log({
+          level: 'info',
+          message: `Reloading market on ${exchange}`,
+          senderFunction: 'reloadMarkets',
+          file: 'ExchangesClass.js',
+        });
+        await this[exchange].loadMarkets();
+      } catch (error) {
+        ApplicationLog.log({
+          level: 'error',
+          message: `Error while reloading market on ${exchange}. ${error}`,
+          senderFunction: 'reloadMarkets',
+          file: 'ExchangesClass.js',
+          discord: 'application-errors',
+        });
+      }
     }
   }
 }
