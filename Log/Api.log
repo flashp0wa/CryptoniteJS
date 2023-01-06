@@ -3,3 +3,4 @@
 {"message":"API started on port: 3000","level":"info","label":"Api","timestamp":"2023-01-06 03:02:23.805"}
 {"message":"API started on port: 3000","level":"info","label":"Api","timestamp":"2023-01-06 04:42:15.741"}
 {"level":"info","message":"API started on port: 3000","senderFunction":"startApi","file":"Api.js","label":"Api","timestamp":"2023-01-06 04:49:29.289"}
+{"level":"info","message":"API started on port: 3000","senderFunction":"startApi","file":"Api.js","label":"Api","timestamp":"2023-01-06 04:58:34.193"}

@@ -118,12 +118,6 @@ class BinanceClass {
    */
   async loadExchange() {
     try {
-      ApplicationLog.log({
-        level: 'info',
-        message: 'Loading exchanges...',
-        senderFunction: 'loadExchange',
-        file: 'BinanceClass.js',
-      });
       this.loadOpenOrders();
       await this.loadMarkets();
       await this.loadExchangeId();

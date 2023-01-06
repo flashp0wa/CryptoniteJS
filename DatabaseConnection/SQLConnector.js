@@ -293,6 +293,7 @@ const sproc_InsertIntoOrder = async (inObj) => {
         .input('ocoStopLossLimitId', inObj.ocoLimitId)
         .input('parentOrderId', inObj.parentOrderId)
         .input('siblingOrderId', inObj.siblingOrderId)
+        .input('strategy', inObj.strategy)
         .execute('InsertIntoOrder');
 
     return request;

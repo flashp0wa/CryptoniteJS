@@ -61,6 +61,7 @@ class CreateOrder extends Order {
         ocoStopLossLimitId: !inObj ? null : inObj.ocoStopLossLimitId,
         parentOrderId: this.orderResponse.parentOrderId ? this.orderResponse.parentOrderId : null,
         siblingOrderId: this.orderResponse.siblingOrderId ? this.orderResponse.siblingOrderId : null,
+        strategy: this.strategy,
       };
       if (typeof this.orderResponse.fee === 'undefined') {
         dataObj.fee = null;
@@ -99,148 +100,152 @@ class CreateOrder extends Order {
   * @param {object} param Optional order parameters
   */
   async createOrder() {
-    this.traderLog.log({
-      level: 'info',
-      message: `
-      New order
-      Symbol: ${this.symbol}
-      Side: ${this.side},
-      Type: ${this.type}
-      Amount: ${this.orderAmount}
-      Price: ${this.price}`,
-      senderFunction: 'createOrder',
-      file: 'CreateOrderClass.js',
-    });
-    let ocoId;
+    if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
+      
+    } else {
+      this.traderLog.log({
+        level: 'info',
+        message: `
+        New order
+        Symbol: ${this.symbol}
+        Side: ${this.side},
+        Type: ${this.type}
+        Amount: ${this.orderAmount}
+        Price: ${this.price}`,
+        senderFunction: 'createOrder',
+        file: 'CreateOrderClass.js',
+      });
+      let ocoId;
 
-    switch (this.type) {
-      case 'market':
-        try {
-          this.orderResponse = await this.exchangeObj.createOrder(
-              this.symbol,
-              this.type,
-              this.side,
-              this.orderAmount,
-              this.price,
-          );
-          this.traderLog.log({
-            level: 'info',
-            message: `New order has been created on ${this.exchangeName} with ID: ${this.orderResponse.id}.`,
-            senderFunction: 'createOrder',
-            file: 'CreateOrderClass.js',
-          });
+      switch (this.type) {
+        case 'market':
+          try {
+            this.orderResponse = await this.exchangeObj.createOrder(
+                this.symbol,
+                this.type,
+                this.side,
+                this.orderAmount,
+                this.price,
+            );
+            this.traderLog.log({
+              level: 'info',
+              message: `New order has been created on ${this.exchangeName} with ID: ${this.orderResponse.id}.`,
+              senderFunction: 'createOrder',
+              file: 'CreateOrderClass.js',
+            });
 
-          this.ocoOrder.parentOrderId = this.orderResponse.id;
-          this.processOrderResponse();
+            this.ocoOrder.parentOrderId = this.orderResponse.id;
+            this.processOrderResponse();
 
-          if ((this.exchangeName === 'binanceSpot' ||
-          this.exchangeName === 'binanceSpotTest') &&
-          this.side === 'buy') {
-            try {
-              ocoId = await this.ocoOrder.createOrder();
-            } catch (error) {
-              this.traderLog.log({
-                level: 'error',
-                message: `Oco order creation failed on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-                discord: 'failed-orders',
-              });
+            if ((this.exchangeName === 'binanceSpot' ||
+            this.exchangeName === 'binanceSpotTest') &&
+            this.side === 'buy') {
+              try {
+                ocoId = await this.ocoOrder.createOrder();
+              } catch (error) {
+                this.traderLog.log({
+                  level: 'error',
+                  message: `Oco order creation failed on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                  discord: 'failed-orders',
+                });
+              }
+
+              this.processOrderResponse(ocoId);
+            } else {
+              const side = this.side === 'buy' ? 'sell' : 'buy';
+              let stopMarketResponse;
+              let takeProfitMarketResponse;
+
+              try {
+                this.traderLog.log({
+                  level: 'info',
+                  message: `Creating stop market / take profit market order pairs on ${this.exchangeName} for order: ${this.orderResponse.id}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                });
+
+                stopMarketResponse = await this.exchangeObj.createOrder(
+                    this.symbol,
+                    'stop_market',
+                    side,
+                    this.orderAmount,
+                    this.price,
+                    {stopPrice: this.stopPrice},
+                );
+                stopMarketResponse.parentOrderId = this.orderResponse.id;
+                this.traderLog.log({
+                  level: 'info',
+                  message: `Stop market order has been created with ID: ${stopMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                });
+              } catch (error) {
+                this.traderLog.log({
+                  level: 'error',
+                  message: `Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                  discord: 'failed-orders',
+                });
+              }
+
+              try {
+                takeProfitMarketResponse = await this.exchangeObj.createOrder(
+                    this.symbol,
+                    'take_profit_market',
+                    side,
+                    this.orderAmount,
+                    this.price,
+                    {stopPrice: this.limitPrice},
+                );
+                takeProfitMarketResponse.parentOrderId = this.orderResponse.id;
+                this.traderLog.log({
+                  level: 'info',
+                  message: `Take profit market order has been created with ID: ${takeProfitMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                });
+              } catch (error) {
+                this.traderLog.log({
+                  level: 'error',
+                  message: `Take profit order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
+                  senderFunction: 'createOrder',
+                  file: 'CreateOrderClass.js',
+                  discord: 'failed-orders',
+                });
+              }
+
+              if (stopMarketResponse && takeProfitMarketResponse) {
+                stopMarketResponse.siblingOrderId = takeProfitMarketResponse.id;
+                takeProfitMarketResponse.siblingOrderId = stopMarketResponse.id;
+              };
+
+              if (stopMarketResponse) {
+                this.orderResponse = stopMarketResponse;
+                this.processOrderResponse();
+              }
+              if (takeProfitMarketResponse) {
+                this.orderResponse = takeProfitMarketResponse;
+                this.processOrderResponse();
+              }
             }
-
-            this.processOrderResponse(ocoId);
-          } else {
-            const side = this.side === 'buy' ? 'sell' : 'buy';
-            let stopMarketResponse;
-            let takeProfitMarketResponse;
-
-            try {
-              this.traderLog.log({
-                level: 'info',
-                message: `Creating stop market / take profit market order pairs on ${this.exchangeName} for order: ${this.orderResponse.id}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-              });
-
-              stopMarketResponse = await this.exchangeObj.createOrder(
-                  this.symbol,
-                  'stop_market',
-                  side,
-                  this.orderAmount,
-                  this.price,
-                  {stopPrice: this.stopPrice},
-              );
-              stopMarketResponse.parentOrderId = this.orderResponse.id;
-              this.traderLog.log({
-                level: 'info',
-                message: `Stop market order has been created with ID: ${stopMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-              });
-            } catch (error) {
-              this.traderLog.log({
-                level: 'error',
-                message: `Stop market order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-                discord: 'failed-orders',
-              });
-            }
-
-            try {
-              takeProfitMarketResponse = await this.exchangeObj.createOrder(
-                  this.symbol,
-                  'take_profit_market',
-                  side,
-                  this.orderAmount,
-                  this.price,
-                  {stopPrice: this.limitPrice},
-              );
-              takeProfitMarketResponse.parentOrderId = this.orderResponse.id;
-              this.traderLog.log({
-                level: 'info',
-                message: `Take profit market order has been created with ID: ${takeProfitMarketResponse.id} on ${this.exchangeName} for order ${this.orderResponse.id}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-              });
-            } catch (error) {
-              this.traderLog.log({
-                level: 'error',
-                message: `Take profit order could not be created on ${this.exchangeName} for order ${this.orderResponse.id}. ${error}`,
-                senderFunction: 'createOrder',
-                file: 'CreateOrderClass.js',
-                discord: 'failed-orders',
-              });
-            }
-
-            if (stopMarketResponse && takeProfitMarketResponse) {
-              stopMarketResponse.siblingOrderId = takeProfitMarketResponse.id;
-              takeProfitMarketResponse.siblingOrderId = stopMarketResponse.id;
-            };
-
-            if (stopMarketResponse) {
-              this.orderResponse = stopMarketResponse;
-              this.processOrderResponse();
-            }
-            if (takeProfitMarketResponse) {
-              this.orderResponse = takeProfitMarketResponse;
-              this.processOrderResponse();
-            }
+          } catch (error) {
+            this.traderLog.log({
+              level: 'error',
+              message: `Market order creation failed. ${error}`,
+              senderFunction: 'createOrder',
+              file: 'CreateOrderClass.js',
+              discord: 'failed-orders',
+            });
           }
-        } catch (error) {
-          this.traderLog.log({
-            level: 'error',
-            message: `Market order creation failed. ${error}`,
-            senderFunction: 'createOrder',
-            file: 'CreateOrderClass.js',
-            discord: 'failed-orders',
-          });
-        }
 
-        break;
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }
 }

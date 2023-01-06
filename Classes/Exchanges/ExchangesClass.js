@@ -49,12 +49,6 @@ class Exchanges {
   async reloadMarkets() {
     for (const exchange of Object.keys(getExchanges())) {
       try {
-        ApplicationLog.log({
-          level: 'info',
-          message: `Reloading market on ${exchange}`,
-          senderFunction: 'reloadMarkets',
-          file: 'ExchangesClass.js',
-        });
         await this[exchange].loadMarkets();
       } catch (error) {
         ApplicationLog.log({

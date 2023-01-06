@@ -37,6 +37,7 @@ class CreateOcoOrder extends Order {
         parentOrderId: this.parentOrderId,
         siblingOrderId: this.orderResponse['orderReports'][1].orderId,
         oco: true,
+        strategy: this.strategy,
       };
       const ocoLimitDataObj = {
         symbol: this.orderResponse['orderReports'][1].symbol,
@@ -52,6 +53,7 @@ class CreateOcoOrder extends Order {
         parentOrderId: this.parentOrderId,
         siblingOrderId: this.orderResponse['orderReports'][0].orderId,
         oco: true,
+        strategy: this.strategy,
       };
 
       this.traderLog.log({

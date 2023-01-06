@@ -4,7 +4,7 @@ const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
 const {BncHistoryDownloadLog} = require('./Logger.js');
 const util = require('util');
 const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
-const {execSync} = require('child_process');
+const {exec} = require('child_process');
 const fs = require('fs');
 
 async function downloadHistoryData(inObj) {
@@ -218,7 +218,7 @@ async function binanceHistoryData(inObj) {
     senderFunction: 'downloadHistoryData',
     file: 'BncHistoryDownload.js',
   });
-  execSync('Cryptonite.CryptoniteJS.BinanceHistoryData', {'shell': 'pwsh.exe', 'stdio': 'ignore'});
+  exec('Cryptonite.CryptoniteJS.BinanceHistoryData', {'shell': 'pwsh.exe', 'stdio': 'ignore'});
   BncHistoryDownloadLog.log({
     level: 'info',
     message: 'Data has been successfully imported',

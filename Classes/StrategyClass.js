@@ -828,7 +828,7 @@ class StrategyClass {
           stopPrice: stop,
           limitPrice: limit,
           exchange: exchangeName,
-          orderSource: 'Support Resistance Candle Tree',
+          strategy: 'Candle-Tree',
         });
         StrategyHandlerLog.log({
           level: 'warn',

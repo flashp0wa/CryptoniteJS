@@ -14,8 +14,8 @@ class Order {
     this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopPrice);
     this.stopLimitPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.stopPrice - conObj.stopPrice * 0.01));
     this.orderResponse;
-    this.orderSource = conObj.orderSource;
     this.traderLog = TraderLog;
+    this.strategy = conObj.strategy;
   }
 
   createOrder() {
