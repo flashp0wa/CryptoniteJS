@@ -101,7 +101,17 @@ class CreateOrder extends Order {
   */
   async createOrder() {
     if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
-      
+      super.writeToDatabase({
+        symbol: this.symbol,
+        side: this.side,
+        type: this.type,
+        orderAmount: this.orderAmount,
+        price: this.price,
+        stopPrice: this.stopPrice,
+        limitPrice: this.limitPrice,
+        exchange: this.exchangeName,
+        strategy: this.strategy,
+      });
     } else {
       this.traderLog.log({
         level: 'info',

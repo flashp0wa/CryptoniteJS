@@ -25,5 +25,3 @@ require('dotenv').config({path: '.env'});
     discord: 'gumiszoba',
   });
 })();
-
-

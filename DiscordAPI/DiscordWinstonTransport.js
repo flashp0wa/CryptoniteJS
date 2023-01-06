@@ -28,38 +28,39 @@ class Discord extends Transport {
     }
 
     setImmediate(async () => {
-      info.message = discordify({
-        obj: info.obj,
-        message: info.message,
-        level: info.level,
-      });
-      switch (info.discord) {
-        case 'gumiszoba':
-          (await getServerChannel(process.env.DSCRD_CHNL_GUMISZOBA)).send(info.message);
-          break;
-        case 'successful-orders':
-          (await getServerChannel(process.env.DSCRD_CHNL_SUCCESSFUL_ORDERS)).send(info.message);
-          break;
-        case 'failed-orders':
-          (await getServerChannel(process.env.DSCRD_CHNL_FAILED_ORDERS)).send(info.message);
-          break;
-        case 'database-errors':
-          (await getServerChannel(process.env.DSCRD_CHNL_DATABASE_ERRORS)).send(info.message);
-          break;
-        case 'application-errors':
-          (await getServerChannel(process.env.DSCRD_CHNL_APPLICATION_ERRORS)).send(info.message);
-          break;
-        case 'strategy-events':
-          (await getServerChannel(process.env.DSCRD_CHNL_STRATEGY_EVENTS)).send(info.message);
-          break;
-        case 'application-warnings':
-          (await getServerChannel(process.env.DSCRD_CHNL_APPLICATION_WARNINGS)).send(info.message);
-          break;
-        default:
-          break;
+      if (process.env.CRYPTONITE_ENV !== 'Test') {
+        info.message = discordify({
+          obj: info.obj,
+          message: info.message,
+          level: info.level,
+        });
+        switch (info.discord) {
+          case 'gumiszoba':
+            (await getServerChannel(process.env.DSCRD_CHNL_GUMISZOBA)).send(info.message);
+            break;
+          case 'successful-orders':
+            (await getServerChannel(process.env.DSCRD_CHNL_SUCCESSFUL_ORDERS)).send(info.message);
+            break;
+          case 'failed-orders':
+            (await getServerChannel(process.env.DSCRD_CHNL_FAILED_ORDERS)).send(info.message);
+            break;
+          case 'database-errors':
+            (await getServerChannel(process.env.DSCRD_CHNL_DATABASE_ERRORS)).send(info.message);
+            break;
+          case 'application-errors':
+            (await getServerChannel(process.env.DSCRD_CHNL_APPLICATION_ERRORS)).send(info.message);
+            break;
+          case 'strategy-events':
+            (await getServerChannel(process.env.DSCRD_CHNL_STRATEGY_EVENTS)).send(info.message);
+            break;
+          case 'application-warnings':
+            (await getServerChannel(process.env.DSCRD_CHNL_APPLICATION_WARNINGS)).send(info.message);
+            break;
+          default:
+            break;
+        }
       }
     });
-
     // Perform the writing to the remote service
     callback();
   }

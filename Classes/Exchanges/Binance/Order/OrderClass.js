@@ -1,5 +1,5 @@
 const {TraderLog} = require('../../../../Toolkit/Logger.js');
-const {sproc_InsertIntoOrder} = require('../../../../DatabaseConnection/SQLConnector.js');
+const {sproc_InsertIntoOrder, sproc_InsertIntoOrderPaper} = require('../../../../DatabaseConnection/SQLConnector.js');
 
 class Order {
   constructor(excObj, excName, conObj) {
@@ -26,11 +26,14 @@ class Order {
     throw new Error('This function must be overridden.');
   }
   /**
-   * Function decides which side's stored procedure to call based on the input object's side property
    * @param {object} databaseObj Object with values will be written to the database
    */
   writeToDatabase(databaseObj) {
-    sproc_InsertIntoOrder(databaseObj);
+    if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
+      sproc_InsertIntoOrderPaper(databaseObj);
+    } else {
+      sproc_InsertIntoOrder(databaseObj);
+    }
   }
 }
 
