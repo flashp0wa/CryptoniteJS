@@ -1,7 +1,7 @@
 // const onMessageOperations = require('./WssStreamHandler/OnMessageOperations.js');
 // const {writeToDatabase} = require('../DatabaseConnection/SQLConnector.js');
 
-const {stream_getCandleType} = require('./WssStreamHandler/OnMessageOperations');
+const {stream_getCandleType} = require('../Streams/OnMessageOperations');
 
 
 // Create object from json stream with SLQ insert string

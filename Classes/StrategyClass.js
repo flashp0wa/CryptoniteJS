@@ -4,9 +4,9 @@ const {returnEmitter} = require('../Loaders/EventEmitter');
 
 
 class StrategyClass {
-  constructor(exchangeObj, exchangeName) {
-    this.exchangeObj = exchangeObj; // CCXT Exchange object
-    this.exchangeName = exchangeName; // Exchange name
+  constructor(excObj, excName) {
+    this.excObj = excObj; // CCXT Exchange object
+    this.excName = excName; // Exchange name
     this.globalEvent = returnEmitter(); // Global event object
     this.technicalIndicators = getTechnicalIndicators();
     this.srCandleTree = {};
@@ -720,7 +720,7 @@ class StrategyClass {
     /**
      * Calculates order details then placing it.
      * @param {string} symbol
-     * @param {string} exchangeName
+     * @param {string} excName
      * @param {string} side
      * @param {string} atr
      * @param {number} support
@@ -730,7 +730,7 @@ class StrategyClass {
      * @param {object} event
      * @return {void}
      */
-    function placeOrder(symbol, exchangeName, side, atr, support, resistance, timeFrameObj, capital, event) {
+    function placeOrder(symbol, excName, side, atr, support, resistance, timeFrameObj, capital, event) {
       StrategyHandlerLog.log({
         level: 'info',
         message: 'Placing order...',
@@ -827,7 +827,7 @@ class StrategyClass {
           price: closeEntryCandle,
           stopPrice: stop,
           limitPrice: limit,
-          exchange: exchangeName,
+          exchange: excName,
           strategy: 'Candle-Tree',
         });
         StrategyHandlerLog.log({
@@ -986,7 +986,7 @@ class StrategyClass {
             file: 'StrategyClass.js',
           });
 
-          capital = (await this.exchangeObj.fetchBalance()).free.USDT;
+          capital = (await this.excObj.fetchBalance()).free.USDT;
           break;
         } catch (error) {
           if (fetchBalanceRetry === 3) {
@@ -1020,7 +1020,7 @@ class StrategyClass {
 
       placeOrder(
           klineObj.symbol,
-          this.exchangeName,
+          this.excName,
           candleTreeResult.side,
           atr,
           support,

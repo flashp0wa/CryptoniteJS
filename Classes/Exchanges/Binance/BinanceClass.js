@@ -7,17 +7,18 @@ const {
   singleRead,
 } = require('../../../DatabaseConnection/SQLConnector');
 const {StrategyClass} = require('../../StrategyClass');
+const {stream_getCandleType} = require('../../../Streams/OnMessageOperations');
 // const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
 
 
 class BinanceClass {
-  constructor(exchangeName) {
-    this.exchangeName = exchangeName;
+  constructor(excName) {
+    this.excName = excName;
     this.markets;
     this.symbolList = [];
-    this.exchangeObj;
+    this.excObj;
     this.openOrders;
-    this.strategy = new StrategyClass(this.exchangeObj, this.exchangeName);
+    this.strategy = new StrategyClass(this.excObj, this.excName);
   }
   /**
    * Loads open orders for exchagne
@@ -25,11 +26,11 @@ class BinanceClass {
   loadOpenOrders() {
     ApplicationLog.log({
       level: 'info',
-      message: `Loading open orders on ${this.exchangeName}`,
+      message: `Loading open orders on ${this.excName}`,
       senderFunction: 'loadOpenOrders',
       file: 'BinanceClass.js',
     });
-    this.openOrders = new OpenOrder(this.exchangeObj, this.exchangeName);
+    this.openOrders = new OpenOrder(this.excObj, this.excName);
   }
   /**
    * Loads CCXT exchange market data
@@ -37,12 +38,12 @@ class BinanceClass {
   async loadMarkets() {
     ApplicationLog.log({
       level: 'info',
-      message: `Loading ${this.exchangeName} markets...`,
+      message: `Loading ${this.excName} markets...`,
       senderFunction: 'loadMarkets',
       file: 'BinanceClass.js',
     });
     try {
-      this.markets = await this.exchangeObj.loadMarkets();
+      this.markets = await this.excObj.loadMarkets();
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
@@ -61,12 +62,12 @@ class BinanceClass {
     try {
       ApplicationLog.log({
         level: 'info',
-        message: `Loading exchange ID on ${this.exchangeName}`,
+        message: `Loading exchange ID on ${this.excName}`,
         senderFunction: 'loadExchangeId',
         file: 'BinanceClass.js',
       });
-      const response = await singleRead(`select * from itvf_GetExchangeId('${this.exchangeName}')`);
-      this.exchangeObj.id = response[0].exchangeId;
+      const response = await singleRead(`select * from itvf_GetExchangeId('${this.excName}')`);
+      this.excObj.id = response[0].exchangeId;
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
@@ -84,7 +85,7 @@ class BinanceClass {
     try {
       ApplicationLog.log({
         level: 'info',
-        message: `Loading symbols on ${this.exchangeName}`,
+        message: `Loading symbols on ${this.excName}`,
         senderFunction: 'loadSymbols',
         file: 'BinanceClass.js',
       });
@@ -99,7 +100,7 @@ class BinanceClass {
     } catch (error) {
       ApplicationLog.log({
         level: 'warn',
-        message: `Loading symbols failed on ${this.exchangeName}. ${error}`,
+        message: `Loading symbols failed on ${this.excName}. ${error}`,
         senderFunction: 'loadSymbols',
         file: 'BinanceClass.js',
       });
@@ -111,7 +112,7 @@ class BinanceClass {
    * { symbol, side, orderType, orderAmount, buyPrice, }
    */
   createOrder(conObj) {
-    new CreateOrder(this.exchangeObj, this.exchangeName, conObj).createOrder();
+    new CreateOrder(this.excObj, this.excName, conObj).createOrder();
   }
   /**
    * Loads exchange data
@@ -223,8 +224,8 @@ class BinanceClass {
     }
 
     const streams = [
-      'btcusdt@kline_1m',
-      // 'btcusdt@ticker',
+      'btcusdt@kline_5m',
+      'ethusdt@kline_5m',
       // 'ethusdt@ticker',
     ];
 

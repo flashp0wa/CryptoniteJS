@@ -16,12 +16,6 @@ const config = {
 // #endregion
 let pool;
 let poolConnect;
-/*
-Prevents multiple pool creation.
-Once any of the functions will be called,
-connecection pool will be created,
-so connection can be kept alive till the application is running.
-*/
 
 if (!pool) {
   (async () => {
@@ -74,8 +68,6 @@ pool.once('error', (error) => {
   });
   process.exit();
 });
-
-// #region single I/O operations
 
 const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
   /*
@@ -136,7 +128,6 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
     });
   }
 };
-
 const singleRead = async (query) => {
   /*
   Payload
@@ -169,9 +160,6 @@ const singleRead = async (query) => {
     });
   }
 };
-
-// #endregion
-// #region stored procedures
 
 const sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
   try {

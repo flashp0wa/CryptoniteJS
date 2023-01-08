@@ -2,8 +2,8 @@ const ccxt = require('ccxt');
 const {BinanceClass} = require('./BinanceClass');
 
 class BinanceFuturesTestClass extends BinanceClass {
-  constructor(exchangeName) {
-    super(exchangeName);
+  constructor(excName) {
+    super(excName);
     this.configureExchange();
   }
 
@@ -15,7 +15,7 @@ class BinanceFuturesTestClass extends BinanceClass {
     binance.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call all open orders only 1 / 10 seconds
     binance.set_sandbox_mode(true);
     binance.name = 'binance-futures-test';
-    this.exchangeObj = binance;
+    this.excObj = binance;
   }
 }
 module.exports = {

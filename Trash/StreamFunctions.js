@@ -1,7 +1,7 @@
 // require('dotenv').config({path: '.env'});
 const WebSocket = require('websocket').w3cwebsocket;
 const ProcessStream = require('../ProcessStream.js');
-const {ApplicationLog} = require('../../Toolkit/Logger.js');
+const {ApplicationLog} = require('../Toolkit/Logger.js');
 // const sendMail = require('../../Toolkit/Mailer.js');
 // const {ReturnEmitter} = require('../../Loaders/EventEmitter.js');
 

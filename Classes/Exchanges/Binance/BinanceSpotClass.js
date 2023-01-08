@@ -16,7 +16,7 @@ class BinanceSpotClass extends BinanceClass {
     binance.secret = process.env.BNC_SECKEY;
     binance.options.adjustForTimeDifference = true;
     binance.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call all open orders only 1 / 10 seconds
-    this.exchangeObj = binance;
+    this.excObj = binance;
   }
 }
 

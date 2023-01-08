@@ -16,6 +16,7 @@ class CreateOrder extends Order {
    *  price,
    *  stopPrice,
    *  limitPrice,
+   *  strategy,
    * }
    */
   constructor(excObj, excName, conObj) {
@@ -121,7 +122,9 @@ class CreateOrder extends Order {
         Side: ${this.side},
         Type: ${this.type}
         Amount: ${this.orderAmount}
-        Price: ${this.price}`,
+        Price: ${this.price}
+        Stop: ${this.stopPrice}
+        Limit: ${this.limitPrice}`,
         senderFunction: 'createOrder',
         file: 'CreateOrderClass.js',
       });

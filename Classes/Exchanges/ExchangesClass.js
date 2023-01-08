@@ -34,7 +34,6 @@ class Exchanges {
       }
     }
   }
-
   /**
    * Check all exchange's order status
    */

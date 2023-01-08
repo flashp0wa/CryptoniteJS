@@ -1,9 +1,10 @@
 const {singleRead, sproc_UpdateOrder} = require('../../../../DatabaseConnection/SQLConnector');
 const {ApplicationLog} = require('../../../../Toolkit/Logger');
+
 class OpenOrder {
-  constructor(exchangeObj, exchangeName) {
-    this.exchangeObj = exchangeObj;
-    this.exchangeName = exchangeName;
+  constructor(excObj, excName) {
+    this.excObj = excObj;
+    this.excName = excName;
     this.openOrders; // Array of objects
   }
   /**
@@ -13,14 +14,14 @@ class OpenOrder {
     try {
       ApplicationLog.log({
         level: 'silly',
-        message: `Checking order status on ${this.exchangeName}...`,
+        message: `Checking order status on ${this.excName}...`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
       });
-      this.openOrders = await singleRead(`select * from itvf_ReturnOrders('open', ${this.exchangeObj.id})`);
+      this.openOrders = await singleRead(`select * from itvf_ReturnOrders('open', ${this.excObj.id})`);
       for (const order of this.openOrders) {
         try {
-          const res = await this.exchangeObj.fetchOrder(order.orderId, order.symbol);
+          const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
           if ((res.status === 'closed' || res.status === 'canceled') && order.oco === false) {
             if (order.siblingOrderId && res.status === 'closed') {
               ApplicationLog.log({
@@ -30,7 +31,7 @@ class OpenOrder {
                 file: 'OpenOrderClass.js',
               });
               try {
-                await this.exchangeObj.cancelOrder(order.siblingOrderId, order.symbol);
+                await this.excObj.cancelOrder(order.siblingOrderId, order.symbol);
                 ApplicationLog.log({
                   level: 'info',
                   message: `Sibling order ${order.siblingOrderId} has been canceled`,
@@ -54,14 +55,14 @@ class OpenOrder {
               tradeStatus: res.info.status,
               orderId: Number(order.orderId),
               fee: !res.fee ? null : res.fee,
-              exchangeId: this.exchangeObj.id,
+              exchangeId: this.excObj.id,
               updateTime: new Date(Number(res.info.updateTime)).toISOString(),
             });
           }
         } catch (error) {
           ApplicationLog.log({
             level: 'error',
-            message: `Could not fetch open orders on ${this.exchangeName} to check trade status. ${error}`,
+            message: `Could not fetch open orders on ${this.excName} to check trade status. ${error}`,
             senderFunction: 'checkOrderStatus',
             file: 'OpenOrderClass.js',
             discord: 'application-errors',
@@ -71,7 +72,7 @@ class OpenOrder {
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
-        message: `Error while checking order status on ${this.exchangeName}: ${error}`,
+        message: `Error while checking order status on ${this.excName}: ${error}`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
         discord: 'application-error',
@@ -79,7 +80,7 @@ class OpenOrder {
     }
     ApplicationLog.log({
       level: 'silly',
-      message: `Order status check finished on ${this.exchangeName}`,
+      message: `Order status check finished on ${this.excName}`,
       senderFunction: 'checkOrderStatus',
       file: 'OpenOrderClass.js',
     });

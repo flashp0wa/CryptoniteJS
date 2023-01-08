@@ -17,7 +17,7 @@ class BinanceSpotTestClass extends BinanceClass {
     binance.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call all open orders only 1 / 10 seconds
     binance.set_sandbox_mode(true);
     binance.name = 'binance-test';
-    this.exchangeObj = binance;
+    this.excObj = binance;
   }
 }
 module.exports = {
