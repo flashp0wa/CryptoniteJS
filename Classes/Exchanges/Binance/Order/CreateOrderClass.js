@@ -1,5 +1,5 @@
-const {Order} = require('./OrderClass.js');
-const {CreateOcoOrder} = require('./CreateOcoOrder.js');
+const {Order} = require('./OrderClass');
+const {CreateOcoOrder} = require('./CreateOcoOrder');
 
 
 class CreateOrder extends Order {
@@ -102,17 +102,7 @@ class CreateOrder extends Order {
   */
   async createOrder() {
     if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
-      super.writeToDatabase({
-        symbol: this.symbol,
-        side: this.side,
-        type: this.type,
-        orderAmount: this.orderAmount,
-        price: this.price,
-        stopPrice: this.stopPrice,
-        limitPrice: this.limitPrice,
-        exchange: this.exchangeName,
-        strategy: this.strategy,
-      });
+      super.writeToDatabase(this.conObj);
     } else {
       this.traderLog.log({
         level: 'info',
@@ -245,6 +235,7 @@ class CreateOrder extends Order {
               }
             }
           } catch (error) {
+            this.conObj.reason = error.message;
             this.traderLog.log({
               level: 'error',
               message: `Market order creation failed. ${error}`,

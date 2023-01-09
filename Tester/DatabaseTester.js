@@ -6,21 +6,36 @@ const { TechnicalIndicatorClass } = require('../Classes/TechnicalIndicatorClass.
 const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
 
 
-(async () => {
+// (async () => {
 
-const ba = new BinanceSpotClass('binance');
-await ba.loadExchange();
-const trade = {
+// const ba = new BinanceSpotClass('binance');
+// await ba.loadExchange();
+// const trade = {
+//   symbol: 'BTCUSDT',
+//   side: 'buy',
+//   type: 'market',
+//   orderAmount: 1,
+//   price: 1,
+//   stopPrice: 1,
+//   limitPrice: 1,
+//   exchange: 'binance',
+//   strategy: 'Candle-Tree'
+// }
+
+// ba.createOrder(trade);
+// })();
+
+const orderObj = {
   symbol: 'BTCUSDT',
   side: 'buy',
   type: 'market',
-  orderAmount: 1,
-  price: 1,
-  stopPrice: 1,
-  limitPrice: 1,
+  orderAmount: 1000,
+  price: 15000,
+  stopPrice: 14000,
+  limitPrice: 17000,
   exchange: 'binance',
-  strategy: 'Candle-Tree'
-}
+  strategy: 'Candle-Tree',
+  reason: 'Entry candle close price is higher than support level.'
+};
 
-ba.createOrder(trade);
-})();
+sqlConnector.sproc_InsertIntoOrderFailed(orderObj);

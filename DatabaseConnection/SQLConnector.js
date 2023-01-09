@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const {DatabaseLog} = require('../Toolkit/Logger.js');
+const {DatabaseLog} = require('../Toolkit/Logger');
 const {once} = require('events');
 
 // #region config
@@ -295,6 +295,39 @@ const sproc_InsertIntoOrder = async (inObj) => {
     });
   }
 };
+const sproc_InsertIntoOrderFailed = async (inObj) => {
+  try {
+    await poolConnect;
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stroed procedure Insert Into OrderFailed',
+      senderFunction: 'sproc_InsertIntoOrderPaperFailed',
+      file: 'SQLConnector.js',
+    });
+    const request = await pool.request()
+        .input('symbol', inObj.symbol)
+        .input('orderType', inObj.type)
+        .input('side', inObj.side)
+        .input('price', inObj.price)
+        .input('stopPrice', inObj.stopPrice)
+        .input('amount', inObj.orderAmount)
+        .input('exchange', inObj.exchange)
+        .input('limitPrice', inObj.limitPrice)
+        .input('strategy', inObj.strategy)
+        .input('reason', inObj.reason)
+        .execute('InsertIntoOrderFailed');
+
+    return request;
+  } catch (error) {
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_InsertIntoOrderFailed' Object: ${inObj}. ${error.stack}`,
+      senderFunction: 'sproc_InsertIntoOrderFailed',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
+  }
+};
 const sproc_InsertIntoOrderPaper = async (inObj) => {
   try {
     await poolConnect;
@@ -433,6 +466,7 @@ module.exports = {
   sproc_AddSymbolToDatabase,
   sproc_InsertIntoOrder,
   sproc_InsertIntoOrderPaper,
+  sproc_InsertIntoOrderFailed,
   sproc_InsertIntoAverageTrueRange,
   sproc_InsertIntoSupportResistance,
   sproc_UpdateOrder,

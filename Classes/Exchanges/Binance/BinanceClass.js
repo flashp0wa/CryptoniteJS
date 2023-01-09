@@ -277,7 +277,8 @@ class BinanceClass {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       // console.log(data);
-      wssJsonStream2Object(data);
+      const processedData = wssJsonStream2Object(data);
+      this.strategy.run_srCandleTree(processedData);
     };
     // Connection closed. Will try reconnecting
     ws.onclose = () => {

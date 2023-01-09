@@ -2,11 +2,13 @@ const {ApplicationLog} = require('../../Toolkit/Logger');
 const {BinanceFuturesTestClass} = require('./Binance/BinanceFuturesTestClass');
 const {BinanceSpotClass} = require('./Binance/BinanceSpotClass');
 const {BinanceSpotTestClass} = require('./Binance/BinanceSpotTestClass');
+const {BinanceFuturesClass} = require('./Binance/BinanceFuturesClass');
 
 class Exchanges {
   constructor() {
     this.binance = new BinanceSpotClass('binance');
     this.binanceSpotTest = new BinanceSpotTestClass('binanceSpotTest');
+    this.binanceFutures = new BinanceFuturesClass('binanceFutures');
     this.binanceFuturesTest = new BinanceFuturesTestClass('binanceFuturesTest');
   }
 

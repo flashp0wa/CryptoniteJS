@@ -1,5 +1,5 @@
-const {TraderLog} = require('../../../../Toolkit/Logger.js');
-const {sproc_InsertIntoOrder, sproc_InsertIntoOrderPaper} = require('../../../../DatabaseConnection/SQLConnector.js');
+const {TraderLog} = require('../../../../Toolkit/Logger');
+const {sproc_InsertIntoOrder, sproc_InsertIntoOrderPaper, sproc_InsertIntoOrderFailed} = require('../../../../DatabaseConnection/SQLConnector.js');
 
 class Order {
   constructor(excObj, excName, conObj) {
@@ -16,6 +16,7 @@ class Order {
     this.orderResponse;
     this.traderLog = TraderLog;
     this.strategy = conObj.strategy;
+    this.conObj = conObj;
   }
 
   createOrder() {
@@ -27,10 +28,13 @@ class Order {
   }
   /**
    * @param {object} databaseObj Object with values will be written to the database
+   * @param {boolean} failed True when order is failed
    */
-  writeToDatabase(databaseObj) {
+  writeToDatabase(databaseObj, failed) {
     if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
       sproc_InsertIntoOrderPaper(databaseObj);
+    } else if (failed) {
+      sproc_InsertIntoOrderFailed(databaseObj);
     } else {
       sproc_InsertIntoOrder(databaseObj);
     }

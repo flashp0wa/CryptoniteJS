@@ -1,6 +1,7 @@
 const {getTechnicalIndicators} = require('./TechnicalIndicatorClass');
 const {StrategyHandlerLog} = require('../Toolkit/Logger');
 const {returnEmitter} = require('../Loaders/EventEmitter');
+const {sproc_InsertIntoOrderFailed} = require('../DatabaseConnection/SQLConnector');
 
 
 class StrategyClass {
@@ -797,7 +798,21 @@ class StrategyClass {
         file: 'StrategyClass.js',
       });
 
+      const orderObj = {
+        symbol: symbol,
+        side: orderSide,
+        type: orderType,
+        orderAmount: positionSize,
+        price: closeEntryCandle,
+        stopPrice: stop,
+        limitPrice: limit,
+        exchange: excName,
+        strategy: 'Candle-Tree',
+      };
+
       if (closeEntryCandle < resistance) {
+        orderObj.reason = 'Entry candle close price is lower than resistance level.';
+        sproc_InsertIntoOrderFailed(orderObj);
         StrategyHandlerLog.log({
           level: 'warn',
           message: 'Entry candle close price is lower than resistance level. No order will be placed',
@@ -805,6 +820,8 @@ class StrategyClass {
           file: 'StrategyClass.js',
         });
       } else if (closeEntryCandle > support) {
+        orderObj.reason = 'Entry candle close price is higher than support level.';
+        sproc_InsertIntoOrderFailed(orderObj);
         StrategyHandlerLog.log({
           level: 'warn',
           message: 'Entry candle close price is higher than support level. No order will be placed',
@@ -812,6 +829,8 @@ class StrategyClass {
           file: 'StrategyClass.js',
         });
       } else if (!criteria) {
+        orderObj.reason = 'Margin value does not meet criteria.';
+        sproc_InsertIntoOrderFailed(orderObj);
         StrategyHandlerLog.log({
           level: 'warn',
           message: 'Margin value does not meet criteria. No order will be placed',
@@ -819,17 +838,7 @@ class StrategyClass {
           file: 'StrategyClass.js',
         });
       } else {
-        event.emit('CreateOrder', {
-          symbol: symbol,
-          side: orderSide,
-          type: orderType,
-          orderAmount: positionSize,
-          price: closeEntryCandle,
-          stopPrice: stop,
-          limitPrice: limit,
-          exchange: excName,
-          strategy: 'Candle-Tree',
-        });
+        event.emit('CreateOrder', orderObj);
         StrategyHandlerLog.log({
           level: 'warn',
           message: 'Order placement initiated',
@@ -1006,7 +1015,6 @@ class StrategyClass {
             message: `Could not fetch account balance. Order cannot be placed without capital. Rertrying fetch in 30 seconds... ${error}`,
             senderFunction: 'run_srCandleTree',
             file: 'StrategyClass.js',
-
           });
 
           await new Promise((resolve) => setTimeout(() => {
@@ -1017,6 +1025,15 @@ class StrategyClass {
         }
       }
 
+      if (capital < process.env.CAPITAL_LOSS_THRESHOLD) {
+        StrategyHandlerLog.log({
+          level: 'error',
+          message: `WARNING !!! CAPITAL BELOW THRESHOLD Capital: ${capital}`,
+          senderFunction: 'run_srCandleTree',
+          file: 'StrategyClass.js',
+          discord: 'gumiszoba',
+        });
+      }
 
       placeOrder(
           klineObj.symbol,

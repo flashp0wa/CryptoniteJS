@@ -16,7 +16,7 @@ require('dotenv').config({path: '.env'});
   loadEventListeners();
   startIntervals();
   startApi();
-  // getExchanges().binance.startWss();
+  getExchanges().binanceFutures.startWss();
   ApplicationLog.log({
     level: 'info',
     message: 'Application online, let the money shower!',
