@@ -295,7 +295,7 @@ class BinanceClass {
     ws.on('error', function error(error) {
       ApplicationLog.log({
         level: 'info',
-        message: `Connection could not be established with the stream server. ${JSON.stringify(error)}`,
+        message: `Connection could not be established with the stream server. ${error}`,
         senderFunction: 'startWss',
         file: 'BinanceClass.js',
       });
