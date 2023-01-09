@@ -1,5 +1,6 @@
 const winston = require('winston');
 const chalk = require('chalk');
+require('winston-daily-rotate-file');
 
 const DiscordApiLog = winston.createLogger({
   transports: [
@@ -19,9 +20,11 @@ const DiscordApiLog = winston.createLogger({
           }),
       ),
     }),
-    new winston.transports.File({
+    new winston.transports.DailyRotateFile({
       filename: `${process.env.CRYPTONITE_ROOT}/Log/DiscordApi.log`,
-      format: winston.format.json(),
+      datePattern: 'YYYY-MM-DD-HH',
+      maxSize: '20m',
+      maxFiles: '14d',
     }),
   ], format: winston.format.combine(
       winston.format.label({
