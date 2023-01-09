@@ -22,7 +22,8 @@
         "pretty": "^2.0.0",
         "websocket": "^1.0.34",
         "winston": "^3.3.3",
-        "winston-daily-rotate-file": "^4.7.1"
+        "winston-daily-rotate-file": "^4.7.1",
+        "ws": "^8.12.0"
     },
     "devDependencies": {
         "eslint": "^8.0.1",

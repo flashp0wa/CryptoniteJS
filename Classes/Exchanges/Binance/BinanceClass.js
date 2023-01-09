@@ -1,7 +1,8 @@
 const {CreateOrder} = require('./Order/CreateOrderClass');
 const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
-const WebSocket = require('websocket').w3cwebsocket;
+// const WebSocket = require('websocket').w3cwebsocket;
+const WebSocket = require('ws');
 const {
   sproc_AddSymbolToDatabase,
   singleRead,
@@ -263,47 +264,21 @@ class BinanceClass {
 
     const ws = new WebSocket(url);
 
-    // Connection established message
-    ws.onopen = () => {
+    ws.on('open', function open() {
       ApplicationLog.log({
         level: 'info',
         message: 'Connection has been established with the stream server',
         senderFunction: 'startWss',
         file: 'BinanceClass.js',
       });
-    };
+    });
 
-    // Data received from server as string...
-    // Making it JSON and writing to database
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // console.log(data);
+    ws.on('message', function message(data) {
+      data = JSON.parse(data);
       const processedData = wssJsonStream2Object(data);
+      console.log(processedData);
       // this.strategy.run_srCandleTree(processedData);
-    };
-    // Connection closed. Will try reconnecting
-    ws.onclose = () => {
-      ApplicationLog.log({
-        level: 'info',
-        message: 'Stream connection has been closed... trying to reconnect',
-        senderFunction: 'startWss',
-        file: 'BinanceClass.js',
-      });
-      setTimeout(() => {
-        this.startWss();
-      }, 3);
-    };
-
-    // Error establishing connection
-    ws.onerror = (error) => {
-      ApplicationLog.log({
-        level: 'info',
-        message: `Connection could not be established with the stream server. ${JSON.stringify(error)}`,
-        senderFunction: 'startWss',
-        file: 'BinanceClass.js',
-      });
-      throw new Error(`Connection could not be established: ${JSON.stringify(error)}`);
-    };
+    });
   }
 }
 
