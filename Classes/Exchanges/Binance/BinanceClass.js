@@ -273,11 +273,33 @@ class BinanceClass {
       });
     });
 
+    function close(restartWss) {
+      ApplicationLog.log({
+        level: 'info',
+        message: 'Stream connection has been closed... trying to reconnect',
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
+      setTimeout(() => {
+        restartWss();
+      }, 3);
+    }
+    ws.on('close', close(this.startWss));
+
     ws.on('message', function message(data) {
       data = JSON.parse(data);
       const processedData = wssJsonStream2Object(data);
       console.log(processedData);
       // this.strategy.run_srCandleTree(processedData);
+    });
+
+    ws.on('error', function error(error) {
+      ApplicationLog.log({
+        level: 'info',
+        message: `Connection could not be established with the stream server. ${JSON.stringify(error)}`,
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
     });
   }
 }
