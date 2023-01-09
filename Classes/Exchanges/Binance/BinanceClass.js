@@ -297,11 +297,11 @@ class BinanceClass {
     ws.onerror = (error) => {
       ApplicationLog.log({
         level: 'info',
-        message: `Connection could not be established with the stream server. Message: ${error.message}. Type: ${error.name}`,
+        message: `Connection could not be established with the stream server. ${error}`,
         senderFunction: 'startWss',
         file: 'BinanceClass.js',
       });
-      throw new Error(`Connection could not be established: ${error.message}`);
+      throw new Error(`Connection could not be established: ${error}`);
     };
   }
 }
