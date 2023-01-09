@@ -140,7 +140,8 @@ class BinanceClass {
     * @return {object} Returns the processed object
     */
     function wssJsonStream2Object(jsonStreamObj) {
-      const streamType = jsonStreamObj['e'];
+      const streamType = jsonStreamObj['data']['e'];
+      jsonStreamObj = jsonStreamObj['data'];
       // const eventUnixTime = jsonStreamObj['data']['E'];
       let processedStream = {};
 
@@ -278,7 +279,7 @@ class BinanceClass {
       const data = JSON.parse(event.data);
       // console.log(data);
       const processedData = wssJsonStream2Object(data);
-      this.strategy.run_srCandleTree(processedData);
+      // this.strategy.run_srCandleTree(processedData);
     };
     // Connection closed. Will try reconnecting
     ws.onclose = () => {
