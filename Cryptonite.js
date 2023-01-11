@@ -22,6 +22,6 @@ require('dotenv').config({path: '.env'});
     message: 'Application online, let the money shower!',
     senderFunction: 'Crypt0nite',
     file: 'Cryptonite.js',
-    // discord: 'gumiszoba',
+    discord: 'gumiszoba',
   });
 })();
