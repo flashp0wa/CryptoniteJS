@@ -273,24 +273,24 @@ class BinanceClass {
       });
     });
 
-    ws.on('close', function close() {
+    ws.onclose = () => {
       ApplicationLog.log({
         level: 'info',
         message: 'Stream connection has been closed... trying to reconnect',
         senderFunction: 'startWss',
         file: 'BinanceClass.js',
       });
-      // setTimeout(() => {
-      //   startWss();
-      // }, 3);
-    });
+      setTimeout(() => {
+        this.startWss();
+      }, 3);
+    };
 
-    ws.on('message', function message(data) {
+    ws.onmessage = (data) => {
       data = JSON.parse(data);
       const processedData = wssJsonStream2Object(data);
       console.log(processedData);
-      // this.strategy.run_srCandleTree(processedData);
-    });
+      this.strategy.run_srCandleTree(processedData);
+    };
 
     ws.on('error', function error(error) {
       ApplicationLog.log({

@@ -60,7 +60,7 @@ const closePool = () => {
  */
 pool.once('error', (error) => {
   DatabaseLog.log({
-    level: 'info',
+    level: 'error',
     message: `The following database error occured: ${error.stack}`,
     senderFunction: 'poolOnce',
     file: 'SQLConnector.js',
