@@ -3,6 +3,8 @@
 const { ApplicationLog } = require("../Toolkit/Logger");
 const {spawn} = require('child_process');
 const {pause} = require('../Toolkit/Pause');
+const WebSocket = require('websocket').w3cwebsocket;
+
 
 
 // let first = true;
@@ -57,17 +59,4 @@ const {pause} = require('../Toolkit/Pause');
 // const component = info.label;
 // const context = info.function;
 // const file = info.file;
-
-
-ApplicationLog.log({
-  discord: 'gumiszoba',
-  timestamp: '2222-22-22 23:23:23',
-  level: 'error',
-  message: 'Szius',
-  label: 'Application',
-  function: 'Teszt',
-  file: 'GeneralTester',
-})
-
-
-
+ws = new WebSocket();
