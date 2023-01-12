@@ -1,10 +1,6 @@
 /*eslint-disable*/
 
 const { ApplicationLog } = require("../Toolkit/Logger");
-const {spawn} = require('child_process');
-const {pause} = require('../Toolkit/Pause');
-const WebSocket = require('websocket').w3cwebsocket;
-
 
 
 // let first = true;
@@ -59,4 +55,9 @@ const WebSocket = require('websocket').w3cwebsocket;
 // const component = info.label;
 // const context = info.function;
 // const file = info.file;
-ws = new WebSocket();
+
+
+
+const file = 'BTCUSDT-5m-2023-01-10.csv'
+
+console.log(file.split('-')[0]);

@@ -8,6 +8,7 @@ const config = {
   password: process.env.DB_PASS,
   server: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
+  requestTimeout: Number(process.env.DB_REQUEST_TIMEOUT),
   options: {
     trustServerCertificate: true,
   },
