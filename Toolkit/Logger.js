@@ -33,10 +33,11 @@ const ApplicationLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/Application.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/Application-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -60,10 +61,11 @@ const TraderLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/Trader.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/Trader-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -87,10 +89,11 @@ const SupportResistanceCandleTreeLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/SupportResistanceCandleTreeLog.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/SupportResistanceCandleTreeLog-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -114,10 +117,11 @@ const DatabaseLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/Database.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/Database-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -141,10 +145,11 @@ const QueryProcessorLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/QueryProcessorLog.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/QueryProcessorLog-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -168,10 +173,11 @@ const ApiLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/Api.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/Api-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -216,10 +222,11 @@ const StrategyHandlerLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/StrategyHandler.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/StrategyHandler-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
@@ -243,10 +250,11 @@ const DiscordApiLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/DiscordApi.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}/Log/DiscordApi-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
+      format: winston.format.json(),
     }),
   ], format: winston.format.combine(
       winston.format.label({
