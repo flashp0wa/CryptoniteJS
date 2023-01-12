@@ -19,7 +19,7 @@ require('dotenv').config({path: '.env'});
   // getExchanges().binanceFutures.startWss();
   ApplicationLog.log({
     level: 'info',
-    message: 'Application online, let the money shower!',
+    message: `Application online, let the money shower! | Trade Mode: ${process.env.CRYPTONITE_TRADE_MODE}`,
     senderFunction: 'Crypt0nite',
     file: 'Cryptonite.js',
     discord: 'gumiszoba',

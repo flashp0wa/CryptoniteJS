@@ -894,7 +894,7 @@ class StrategyClass {
           };
           StrategyHandlerLog.log({
             level: 'info',
-            message: '#1 OHLC values arrived, two more to go to initiate candle tree decision',
+            message: `#1 OHLC values arrived, two more to initiate candle tree decision. Symbol: ${klineObj.symbol} | Timeframe: ${klineObj.timeFrame}`,
             senderFunction: 'run_srCandleTree',
             file: 'StrategyClass.js',
           });
@@ -913,7 +913,7 @@ class StrategyClass {
           };
           StrategyHandlerLog.log({
             level: 'info',
-            message: '#1 OHLC values arrived, two more to go to initiate candle tree decision',
+            message: `#1 OHLC values arrived, two more to initiate candle tree decision. Symbol: ${klineObj.symbol} | Timeframe: ${klineObj.timeFrame}`,
             senderFunction: 'run_srCandleTree',
             file: 'StrategyClass.js',
           });
@@ -933,7 +933,7 @@ class StrategyClass {
           if (timeFrameObj.candleTypeIds.length <= 2) {
             StrategyHandlerLog.log({
               level: 'info',
-              message: `#${timeFrameObj.candleTypeIds.length} OHLC values arrived, ${3 - timeFrameObj.candleTypeIds.length} more to initiate candle tree decision`,
+              message: `#${timeFrameObj.candleTypeIds.length} OHLC values arrived, ${3 - timeFrameObj.candleTypeIds.length} more to initiate candle tree decision. Symbol: ${klineObj.symbol} | Timeframe: ${klineObj.timeFrame}`,
               senderFunction: 'run_srCandleTree',
               file: 'StrategyClass.js',
             });
@@ -966,6 +966,7 @@ class StrategyClass {
           message: 'Candle tree decision did not produce result even with the maximum of 5 candles defined',
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
+          obj: timeFrameObj,
           discord: 'application-warnings',
         });
 
@@ -977,6 +978,7 @@ class StrategyClass {
           message: `Candle tree decision did not produce result. Number of candles defined: ${timeFrameObj.closePrices.length}`,
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
+          obj: timeFrameObj,
           discord: 'application-warnings',
         });
 

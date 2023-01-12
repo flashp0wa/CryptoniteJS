@@ -12,6 +12,16 @@ const config = {
   options: {
     trustServerCertificate: true,
   },
+  pool: {
+    max: Number(process.env.DB_MAX_POOL),
+    min: 1,
+    idleTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    acquireTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    createTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    destroyTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    reapIntervalMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    createRetryIntervalMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+  },
 };
 
 // #endregion
@@ -207,7 +217,7 @@ const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_AddSymbolToDatabase'. Object: ${inObj} ${error.stack}`,
+      message: `Encountered an error running 'sproc_AddSymbolToDatabase'. ${error}`,
       senderFunction: 'sproc_AddSymbolToDatabase',
       file: 'SQLConnector.js',
       discord: 'database-errors',

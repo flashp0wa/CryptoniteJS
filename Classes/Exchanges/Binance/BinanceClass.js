@@ -288,7 +288,6 @@ class BinanceClass {
     ws.on('message', (data) => {
       data = JSON.parse(data);
       const processedData = wssJsonStream2Object(data);
-      // console.log(processedData);
       this.strategy.run_srCandleTree(processedData);
     });
 
