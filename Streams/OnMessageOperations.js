@@ -280,7 +280,12 @@ function stream_getCandleType(inObj) {
       return inObj;
 
     default:
-      ApplicationLog.warn(`No candle type has been identified: ${inObj}`);
+      ApplicationLog.log({
+        level: 'warn',
+        message: `No candle type has been identified: ${JSON.stringify(inObj)}`,
+        senderFunction: 'stream_getCandleType',
+        file: 'OnMessageOperations.js',
+      });
       inObj.candleTypeId = 'none';
       return inObj;
   }
