@@ -68,6 +68,7 @@ class BinanceClass {
         file: 'BinanceClass.js',
       });
       const response = await singleRead(`select * from itvf_GetExchangeId('${this.excName}')`);
+      console.log(response);
       this.excObj.id = response[0].exchangeId;
     } catch (error) {
       ApplicationLog.log({
@@ -288,7 +289,6 @@ class BinanceClass {
     ws.on('message', (data) => {
       data = JSON.parse(data);
       const processedData = wssJsonStream2Object(data);
-      console.log(processedData);
       this.strategy.run_srCandleTree(processedData);
     });
 
