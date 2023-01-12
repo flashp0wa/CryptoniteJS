@@ -3,16 +3,17 @@
 require('dotenv').config({path: '.env'});
 const _ = require('lodash');
 const ccxt = require('ccxt');
-const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/BinanceFuturesTestClass');
+const { BinanceFuturesClass } = require('../Classes/Exchanges/Binance/BinanceFuturesClass');
 const { CreateOrder } = require('../Classes/Exchanges/Binance/Order/CreateOrderClass');
 const { BinanceSpotTestClass } = require('../Classes/Exchanges/Binance/BinanceSpotTestClass');
 
-const futures = new BinanceFuturesTestClass('binanceFuturesTest');
+const futures = new BinanceFuturesClass('binanceFutures');
 // const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
   try {
-    console.log((await futures.exchangeObj.fetchBalance()).free.USDT);
+    // console.log(await futures.excObj.fetchBalance());
+    console.log((await futures.excObj.fetchBalance()).free.USDT);
   // await futures.loadExchangeId();
   // // futures.loadOpenOrders();
   // await futures.loadMarkets();

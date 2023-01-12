@@ -969,8 +969,9 @@ class StrategyClass {
           obj: timeFrameObj,
           discord: 'application-warnings',
         });
-
-        resetTimeFrameObj(timeFrameObj);
+        setTimeout(() => {
+          resetTimeFrameObj(timeFrameObj);
+        }, 60000); // Dont reset the object too fast, let time discord client to send it
         return;
       } else if (!candleTreeResult.side) {
         StrategyHandlerLog.log({

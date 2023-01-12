@@ -19,6 +19,12 @@ class BinanceClass {
     this.symbolList = [];
     this.excObj;
     this.openOrders;
+    this.strategy;
+  }
+  /**
+   * Loads strategy class
+   */
+  loadStrategy() {
     this.strategy = new StrategyClass(this.excObj, this.excName);
   }
   /**
@@ -124,6 +130,7 @@ class BinanceClass {
       await this.loadExchangeId();
       await this.loadMarkets();
       this.loadSymbols();
+      this.loadStrategy();
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
