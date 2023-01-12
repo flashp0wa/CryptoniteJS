@@ -966,6 +966,7 @@ class StrategyClass {
           message: 'Candle tree decision did not produce result even with the maximum of 5 candles defined',
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
+          obj: timeFrameObj,
           discord: 'application-warnings',
         });
 
@@ -977,6 +978,7 @@ class StrategyClass {
           message: `Candle tree decision did not produce result. Number of candles defined: ${timeFrameObj.closePrices.length}`,
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
+          obj: timeFrameObj,
           discord: 'application-warnings',
         });
 
