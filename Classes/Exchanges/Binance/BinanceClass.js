@@ -121,8 +121,8 @@ class BinanceClass {
   async loadExchange() {
     try {
       this.loadOpenOrders();
-      await this.loadMarkets();
       await this.loadExchangeId();
+      await this.loadMarkets();
       this.loadSymbols();
     } catch (error) {
       ApplicationLog.log({
