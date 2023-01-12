@@ -68,7 +68,6 @@ class BinanceClass {
         file: 'BinanceClass.js',
       });
       const response = await singleRead(`select * from itvf_GetExchangeId('${this.excName}')`);
-      console.log(response);
       this.excObj.id = response[0].exchangeId;
     } catch (error) {
       ApplicationLog.log({
@@ -122,8 +121,8 @@ class BinanceClass {
   async loadExchange() {
     try {
       this.loadOpenOrders();
-      await this.loadMarkets();
       await this.loadExchangeId();
+      await this.loadMarkets();
       this.loadSymbols();
     } catch (error) {
       ApplicationLog.log({

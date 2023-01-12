@@ -11,6 +11,10 @@ const config = {
   options: {
     trustServerCertificate: true,
   },
+  pool: {
+    max: Number(process.env.DB_MAX_POOL),
+    min: 0,
+  },
 };
 
 // #endregion
@@ -206,7 +210,7 @@ const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_AddSymbolToDatabase'. Object: ${inObj} ${error.stack}`,
+      message: `Encountered an error running 'sproc_AddSymbolToDatabase'. ${error}`,
       senderFunction: 'sproc_AddSymbolToDatabase',
       file: 'SQLConnector.js',
       discord: 'database-errors',
