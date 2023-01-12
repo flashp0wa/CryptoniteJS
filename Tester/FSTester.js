@@ -1,24 +1,31 @@
 /* eslint-disable */
 require('dotenv').config({path: '.env'});
 const fs = require('fs');
-const decompress = require('decompress');
+const extract = require('extract-zip')
+
+
+async function main () {
+}
 
 const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
 const alreadyDownloaded = [];
-
-// (async () => {
-//   const zip = fs.readdirSync(downloadPath);
-  
-//   for (const file of zip) {
-//     await decompress(`${downloadPath}\\${file}`, '../Inboxes/BinanceData'); 
-//   }
-// })
+const zipFiles = fs.readdirSync(downloadPath);
 
 (async () => {
-  const zip = fs.readdirSync(downloadPath);
+  console.log(zipFiles);
   
-  for (const file of zip) {
-    await decompress('BTCUSDT-5m-2023-01-10.zip', './Tester'); 
+  for (const file of zipFiles) {
+    const filePath = `${downloadPath}\\${file}`;
+    try {
+      await extract(`${downloadPath}\\${file}`, { dir: downloadPath })
+      console.log('Extraction complete');
+      fs.unlinkSync(filePath)
+    } catch (err) {
+      // handle any errors
+    }
+
   }
-})
+})();
+
+
 

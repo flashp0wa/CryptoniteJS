@@ -4,13 +4,14 @@ const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
 const {BncHistoryDownloadLog} = require('./Logger.js');
 const util = require('util');
 const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
-const {exec} = require('child_process');
 const fs = require('fs');
+const extract = require('extract-zip');
+const {sproc_ImportBinanceCsv} = require('../DatabaseConnection/SQLConnector.js');
+const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
 
 async function downloadHistoryData(inObj) {
   return new Promise(async (resolve) => {
     const baseUrl = 'https://data.binance.vision/data/spot';
-    const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
     const alreadyDownloaded = [];
     let oneSuccessfulDownload = false;
     let alreadyDownloadedFile = false;
@@ -218,13 +219,60 @@ async function binanceHistoryData(inObj) {
     senderFunction: 'downloadHistoryData',
     file: 'BncHistoryDownload.js',
   });
-  exec('Cryptonite.CryptoniteJS.BinanceHistoryData', {'shell': 'pwsh.exe', 'stdio': 'ignore'});
-  BncHistoryDownloadLog.log({
-    level: 'info',
-    message: 'Data has been successfully imported',
-    senderFunction: 'downloadHistoryData',
-    file: 'BncHistoryDownload.js',
-  });
+
+  const zipFiles = fs.readdirSync(downloadPath);
+
+  for (const file of zipFiles) {
+    const filePathFull = `${downloadPath}\\${file}`;
+    const symbol = file.split('-')[0];
+    const timeFrame = file.split('-')[1];
+    const csvFile = file.split('.')[0] + '.csv';
+    const csvPathFull = downloadPath + '\\' +csvFile;
+    try {
+      await extract(filePathFull, {dir: downloadPath});
+
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `${file} extract done.`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+
+      fs.unlinkSync(filePathFull);
+
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `${file} delete done`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+
+      await sproc_ImportBinanceCsv(symbol, timeFrame, csvPathFull);
+
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `${csvFile} import done`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+
+      fs.unlinkSync(csvPathFull);
+
+      BncHistoryDownloadLog.log({
+        level: 'info',
+        message: `${csvFile} delete done.`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+    } catch (error) {
+      BncHistoryDownloadLog.log({
+        level: 'error',
+        message: `There was an error in processing binance data. ${error}`,
+        senderFunction: 'downloadHistoryData',
+        file: 'BncHistoryDownload.js',
+      });
+    }
+  }
 }
 
 module.exports = {

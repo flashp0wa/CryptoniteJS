@@ -291,14 +291,6 @@ class BinanceClass {
       this.strategy.run_srCandleTree(processedData);
     });
 
-    // ws.onmessage = (data) => {
-    //   console.log(data.event);
-    //   // data = JSON.parse(data);
-    //   const processedData = wssJsonStream2Object(data);
-    //   console.log(processedData);
-    //   // this.strategy.run_srCandleTree(processedData);
-    // };
-
     ws.on('error', function error(error) {
       ApplicationLog.log({
         level: 'info',
