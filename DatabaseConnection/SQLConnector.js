@@ -8,12 +8,19 @@ const config = {
   password: process.env.DB_PASS,
   server: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
+  requestTimeout: Number(process.env.DB_REQUEST_TIMEOUT),
   options: {
     trustServerCertificate: true,
   },
   pool: {
     max: Number(process.env.DB_MAX_POOL),
-    min: 0,
+    min: 1,
+    idleTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    acquireTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    createTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    destroyTimeoutMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    reapIntervalMillis: Number(process.env.DB_REQUEST_TIMEOUT),
+    createRetryIntervalMillis: Number(process.env.DB_REQUEST_TIMEOUT),
   },
 };
 
