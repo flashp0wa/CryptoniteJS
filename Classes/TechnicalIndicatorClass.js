@@ -63,10 +63,10 @@ class TechnicalIndicatorClass {
       const method3 = Math.abs(klineObj.lowPrice - prevClosePrice);
       const tr = Math.max(method1, method2, method3);
       const atr = ((prevAtr * (dataPeriod - 1)) + tr) / dataPeriod;
+      this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].currentAtr = atr;
       if (klineObj.closed) {
         this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].prevClosePrice = klineObj.closePrice;
         this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].prevAtr = atr;
-        this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].currentAtr = atr;
         sproc_InsertIntoAverageTrueRange({
           eventTime: klineObj.closeTime,
           symbol: klineObj.symbol,
@@ -74,7 +74,6 @@ class TechnicalIndicatorClass {
           atr: atr,
         });
       }
-      this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].currentAtr = atr;
       return atr;
     }
   }
@@ -86,10 +85,12 @@ class TechnicalIndicatorClass {
      * @param {object} klineObj Kline object
      */
     function turnpointCheck(inObj, klineObj) {
-      const prices = inObj.prices;
+      const {closePrices} = inObj;
+      const {highPrices} = inObj;
+      const {lowPrices} = inObj;
       switch (true) {
-        case (prices[0] < prices[2]) && (prices[1] < prices[2]) && (prices[3] < prices[2]) && (prices[4] < prices[2]):
-          inObj.resistance = priceRounder(prices[2]);
+        case (closePrices[0] < highPrices[2]) && (closePrices[1] < highPrices[2]) && (closePrices[3] < highPrices[2]) && (closePrices[4] < highPrices[2]):
+          inObj.resistance = priceRounder(highPrices[2]);
           sproc_InsertIntoSupportResistance({
             eventTime: klineObj.closeTime,
             symbol: klineObj.symbol,
@@ -99,8 +100,8 @@ class TechnicalIndicatorClass {
           });
           break;
 
-        case (prices[0] > prices[2]) && (prices[1] > prices[2]) && (prices[3] > prices[2]) && (prices[4] > prices[2]):
-          inObj.support = priceRounder(prices[2]);
+        case (closePrices[0] > lowPrices[2]) && (closePrices[1] > lowPrices[2]) && (closePrices[3] > lowPrices[2]) && (closePrices[4] > lowPrices[2]):
+          inObj.support = priceRounder(lowPrices[2]);
           sproc_InsertIntoSupportResistance({
             eventTime: klineObj.closeTime,
             symbol: klineObj.symbol,
@@ -114,7 +115,6 @@ class TechnicalIndicatorClass {
           break;
       }
     }
-
     if (!klineObj) {
       try {
         const srObj = {};
@@ -125,14 +125,18 @@ class TechnicalIndicatorClass {
             srObj[sr.symbol] = {[sr.timeFrame]: {
               support: sr.support,
               resistance: sr.resistance,
-              prices: [],
+              closePrices: [],
+              lowPrices: [],
+              highPrices: [],
             }};
           }
           const symbol = srObj[sr.symbol];
           symbol[sr.timeFrame] = {
             support: sr.support,
             resistance: sr.resistance,
-            prices: [],
+            closePrices: [],
+            lowPrices: [],
+            highPrices: [],
           };
         }
 
@@ -150,14 +154,20 @@ class TechnicalIndicatorClass {
       if (klineObj.closed) {
         try {
           const timeFrameObj = this.supportResistance[klineObj.symbol][klineObj.timeFrame];
-          if (timeFrameObj.prices.length < 5) {
-            timeFrameObj.prices.push(klineObj.closePrice);
-            if (timeFrameObj.prices.length === 5) {
+          if (timeFrameObj.closePrices.length < 5) {
+            timeFrameObj.closePrices.push(klineObj.closePrice);
+            timeFrameObj.highPrices.push(klineObj.highPrice);
+            timeFrameObj.lowPrices.push(klineObj.lowPrice);
+            if (timeFrameObj.closePrices.length === 5) {
               turnpointCheck(timeFrameObj, klineObj);
             }
           } else {
-            timeFrameObj.prices.shift();
-            timeFrameObj.prices.push(klineObj.closePrice);
+            timeFrameObj.closePrices.shift();
+            timeFrameObj.highPrices.shift();
+            timeFrameObj.lowPrices.shift();
+            timeFrameObj.closePrices.push(klineObj.closePrice);
+            timeFrameObj.lowPrices.push(klineObj.lowPrice);
+            timeFrameObj.highPrices.push(klineObj.highPrice);
             turnpointCheck(timeFrameObj, klineObj);
           }
         } catch (error) {

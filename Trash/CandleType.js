@@ -3,11 +3,11 @@
  * @param {object} inObj Input is an object which has closePrice, openPrice, lowPrice, highPrice properties
  * @return {object} Returns the input object with a `candleTypeId` property
  */
- function stream_getCandleType(inObj) {
+function stream_getCandleType(inObj) {
   const co = inObj.closePrice - inObj.openPrice;
   const hl = inObj.highPrice - inObj.lowPrice;
   const hc = inObj.highPrice - inObj.closePrice;
-  const ol = inObj.openPrice - inObj.lowPr2ice;
+  const ol = inObj.openPrice - inObj.lowPrice;
   const ho = inObj.highPrice - inObj.openPrice;
   const cl = inObj.closePrice - inObj.lowPrice;
   const oc = inObj.openPrice - inObj.closePrice;

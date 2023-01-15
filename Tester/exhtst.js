@@ -6,14 +6,28 @@ const ccxt = require('ccxt');
 const { BinanceFuturesClass } = require('../Classes/Exchanges/Binance/BinanceFuturesClass');
 const { CreateOrder } = require('../Classes/Exchanges/Binance/Order/CreateOrderClass');
 const { BinanceSpotTestClass } = require('../Classes/Exchanges/Binance/BinanceSpotTestClass');
+const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass');
 
 const futures = new BinanceFuturesClass('binanceFutures');
+const spot = new BinanceSpotClass('binanceSpot');
 // const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
   try {
-    // console.log(await futures.excObj.fetchBalance());
-    console.log((await futures.excObj.fetchBalance()).free.USDT);
+
+    let since = new Date('2023-01-14 22:54:59');
+    since = since.setHours(since.getHours() + 1);
+    const ohlcv = await spot.excObj.publicGetKlines({
+      symbol: 'BTCUSDT',
+      interval: '5m',
+      startTime: since,
+      endTime: new Date().getTime(),
+    });
+    console.log(ohlcv);
+
+
+    // console.log(await futures.excObj.fetchBalance());j
+    // console.log((await futures.excObj.fetchBalance()).free.USDT);
   // await futures.loadExchangeId();
   // // futures.loadOpenOrders();
   // await futures.loadMarkets();

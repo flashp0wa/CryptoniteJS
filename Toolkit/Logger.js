@@ -13,7 +13,7 @@ const pretty = winston.format((info) => {
     return info;
   }
   if (info.level === 'warn') {
-    info.message = `${chalk.yellow([info.timestamp])} | ${chalk.yellow(info.level.replace(/^./, (str) => str.toUpperCase()))} | ${chalk.blue(info.senderFunction)} | ${chalk.grey(info.file)} | ${chalk.magenta(info.label)} | ${chalk.yellow(info.message)}`;
+    info.message = `${chalk.yellow([info.timestamp])} | ${chalk.yellowBright(info.level.replace(/^./, (str) => str.toUpperCase()))} | ${chalk.blue(info.senderFunction)} | ${chalk.grey(info.file)} | ${chalk.magenta(info.label)} | ${chalk.yellowBright(info.message)}`;
     return info;
   }
 });

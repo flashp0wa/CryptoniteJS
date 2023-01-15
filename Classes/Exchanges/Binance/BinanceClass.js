@@ -1,15 +1,14 @@
 const {CreateOrder} = require('./Order/CreateOrderClass');
 const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
-// const WebSocket = require('websocket').w3cwebsocket;
 const WebSocket = require('ws');
 const {
-  sproc_AddSymbolToDatabase,
-  singleRead,
+  // sproc_AddSymbolToDatabase,
+  singleRead, sproc_InsertIntoKlines, sproc_RunTechnicalAnalysis,
 } = require('../../../DatabaseConnection/SQLConnector');
 const {StrategyClass} = require('../../StrategyClass');
 const {stream_getCandleType} = require('../../../Streams/OnMessageOperations');
-// const [downloadHistoryData] = require('../../../Toolkit/BncHistoryDownload');
+const {getTechnicalIndicators} = require('../../TechnicalIndicatorClass');
 
 
 class BinanceClass {
@@ -20,12 +19,19 @@ class BinanceClass {
     this.excObj;
     this.openOrders;
     this.strategy;
+    this.technicalIndicator;
   }
   /**
    * Loads strategy class
    */
   loadStrategy() {
     this.strategy = new StrategyClass(this.excObj, this.excName);
+  }
+  /**
+   * Loads technical indicator class
+   */
+  loadTechnicalIndicator() {
+    this.technicalIndicator = getTechnicalIndicators();
   }
   /**
    * Loads open orders for exchagne
@@ -102,7 +108,7 @@ class BinanceClass {
       for (const market of Object.keys(this.markets)) {
         const actualSymbol = this.markets[market].info.symbol;
         this.symbolList.push(actualSymbol);
-        sproc_AddSymbolToDatabase(actualSymbol, this.exchangeId);
+        // sproc_AddSymbolToDatabase(actualSymbol, this.exchangeId);
       }
     } catch (error) {
       ApplicationLog.log({
@@ -129,6 +135,7 @@ class BinanceClass {
       this.loadOpenOrders();
       await this.loadExchangeId();
       await this.loadMarkets();
+      this.loadTechnicalIndicator();
       this.loadSymbols();
       this.loadStrategy();
     } catch (error) {
@@ -141,7 +148,7 @@ class BinanceClass {
     }
   }
 
-  startWss() {
+  async startWss() {
     /**
     *
     * @param {object} jsonStreamObj
@@ -188,8 +195,8 @@ class BinanceClass {
         //   break;
         // }
         case 'kline': {
-          processedStream.openTime = new Date(jsonStreamObj['k']['t']);
-          processedStream.closeTime = new Date(jsonStreamObj['k']['T']);
+          processedStream.openTime = new Date(jsonStreamObj['k']['t']).toISOString().split('.')[0];
+          processedStream.closeTime = new Date(jsonStreamObj['k']['T']).toISOString().split('.')[0];
           processedStream.symbol = jsonStreamObj['k']['s'];
           processedStream.timeFrame = jsonStreamObj['k']['i'];
           processedStream.FirstTradeId = jsonStreamObj['k']['f'];
@@ -231,81 +238,198 @@ class BinanceClass {
           break;
       }
     }
+    /**
+     *  Transfroms kline array to object
+     * @param {array} array
+     * @param {string} symbol
+     * @param {string} timeFrame
+     * @return {object}
+     */
+    function klineResponse2Object(array, symbol, timeFrame) {
+      let processedArray = {};
+      processedArray.openTime = new Date(array[0]).toISOString().split('.')[0];
+      processedArray.closeTime = new Date(array[6]).toISOString().split('.')[0];
+      processedArray.symbol = symbol;
+      processedArray.timeFrame = timeFrame;
+      processedArray.openPrice = parseFloat(array[1]);
+      processedArray.closePrice = parseFloat(array[4]);
+      processedArray.highPrice = parseFloat(array[2]);
+      processedArray.lowPrice = parseFloat(array[3]);
+      processedArray.numberOfTrades = array[8];
+      processedArray.quoteAssetVolume = parseFloat(array[7]);
+      processedArray.volume = parseFloat(array[5]);
+      processedArray.takerBuyBaseAssetVolume = parseFloat(array[9]);
+      processedArray.takerBuyQuoteAssetVolume = parseFloat(array[10]);
+      processedArray.ignore = parseInt(array[11]);
 
-    const streams = [
-      'btcusdt@kline_5m',
-      'ethusdt@kline_5m',
-      // 'ethusdt@ticker',
-    ];
-
-    // Build URL
-    let url;
-    const baseUrl = process.env.BNC_WSS_URL;
-
-    if (!streams) {
-      ApplicationLog.log({
-        level: 'info',
-        message: 'No stream have been defined. Could not build URL',
-        senderFunction: 'startWss',
-        file: 'BinanceClass.js',
-      });
-      throw new Error('No streams have been defined.');
-    } else if (streams.length === 1) {
-      url = baseUrl + 'ws/' + streams;
-    } else {
-      url = `${baseUrl}stream?streams=`;
-      for (let index = 0; index < streams.length; index++) {
-        url += streams[index] + '/';
-        // Do not place forward slash at the end of the URL
-        if (streams.length === index + 1) {
-          url += streams[index];
-        }
-      }
+      processedArray = stream_getCandleType(processedArray);
+      return processedArray;
     }
-    ApplicationLog.log({
-      level: 'info',
-      message: `URL build succeeded. Stream URL: ${url}`,
-      senderFunction: 'startWss',
-      file: 'BinanceClass.js',
-    });
+    /**
+     * Checks for missing kline data between last database entry and current application run time.
+     * @param {array} streams
+     * @return {promise} // Resolves true if success, false if fail.
+     */
+    const dataIntegrityCheck = async (streams) => {
+      return new Promise(async (resolve, reject) => {
+        ApplicationLog.log({
+          level: 'info',
+          message: 'Data integrity check started',
+          senderFunction: 'dataIntegrityCheck',
+          file: 'BinanceClass.js',
+        });
 
-    const ws = new WebSocket(url);
+        for (const stream of streams) {
+          if (stream.includes('kline')) {
+            const symbol = stream.split('@')[0].toUpperCase();
+            const timeframe = stream.split('_')[1];
 
-    ws.on('open', function open() {
-      ApplicationLog.log({
-        level: 'info',
-        message: 'Connection has been established with the stream server',
-        senderFunction: 'startWss',
-        file: 'BinanceClass.js',
+            try {
+              const response = await singleRead(`select * from itvf_GetLastKlineOpenTime('${symbol}', '${timeframe}')`);
+              const lastKlineOpenTime = response[0].openTime;
+              const since = new Date(lastKlineOpenTime).getTime();
+              const klines = await this.excObj.publicGetKlines({
+                symbol: symbol,
+                interval: timeframe,
+                startTime: since,
+                endTime: new Date().getTime(),
+              });
+
+              if (klines.length === 2) {
+                ApplicationLog.log({
+                  level: 'info',
+                  message: `No missing kline data for ${symbol} ${timeframe}`,
+                  senderFunction: 'dataIntegrityCheck',
+                  file: 'BinanceClass.js',
+                });
+                continue;
+              }
+
+              let counter = 0;
+              for (const kline of klines) {
+                if (counter === 0 || counter === klines.length - 1) {
+                  counter++;
+                  continue; // The first kline is already in the database, the last is not closed yet.
+                };
+                const obj = klineResponse2Object(kline, symbol, timeframe);
+                await sproc_InsertIntoKlines(obj);
+                counter++;
+              }
+              await sproc_RunTechnicalAnalysis();
+              resolve(true);
+            } catch (error) {
+              ApplicationLog.log({
+                level: 'info',
+                message: `There was an error while running data integrity check ${error}`,
+                senderFunction: 'dataIntegrityCheck',
+                file: 'BinanceClass.js',
+              });
+              reject(new Error(`Failed to check data integrity ${error}`));
+            }
+          }
+        }
       });
-    });
-
-    ws.onclose = () => {
-      ApplicationLog.log({
-        level: 'info',
-        message: 'Stream connection has been closed... trying to reconnect',
-        senderFunction: 'startWss',
-        file: 'BinanceClass.js',
-      });
-      setTimeout(() => {
-        this.startWss();
-      }, 3);
     };
 
-    ws.on('message', (data) => {
-      data = JSON.parse(data);
-      const processedData = wssJsonStream2Object(data);
+    const onMessage = (processedData) => {
+      sproc_InsertIntoKlines(processedData);
+      this.technicalIndicator.atr(processedData);
+      this.technicalIndicator.sr(processedData);
       this.strategy.run_srCandleTree(processedData);
-    });
+    };
 
-    ws.on('error', function error(error) {
+    try {
+      let url;
+      const baseUrl = process.env.BNC_WSS_URL;
+      const rows = await singleRead(`select * from itvf_GetWss(${this.excObj.id})`);
+      const streams = [];
+      let wssCache = [];
+      let dataIntegrityIsChecked = false;
+
+      for (const row of rows) {
+        streams.push(`${row.symbol.toLowerCase()}@${row.streamType}`);
+      }
+
+      if (streams.length === 1) {
+        url = baseUrl + 'ws/' + streams;
+      } else {
+        url = `${baseUrl}stream?streams=`;
+        for (let index = 0; index < streams.length; index++) {
+          url += streams[index] + '/';
+          // Do not place forward slash at the end of the URL
+          if (streams.length === index + 1) {
+            url += streams[index];
+          }
+        }
+      }
       ApplicationLog.log({
         level: 'info',
-        message: `Connection could not be established with the stream server. ${error}`,
+        message: `URL build succeeded. Stream URL: ${url}`,
         senderFunction: 'startWss',
         file: 'BinanceClass.js',
       });
-    });
+
+      const ws = new WebSocket(url);
+
+      ws.on('open', function open() {
+        ApplicationLog.log({
+          level: 'info',
+          message: 'Connection has been established with the stream server',
+          senderFunction: 'startWss',
+          file: 'BinanceClass.js',
+        });
+      });
+
+      ws.onclose = () => {
+        ApplicationLog.log({
+          level: 'info',
+          message: 'Stream connection has been closed... trying to reconnect',
+          senderFunction: 'startWss',
+          file: 'BinanceClass.js',
+        });
+        setTimeout(() => {
+          this.startWss();
+        }, 3);
+      };
+
+      ws.on('message', (data) => {
+        const dataObj = JSON.parse(data);
+        const processedData = wssJsonStream2Object(dataObj);
+        if (processedData.closed) {
+          if (dataIntegrityIsChecked) {
+            if (wssCache.length !== 0) {
+              for (const klineObj of wssCache) {
+                onMessage(klineObj);
+                wssCache = [];
+              }
+            }
+            onMessage(processedData);
+          } else {
+            wssCache.push(processedData);
+          }
+        }
+      });
+
+      ws.on('error', function error(error) {
+        ApplicationLog.log({
+          level: 'info',
+          message: `Connection could not be established with the stream server. ${error}`,
+          senderFunction: 'startWss',
+          file: 'BinanceClass.js',
+        });
+      });
+
+      dataIntegrityIsChecked = await dataIntegrityCheck(streams);
+      await this.technicalIndicator.loadValues();
+    } catch (error) {
+      ApplicationLog.log({
+        level: 'error',
+        message: `Web Socket Stream failed to start ${error.stack}`,
+        senderFunction: 'startWss',
+        file: 'BinanceClass.js',
+      });
+      process.exit();
+    }
   }
 }
 

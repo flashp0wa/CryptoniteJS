@@ -19,8 +19,17 @@ class StrategyClass {
    * @return {void}
    */
   async run_srCandleTree(klineObj) {
-    if (klineObj.closed === false) return;
-
+    StrategyHandlerLog.log({
+      level: 'info',
+      message: `Incoming candle
+      Symbol: ${klineObj.symbol}
+      TimeFrame: ${klineObj.timeFrame}
+      LowPrice: ${klineObj.lowPrice}
+      HighPrice: ${klineObj.highPrice}
+      `,
+      senderFunction: 'run_srCandleTree',
+      file: 'StrategyClass.js',
+    });
     let timeFrameObj;
 
     if (this.srCandleTree[klineObj.symbol]) {
@@ -856,14 +865,14 @@ class StrategyClass {
     let activator;
 
     // Activate candle tree decision
-    if (klineObj.lowPrice <= supportWTolerance ||
-      klineObj.highPrice >= resistanceWTolerance ||
+    if (klineObj.closePrice <= supportWTolerance ||
+      klineObj.closePrice >= resistanceWTolerance ||
       timeFrameObj.isActive === true) {
       if (klineObj.lowPrice <= supportWTolerance) {
         activator = 'support';
         StrategyHandlerLog.log({
           level: 'info',
-          message: 'Candle tree decision activated by support level',
+          message: `Candle tree decision activated by support (${supportWTolerance}) level`,
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
         });
@@ -872,7 +881,7 @@ class StrategyClass {
         activator = 'resistance';
         StrategyHandlerLog.log({
           level: 'info',
-          message: 'Candle tree decision activated by resistance level',
+          message: `Candle tree decision activated by resistance (${resistanceWTolerance}) level`,
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
         });
@@ -998,7 +1007,12 @@ class StrategyClass {
             file: 'StrategyClass.js',
           });
 
-          capital = (await this.excObj.fetchBalance()).free.USDT;
+          if (process.env.CRYPTONITE_TRADE_MODE === 'Paper') {
+            capital = 10000;
+          } else {
+            capital = (await this.excObj.fetchBalance()).free.USDT;
+          }
+
           break;
         } catch (error) {
           if (fetchBalanceRetry === 3) {

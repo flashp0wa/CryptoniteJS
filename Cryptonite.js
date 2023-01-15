@@ -9,10 +9,8 @@ require('dotenv').config({path: '.env'});
   const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
-  const {getTechnicalIndicators} = require('./Classes/TechnicalIndicatorClass');
 
   await getExchanges().loadExchanges();
-  await getTechnicalIndicators().loadValues();
   loadEventListeners();
   startIntervals();
   startApi();

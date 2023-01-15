@@ -15,13 +15,13 @@ const DiscordApiLog = winston.createLogger({
               return `${chalk.yellow([info.timestamp])} | ${chalk.red(info.level.replace(/^./, (str) => str.toUpperCase()))} | ${chalk.blue(info.senderFunction)} | ${chalk.grey(info.file)} | ${chalk.magenta(info.label)} | ${chalk.red(info.message)}`;
             }
             if (info.level === 'warn') {
-              return `${chalk.yellow([info.timestamp])} | ${chalk.yellow(info.level.replace(/^./, (str) => str.toUpperCase()))} | ${chalk.blue(info.senderFunction)} | ${chalk.grey(info.file)} | ${chalk.magenta(info.label)} | ${chalk.red(info.message)}`;
+              return `${chalk.yellow([info.timestamp])} | ${chalk.yellowBright(info.level.replace(/^./, (str) => str.toUpperCase()))} | ${chalk.blue(info.senderFunction)} | ${chalk.grey(info.file)} | ${chalk.magenta(info.label)} | ${chalk.yellowBright(info.message)}`;
             }
           }),
       ),
     }),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}/Log/DiscordApi.log`,
+      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\DiscordApi-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',

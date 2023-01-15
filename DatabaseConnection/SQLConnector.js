@@ -224,6 +224,29 @@ const sproc_AddSymbolToDatabase = async (symbol, exchangeId) => {
     });
   }
 };
+const sproc_RunTechnicalAnalysis = async () => {
+  try {
+    await poolConnect;
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stored procedure sproc_RunTechnicalAnalysis',
+      senderFunction: 'sproc_RunTechnicalAnalysis',
+      file: 'SQLConnector.js',
+    });
+    const request = await pool.request()
+        .execute('RunTechnicalAnalysis');
+
+    return request;
+  } catch (error) {
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_RunTechnicalAnalysis'. ${error.stack}`,
+      senderFunction: 'sproc_RunTechnicalAnalysis',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
+  }
+};
 const sproc_UpdateOrder = async (inObj) => {
   try {
     await poolConnect;
@@ -248,8 +271,46 @@ const sproc_UpdateOrder = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_UpdateOrder'. Object: ${inObj} ${error.stack}`,
+      message: `Encountered an error running 'sproc_UpdateOrder'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
       senderFunction: 'sproc_UpdateOrder',
+      file: 'SQLConnector.js',
+      discord: 'database-errors',
+    });
+  }
+};
+const sproc_InsertIntoKlines = async (inObj) => {
+  try {
+    await poolConnect;
+    DatabaseLog.log({
+      level: 'silly',
+      message: 'Running stroed procedure Insert Into Klines',
+      senderFunction: 'sproc_InsertIntoKlines',
+      file: 'SQLConnector.js',
+    });
+    const request = await pool.request()
+        .input('openTime', inObj.openTime)
+        .input('openPrice', inObj.openPrice)
+        .input('highPrice', inObj.highPrice)
+        .input('lowPrice', inObj.lowPrice)
+        .input('closePrice', inObj.closePrice)
+        .input('volume', inObj.volume)
+        .input('closeTime', inObj.closeTime)
+        .input('quoteAssetVolume', inObj.quoteAssetVolume)
+        .input('numberOfTrades', inObj.numberOfTrades)
+        .input('takerBuyBaseAssetVolume', inObj.takerBuyBaseAssetVolume)
+        .input('takerBuyQuoteAssetVolume', inObj.takerBuyQuoteAssetVolume)
+        .input('ignore', inObj.ignore)
+        .input('timeFrame', inObj.timeFrame)
+        .input('symbol', inObj.symbol)
+        .input('candleTypeId', inObj.candleTypeId)
+        .execute('InsertIntoKlines');
+
+    return request;
+  } catch (error) {
+    DatabaseLog.log({
+      level: 'error',
+      message: `Encountered an error running 'sproc_InsertIntoKlines' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+      senderFunction: 'sproc_InsertIntoOrder',
       file: 'SQLConnector.js',
       discord: 'database-errors',
     });
@@ -299,7 +360,7 @@ const sproc_InsertIntoOrder = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_InsertIntoOrder' Object: ${inObj}. ${error.stack}`,
+      message: `Encountered an error running 'sproc_InsertIntoOrder' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
       senderFunction: 'sproc_InsertIntoOrder',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -332,7 +393,7 @@ const sproc_InsertIntoOrderFailed = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_InsertIntoOrderFailed' Object: ${inObj}. ${error.stack}`,
+      message: `Encountered an error running 'sproc_InsertIntoOrderFailed' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
       senderFunction: 'sproc_InsertIntoOrderFailed',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -364,7 +425,7 @@ const sproc_InsertIntoOrderPaper = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_InsertIntoOrderPaper' Object: ${inObj}. ${error.stack}`,
+      message: `Encountered an error running 'sproc_InsertIntoOrderPaper' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
       senderFunction: 'sproc_InsertIntoOrderPaper',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -391,7 +452,7 @@ const sproc_InsertIntoAverageTrueRange = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_InsertIntoAverageTrueRange' Object: ${inObj}. ${error.stack}`,
+      message: `Encountered an error running 'sproc_InsertIntoAverageTrueRange' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
       senderFunction: 'sproc_InsertIntoAverageTrueRange',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -418,7 +479,7 @@ const sproc_InsertIntoSupportResistance = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_InsertIntoSupportResistance'. Object: ${inObj} ${error.stack}`,
+      message: `Encountered an error running 'sproc_InsertIntoSupportResistance'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
       senderFunction: 'sproc_InsertIntoSupportResistance',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -459,7 +520,7 @@ const sproc_GatherSymbolTAData = async (inObj) => {
   } catch (error) {
     DatabaseLog.log({
       level: 'error',
-      message: `Encountered an error running 'sproc_GatherSymbolTAData. Object: ${inObj} ${error.stack}`,
+      message: `Encountered an error running 'sproc_GatherSymbolTAData. Object: ${JSON.stringify(inObj)} ${error.stack}`,
       senderFunction: 'sproc_GatherSymbolTAData',
       file: 'SQLConnector.js',
       discord: 'database-errors',
@@ -472,10 +533,12 @@ const sproc_GatherSymbolTAData = async (inObj) => {
 module.exports = {
   streamRead,
   singleRead,
+  sproc_RunTechnicalAnalysis,
   sproc_GatherSymbolTAData,
   sproc_ImportBinanceCsv,
   sproc_AddSymbolToDatabase,
   sproc_InsertIntoOrder,
+  sproc_InsertIntoKlines,
   sproc_InsertIntoOrderPaper,
   sproc_InsertIntoOrderFailed,
   sproc_InsertIntoAverageTrueRange,

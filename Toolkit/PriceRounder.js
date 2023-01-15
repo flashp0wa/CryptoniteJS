@@ -6,8 +6,6 @@ const {ApplicationLog} = require('./Logger');
  */
 function priceRounder(num) {
   switch (true) {
-    case num > 1000:
-      return Math.round(num / 100) * 100;
     case num > 100:
       return Math.round(num / 10) * 10;
     case num > 10:

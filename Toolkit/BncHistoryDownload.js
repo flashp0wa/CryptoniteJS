@@ -39,7 +39,11 @@ async function downloadHistoryData(inObj) {
       throw (new Error('End Date cannot be bigger than yesterdays date'));
     }
     if (!endDate) {
-      dates = [startDate.toISOString().split('T')[0]];
+      if (inObj.timeFrame === 'daily') {
+        dates = [startDate.toISOString().split('T')[0]];
+      } else {
+        dates = [startDate.toISOString().split('T')[0].slice(0, 7)];
+      }
     } else {
       if (inObj.timeFrame === 'daily') {
         tempArray = getDatesArray(startDate, endDate, 'days');
@@ -115,9 +119,6 @@ async function downloadHistoryData(inObj) {
             senderFunction: 'downloadHistoryData',
             file: 'BncHistoryDownload.js',
           });
-          // BncHistoryDownloadLog.info('Symbol does not exist');
-          // resolve(true);
-          // return;
           if (oneSuccessfulDownload) {
             BncHistoryDownloadLog.log({
               level: 'info',
@@ -233,7 +234,7 @@ async function binanceHistoryData(inObj) {
 
       BncHistoryDownloadLog.log({
         level: 'info',
-        message: `${file} extract done.`,
+        message: `${file} extract done`,
         senderFunction: 'downloadHistoryData',
         file: 'BncHistoryDownload.js',
       });
@@ -260,7 +261,7 @@ async function binanceHistoryData(inObj) {
 
       BncHistoryDownloadLog.log({
         level: 'info',
-        message: `${csvFile} delete done.`,
+        message: `${csvFile} delete done`,
         senderFunction: 'downloadHistoryData',
         file: 'BncHistoryDownload.js',
       });

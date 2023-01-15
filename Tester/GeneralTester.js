@@ -1,7 +1,4 @@
 /*eslint-disable*/
 
 
-const obj = {
-  lolka: 'polka'
-}
-
+const date = new Date(1499040000000);
