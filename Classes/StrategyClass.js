@@ -21,11 +21,13 @@ class StrategyClass {
   async run_srCandleTree(klineObj) {
     StrategyHandlerLog.log({
       level: 'info',
-      message: `Incoming candle
+      message: `Incoming candle --->
       Symbol: ${klineObj.symbol}
       TimeFrame: ${klineObj.timeFrame}
       LowPrice: ${klineObj.lowPrice}
       HighPrice: ${klineObj.highPrice}
+      ClosePrice: ${klineObj.closePrice}
+      OpenPrice: ${klineObj.openPrice}
       `,
       senderFunction: 'run_srCandleTree',
       file: 'StrategyClass.js',
@@ -868,7 +870,7 @@ class StrategyClass {
     if (klineObj.closePrice <= supportWTolerance ||
       klineObj.closePrice >= resistanceWTolerance ||
       timeFrameObj.isActive === true) {
-      if (klineObj.lowPrice <= supportWTolerance) {
+      if (klineObj.closePrice <= supportWTolerance) {
         activator = 'support';
         StrategyHandlerLog.log({
           level: 'info',
@@ -877,7 +879,7 @@ class StrategyClass {
           file: 'StrategyClass.js',
         });
       }
-      if (klineObj.highPrice >= resistanceWTolerance) {
+      if (klineObj.closePrice >= resistanceWTolerance) {
         activator = 'resistance';
         StrategyHandlerLog.log({
           level: 'info',

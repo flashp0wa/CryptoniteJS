@@ -205,7 +205,7 @@ class BinanceClass {
           processedStream.closePrice = parseFloat(jsonStreamObj['k']['c']);
           processedStream.highPrice = parseFloat(jsonStreamObj['k']['h']);
           processedStream.lowPrice = parseFloat(jsonStreamObj['k']['l']);
-          processedStream.baseAssetVolume = parseFloat(jsonStreamObj['k']['v']);
+          processedStream.volume = parseFloat(jsonStreamObj['k']['v']);
           processedStream.numberOfTrades = jsonStreamObj['k']['n'];
           processedStream.closed = jsonStreamObj['k']['x'];
           processedStream.quoteAssetVolume = parseFloat(jsonStreamObj['k']['q']);
