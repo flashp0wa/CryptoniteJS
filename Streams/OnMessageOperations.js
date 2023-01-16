@@ -286,7 +286,7 @@ function stream_getCandleType(inObj) {
         senderFunction: 'stream_getCandleType',
         file: 'OnMessageOperations.js',
       });
-      inObj.candleTypeId = 'none';
+      inObj.candleTypeId = 14;
       return inObj;
   }
 }

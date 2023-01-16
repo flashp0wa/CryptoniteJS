@@ -1,4 +1,4 @@
-const obj = JSON.parse('{"openTime":"2023-01-15T08:10:00.000Z","closeTime":"2023-01-15T08:14:59.999Z","symbol":"BTCUSDT","timeFrame":"5m","openPrice":20737.54,"closePrice":20734.22,"highPrice":20740,"lowPrice":20720.09,"numberOfTrades":12657,"quoteAssetVolume":6288673.7134068}');
+const obj = JSON.parse('{\"openPrice\":1575.08,\"closePrice\":1575,\"highPrice\":1575.09,\"lowPrice\":1574.99}');
 
 function stream_getCandleType(inObj) {
   const co = inObj.closePrice - inObj.openPrice;
@@ -8,6 +8,14 @@ function stream_getCandleType(inObj) {
   const ho = inObj.highPrice - inObj.openPrice;
   const cl = inObj.closePrice - inObj.lowPrice;
   const oc = inObj.openPrice - inObj.closePrice;
+
+  console.log(co);
+  console.log(hl);
+  console.log(hc);
+  console.log(ol);
+  console.log(ho);
+  console.log(cl);
+  console.log(oc);
 
   switch (true) {
     case (co) === 0:

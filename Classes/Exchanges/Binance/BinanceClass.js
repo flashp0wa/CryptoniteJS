@@ -22,10 +22,11 @@ class BinanceClass {
     this.technicalIndicator;
   }
   /**
+   * @param {array} wss // array of web socket streams
    * Loads strategy class
    */
-  loadStrategy() {
-    this.strategy = new StrategyClass(this.excObj, this.excName);
+  loadStrategy(wss) {
+    this.strategy = new StrategyClass(this.excObj, this.excName, wss);
   }
   /**
    * Loads technical indicator class
@@ -137,7 +138,6 @@ class BinanceClass {
       await this.loadMarkets();
       this.loadTechnicalIndicator();
       this.loadSymbols();
-      this.loadStrategy();
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
@@ -213,7 +213,7 @@ class BinanceClass {
           processedStream.takerBuyQuoteAssetVolume = parseFloat(jsonStreamObj['k']['Q']);
           processedStream.ignore = parseInt(jsonStreamObj['k']['B']);
 
-          processedStream = stream_getCandleType(processedStream);
+          if (processedStream.closed) processedStream = stream_getCandleType(processedStream);
           return processedStream;
         }
 
@@ -332,7 +332,9 @@ class BinanceClass {
     };
 
     const onMessage = (processedData) => {
-      sproc_InsertIntoKlines(processedData);
+      if (processedData.closed) {
+        sproc_InsertIntoKlines(processedData);
+      }
       this.technicalIndicator.atr(processedData);
       this.technicalIndicator.sr(processedData);
       this.strategy.run_srCandleTree(processedData);
@@ -349,6 +351,8 @@ class BinanceClass {
       for (const row of rows) {
         streams.push(`${row.symbol.toLowerCase()}@${row.streamType}`);
       }
+
+      this.loadStrategy(streams);
 
       if (streams.length === 1) {
         url = baseUrl + 'ws/' + streams;
@@ -395,18 +399,16 @@ class BinanceClass {
       ws.on('message', (data) => {
         const dataObj = JSON.parse(data);
         const processedData = wssJsonStream2Object(dataObj);
-        if (processedData.closed) {
-          if (dataIntegrityIsChecked) {
-            if (wssCache.length !== 0) {
-              for (const klineObj of wssCache) {
-                onMessage(klineObj);
-                wssCache = [];
-              }
+        if (dataIntegrityIsChecked && this.technicalIndicator.isLoaded) {
+          if (wssCache.length !== 0) {
+            for (const klineObj of wssCache) {
+              onMessage(klineObj);
+              wssCache = [];
             }
-            onMessage(processedData);
-          } else {
-            wssCache.push(processedData);
           }
+          onMessage(processedData);
+        } else {
+          wssCache.push(processedData);
         }
       });
 

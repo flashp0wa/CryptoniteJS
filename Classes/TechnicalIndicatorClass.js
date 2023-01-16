@@ -1,13 +1,12 @@
 const {
   singleRead,
-  sproc_InsertIntoAverageTrueRange,
-  sproc_InsertIntoSupportResistance,
 } = require('../DatabaseConnection/SQLConnector');
 const {ApplicationLog} = require('../Toolkit/Logger');
 const {priceRounder} = require('../Toolkit/PriceRounder');
 
 class TechnicalIndicatorClass {
   constructor() {
+    this.isLoaded = false;
     this.averageTrueRange;
     this.supportResistance;
   }
@@ -67,12 +66,6 @@ class TechnicalIndicatorClass {
       if (klineObj.closed) {
         this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].prevClosePrice = klineObj.closePrice;
         this.averageTrueRange[klineObj.symbol][klineObj.timeFrame].prevAtr = atr;
-        sproc_InsertIntoAverageTrueRange({
-          eventTime: klineObj.closeTime,
-          symbol: klineObj.symbol,
-          timeFrame: klineObj.timeFrame,
-          atr: atr,
-        });
       }
       return atr;
     }
@@ -82,33 +75,18 @@ class TechnicalIndicatorClass {
     /**
      * Checks for turnpoint in price
      * @param {object} inObj Symbol / TimeFrame object
-     * @param {object} klineObj Kline object
      */
-    function turnpointCheck(inObj, klineObj) {
+    function turnpointCheck(inObj) {
       const {closePrices} = inObj;
       const {highPrices} = inObj;
       const {lowPrices} = inObj;
       switch (true) {
         case (closePrices[0] < highPrices[2]) && (closePrices[1] < highPrices[2]) && (closePrices[3] < highPrices[2]) && (closePrices[4] < highPrices[2]):
           inObj.resistance = priceRounder(highPrices[2]);
-          sproc_InsertIntoSupportResistance({
-            eventTime: klineObj.closeTime,
-            symbol: klineObj.symbol,
-            timeFrame: klineObj.timeFrame,
-            resistance: inObj.resistance,
-            support: null,
-          });
           break;
 
         case (closePrices[0] > lowPrices[2]) && (closePrices[1] > lowPrices[2]) && (closePrices[3] > lowPrices[2]) && (closePrices[4] > lowPrices[2]):
           inObj.support = priceRounder(lowPrices[2]);
-          sproc_InsertIntoSupportResistance({
-            eventTime: klineObj.closeTime,
-            symbol: klineObj.symbol,
-            timeFrame: klineObj.timeFrame,
-            resistance: null,
-            support: inObj.support,
-          });
           break;
 
         default:
@@ -159,7 +137,7 @@ class TechnicalIndicatorClass {
             timeFrameObj.highPrices.push(klineObj.highPrice);
             timeFrameObj.lowPrices.push(klineObj.lowPrice);
             if (timeFrameObj.closePrices.length === 5) {
-              turnpointCheck(timeFrameObj, klineObj);
+              turnpointCheck(timeFrameObj);
             }
           } else {
             timeFrameObj.closePrices.shift();
@@ -168,7 +146,7 @@ class TechnicalIndicatorClass {
             timeFrameObj.closePrices.push(klineObj.closePrice);
             timeFrameObj.lowPrices.push(klineObj.lowPrice);
             timeFrameObj.highPrices.push(klineObj.highPrice);
-            turnpointCheck(timeFrameObj, klineObj);
+            turnpointCheck(timeFrameObj);
           }
         } catch (error) {
           ApplicationLog.log({
@@ -195,6 +173,7 @@ class TechnicalIndicatorClass {
       });
       await this.atr();
       await this.sr();
+      this.isLoaded = true;
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
