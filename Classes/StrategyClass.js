@@ -83,6 +83,11 @@ class StrategyClass {
       HighPrice: ${klineObj.highPrice}
       ClosePrice: ${klineObj.closePrice}
       OpenPrice: ${klineObj.openPrice}
+      Support: ${support}
+      Resistance: ${resistance}
+      Support With Tolerance: ${supportWTolerance}
+      Resistance With Tolerance: ${resistanceWTolerance}
+      Activator: ${timeFrameObj.activator}
       `,
         senderFunction: 'run_srCandleTree',
         file: 'StrategyClass.js',
@@ -908,23 +913,6 @@ class StrategyClass {
           });
         }
       }
-
-      StrategyHandlerLog.log({
-        level: 'info',
-        message: `
-        Symbol: ${klineObj.symbol}
-        TimeFrame: ${klineObj.timeFrame}
-        LowPrice: ${klineObj.lowPrice}
-        HighPrice: ${klineObj.highPrice}
-        Support: ${support}
-        Resistance: ${resistance}
-        Support With Tolerance: ${supportWTolerance}
-        Resistance With Tolerance: ${resistanceWTolerance}
-        Activator: ${timeFrameObj.activator}
-        `,
-        senderFunction: 'run_srCandleTree',
-        file: 'StrategyClass.js',
-      });
 
       timeFrameObj.closePrices.push(klineObj.closePrice);
       timeFrameObj.openPrices.push(klineObj.openPrice);
