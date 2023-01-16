@@ -45,7 +45,6 @@ class StrategyClass {
     const supportWTolerance = support + (support * process.env.SR_TOLERANCE);
     const resistanceWTolerance = resistance - (resistance * process.env.SR_TOLERANCE);
     const timeFrameObj = this.srCandleTree[klineObj.symbol][klineObj.timeFrame];
-    let activator;
 
     // Activate candle tree decision
     if ((klineObj.closePrice <= supportWTolerance ||
@@ -910,6 +909,23 @@ class StrategyClass {
         }
       }
 
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: `
+        Symbol: ${klineObj.symbol}
+        TimeFrame: ${klineObj.timeFrame}
+        LowPrice: ${klineObj.lowPrice}
+        HighPrice: ${klineObj.highPrice}
+        Support: ${support}
+        Resistance: ${resistance}
+        Support With Tolerance: ${supportWTolerance}
+        Resistance With Tolerance: ${resistanceWTolerance}
+        Activator: ${timeFrameObj.activator}
+        `,
+        senderFunction: 'run_srCandleTree',
+        file: 'StrategyClass.js',
+      });
+
       timeFrameObj.closePrices.push(klineObj.closePrice);
       timeFrameObj.openPrices.push(klineObj.openPrice);
       timeFrameObj.lowPrices.push(klineObj.lowPrice);
@@ -925,23 +941,6 @@ class StrategyClass {
         });
         return;
       }
-
-      StrategyHandlerLog.log({
-        level: 'info',
-        message: `
-        Symbol: ${klineObj.symbol}
-        TimeFrame: ${klineObj.timeFrame}
-        LowPrice: ${klineObj.lowPrice}
-        HighPrice: ${klineObj.highPrice}
-        Support: ${support}
-        Resistance: ${resistance}
-        Support With Tolerance: ${supportWTolerance}
-        Resistance With Tolerance: ${resistanceWTolerance}
-        Activator: ${activator}
-        `,
-        senderFunction: 'run_srCandleTree',
-        file: 'StrategyClass.js',
-      });
 
       const candleTreeResult = candleTree(timeFrameObj.activator, ...timeFrameObj.candleTypeIds);
       if (!candleTreeResult.side && timeFrameObj.closePrices.length === 5) {
