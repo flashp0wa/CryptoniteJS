@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+
+  app:
+    container_name: SD-CRY-APP
+    image: cryptonite:1.0-${CRY_ENV}
+    build:
+      context: .
+      dockerfile: dockerfile
+      args:
+        packages: "nano wget curl"
+        environment: ${CRY_ENV}
+    ports:
+      - "3000:3000"
+    networks:
+      - cry-nw
+    volumes:
+      - ./Log:/var/www/Log
+    depends_on:
+      - mssql
+    command: ./wait-for.sh SD-CRY-SQL:1433 -- node ./Cryptonite.js
+  
+  mssql:
+    container_name: SD-CRY-SQL
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      - cry-nw
+    ports:
+      - "1433:1433"
+    volumes:
+      - SD-CRY-SQL-VOL:/var/opt/mssql
+    environment: 
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=N8jichYt
+    
+
+networks:
+  cry-nw:
+    name: cryptonite-nw
+    external: true
+
+volumes:
+  SD-CRY-SQL-VOL:
+    external: true

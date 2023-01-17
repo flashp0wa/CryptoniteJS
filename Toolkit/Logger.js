@@ -33,7 +33,7 @@ const ApplicationLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\Application-%DATE%.log`,
+      filename: `./Log/Application-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -61,7 +61,7 @@ const TraderLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\Trader-%DATE%.log`,
+      filename: `./Log/Trader-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -89,7 +89,7 @@ const SupportResistanceCandleTreeLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\SupportResistanceCandleTreeLog-%DATE%.log`,
+      filename: `./Log/SupportResistanceCandleTreeLog-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -117,7 +117,7 @@ const DatabaseLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\Database-%DATE%.log`,
+      filename: `./Log/Database-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -145,7 +145,7 @@ const QueryProcessorLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\QueryProcessorLog-%DATE%.log`,
+      filename: `./Log/QueryProcessorLog-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -173,7 +173,7 @@ const ApiLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\Api-%DATE%.log`,
+      filename: `./Log/Api-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -222,7 +222,7 @@ const StrategyHandlerLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\StrategyHandler-%DATE%.log`,
+      filename: `./Log/StrategyHandler-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',
@@ -250,7 +250,7 @@ const DiscordApiLog = winston.createLogger({
     }),
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\DiscordApi-%DATE%.log`,
+      filename: `./Log/DiscordApi-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',

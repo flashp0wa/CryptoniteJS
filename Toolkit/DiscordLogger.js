@@ -21,7 +21,7 @@ const DiscordApiLog = winston.createLogger({
       ),
     }),
     new winston.transports.DailyRotateFile({
-      filename: `${process.env.CRYPTONITE_ROOT}\\Log\\DiscordApi-%DATE%.log`,
+      filename: `./Log/DiscordApi-%DATE%.log`,
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
       maxFiles: '14d',

@@ -28,7 +28,7 @@ class Discord extends Transport {
     }
 
     setImmediate(async () => {
-      if (process.env.CRYPTONITE_ENV !== 'Test') {
+      if (process.env.CRYPTONITE_ENV !== 'Dev') {
         info.message = discordify({
           obj: info.obj,
           message: info.message,
