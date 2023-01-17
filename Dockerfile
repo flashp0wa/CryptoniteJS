@@ -4,6 +4,7 @@ LABEL author="f0"
 
 ENV NODE_ENV=${environment}
 ENV PORT=3000
+ENV packages="nano"
 
 WORKDIR /var/www
 

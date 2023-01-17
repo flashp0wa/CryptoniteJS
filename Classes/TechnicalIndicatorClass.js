@@ -2,7 +2,6 @@ const {
   singleRead,
 } = require('../DatabaseConnection/SQLConnector');
 const {ApplicationLog} = require('../Toolkit/Logger');
-const {priceRounder} = require('../Toolkit/PriceRounder');
 
 class TechnicalIndicatorClass {
   constructor() {
@@ -82,11 +81,11 @@ class TechnicalIndicatorClass {
       const {lowPrices} = inObj;
       switch (true) {
         case (closePrices[0] < highPrices[2]) && (closePrices[1] < highPrices[2]) && (closePrices[3] < highPrices[2]) && (closePrices[4] < highPrices[2]):
-          inObj.resistance = priceRounder(highPrices[2]);
+          inObj.resistance = highPrices[2];
           break;
 
         case (closePrices[0] > lowPrices[2]) && (closePrices[1] > lowPrices[2]) && (closePrices[3] > lowPrices[2]) && (closePrices[4] > lowPrices[2]):
-          inObj.support = priceRounder(lowPrices[2]);
+          inObj.support = lowPrices[2];
           break;
 
         default:

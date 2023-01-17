@@ -4,7 +4,7 @@ services:
 
   app:
     container_name: SD-CRY-APP
-    image: cryptonite:1.0-${CRY_ENV}
+    image: ghcr.io/flashp0wa/cryptonite:1.0-${CRY_ENV}
     build:
       context: .
       dockerfile: dockerfile
@@ -19,7 +19,7 @@ services:
       - ./Log:/var/www/Log
     depends_on:
       - mssql
-    command: ./wait-for.sh SD-CRY-SQL:1433 -- node ./Cryptonite.js
+    command: ./wait-for.sh SD-CRY-SQL:1433 -t 30 -- node ./Cryptonite.js
   
   mssql:
     container_name: SD-CRY-SQL

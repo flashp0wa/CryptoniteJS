@@ -1,8 +1,8 @@
 'use strict';
 require('dotenv').config({path: '.env'});
 (async () => {
-  // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
-  // await loadDiscordApi();
+  const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
+  await loadDiscordApi();
 
   const {ApplicationLog} = require('./Toolkit/Logger');
   const {loadEventListeners} = require('./Loaders/Events');
@@ -14,7 +14,7 @@ require('dotenv').config({path: '.env'});
   loadEventListeners();
   startIntervals();
   startApi();
-  // getExchanges().binanceFutures.startWss();
+  getExchanges().binanceFutures.startWss();
   ApplicationLog.log({
     level: 'info',
     message: `Application online, let the money shower! | Trade Mode: ${process.env.CRYPTONITE_TRADE_MODE}`,
