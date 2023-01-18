@@ -77,6 +77,8 @@ class StrategyClass {
       StrategyHandlerLog.log({
         level: 'info',
         message: `Incoming candle --->
+      CloseTime: ${klineObj.closeTime}
+      OpenTime: ${klineObj.openTime}
       Symbol: ${klineObj.symbol}
       TimeFrame: ${klineObj.timeFrame}
       LowPrice: ${klineObj.lowPrice}
