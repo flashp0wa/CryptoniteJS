@@ -314,7 +314,9 @@
     "yauzl": "^2.10.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node ./Cryptonite-dev.js",
+    "prod": "node ./Cryptonite.js"
   },
   "repository": {
     "type": "git",

@@ -22,7 +22,7 @@ const DiscordApiLog = winston.createLogger({
     }),
     new winston.transports.DailyRotateFile({
       filename: `./Log/DiscordApi-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD-HH',
+      datePattern: 'YYYY-MM-DD',
       maxSize: '20m',
       maxFiles: '14d',
     }),
