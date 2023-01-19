@@ -878,7 +878,7 @@ class StrategyClass {
           strategy: 'Candle-Tree',
         };
 
-        if (closeEntryCandle < resistance) {
+        if ((closeEntryCandle < resistance) && side === 2) {
           orderObj.reason = 'Entry candle close price is lower than resistance level.';
           sproc_InsertIntoOrderFailed(orderObj);
           StrategyHandlerLog.log({
@@ -887,7 +887,7 @@ class StrategyClass {
             senderFunction: 'placeOrder',
             file: 'StrategyClass.js',
           });
-        } else if (closeEntryCandle > support) {
+        } else if ((closeEntryCandle > support) && side === 2) {
           orderObj.reason = 'Entry candle close price is higher than support level.';
           sproc_InsertIntoOrderFailed(orderObj);
           StrategyHandlerLog.log({
