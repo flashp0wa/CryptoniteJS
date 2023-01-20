@@ -15,13 +15,13 @@ class CreateOcoOrder extends Order {
    * Write order response data to database
    */
   processOrderResponse() {
+    this.traderLog.log({
+      level: 'info',
+      message: 'Processing OCO order response...',
+      senderFunction: 'processOrderResponse',
+      file: 'CreateOcoOrder.js',
+    });
     try {
-      this.traderLog.log({
-        level: 'info',
-        message: 'Processing OCO order response...',
-        senderFunction: 'processOrderResponse',
-        file: 'CreateOcoOrder.js',
-      });
       const ocoStopLossDataObj = {
         symbol: this.orderResponse['orderReports'][0].symbol,
         orderId: this.orderResponse['orderReports'][0].orderId,
@@ -84,7 +84,7 @@ class CreateOcoOrder extends Order {
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Could not process OCO order response. ${error}`,
+        message: `Could not process OCO order response. ${error.stack}`,
         senderFunction: 'createOrder',
         file: 'CreateOcoOrder.js',
         discord: 'application-errors',

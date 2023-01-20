@@ -327,5 +327,8 @@
   "bugs": {
     "url": "https://github.com/flashp0wa/CryptoniteJS/issues"
   },
-  "homepage": "https://github.com/flashp0wa/CryptoniteJS#readme"
+  "homepage": "https://github.com/flashp0wa/CryptoniteJS#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.2.4"
+  }
 }

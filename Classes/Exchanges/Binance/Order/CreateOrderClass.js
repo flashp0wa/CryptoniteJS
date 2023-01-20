@@ -28,13 +28,13 @@ class CreateOrder extends Order {
    * @param {object} inObj Input object
    */
   processOrderResponse(inObj) {
+    this.traderLog.log({
+      level: 'info',
+      message: `Processing ${this.type} order response`,
+      senderFunction: 'processOrderResponse',
+      file: 'createOrderClass.js',
+    });
     try {
-      this.traderLog.log({
-        level: 'info',
-        message: `Processing ${this.orderType.type} order response`,
-        senderFunction: 'processOrderResponse',
-        file: 'createOrderClass.js',
-      });
       const dataObj = {
         eventTime: this.orderResponse.datetime,
         updateTime: this.orderResponse.info.updateTime ? new Date(Number(this.orderResponse.info.updateTime)).toISOString(): null,
@@ -89,7 +89,7 @@ class CreateOrder extends Order {
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Failed to write order response to database. ${error}`,
+        message: `Failed to write order response to database. ${error.stack}`,
         senderFunction: 'processOrderResponse',
         file: 'CreateOrderClass.js',
         discord: 'application-errors',

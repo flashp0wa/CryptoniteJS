@@ -95,13 +95,6 @@ class StrategyClass {
         file: 'StrategyClass.js',
       });
 
-      StrategyHandlerLog.log({
-        level: 'info',
-        message: 'Support/Resistance strategy initiated...',
-        senderFunction: 'run_srCandleTree',
-        file: 'StrategyClass.js',
-      });
-
       /**
    * Returns an object with the trade side (buy/sell), strategy id and candle stack. If no match found returns an empty object
    * @param {string} activator Support or Resistance
@@ -802,7 +795,7 @@ class StrategyClass {
       function placeOrder(symbol, excName, side, atr, support, resistance, timeFrameObj, capital, event) {
         StrategyHandlerLog.log({
           level: 'info',
-          message: 'Placing order...',
+          message: 'Checking order validity...',
           senderFunction: 'placeOrder',
           file: 'StrategyClass.js',
         });
@@ -908,8 +901,8 @@ class StrategyClass {
         } else {
           event.emit('CreateOrder', orderObj);
           StrategyHandlerLog.log({
-            level: 'warn',
-            message: 'Order placement initiated',
+            level: 'Info',
+            message: 'Placing order...',
             senderFunction: 'placeOrder',
             file: 'StrategyClass.js',
           });
@@ -940,7 +933,6 @@ class StrategyClass {
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
           obj: timeFrameObj,
-          discord: 'application-warnings',
         });
         setTimeout(() => {
           resetTimeFrameObj(timeFrameObj);
@@ -953,7 +945,6 @@ class StrategyClass {
           senderFunction: 'run_srCandleTree',
           file: 'StrategyClass.js',
           obj: timeFrameObj,
-          discord: 'application-warnings',
         });
 
         return;
