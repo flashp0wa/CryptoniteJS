@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  app:
+  SD-CRY-APP:
     container_name: SD-CRY-APP
     image: ghcr.io/flashp0wa/cryptonite:1.0-${CRY_ENV}
     build:
@@ -18,10 +18,10 @@ services:
     volumes:
       - ./Log:/var/www/Log
     depends_on:
-      - mssql
+      - SD-CRY-SQL
     command: ./wait-for.sh SD-CRY-SQL:1433 -t 30 -- node ./Cryptonite.js
   
-  mssql:
+  SD-CRY-SQL:
     container_name: SD-CRY-SQL
     image: mcr.microsoft.com/mssql/server:2019-latest
     networks:
@@ -30,6 +30,7 @@ services:
       - "1433:1433"
     volumes:
       - SD-CRY-SQL-VOL:/var/opt/mssql
+      - ./Inboxes/BinanceData:/tmp:rw
     environment: 
       - ACCEPT_EULA=Y
       - SA_PASSWORD=N8jichYt

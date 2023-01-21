@@ -835,7 +835,7 @@ class StrategyClass {
         }
         const positionSize = (capital * risk) / (Math.abs(openEntryCandle - stop));
         const margin = positionSize * openEntryCandle / leverage;
-        const criteria = margin < (capital * process.env.POS_CRITERIA * leverage) / openEntryCandle;
+        const criteria = margin < capital * process.env.POS_CRITERIA;
 
         StrategyHandlerLog.log({
           level: 'info',

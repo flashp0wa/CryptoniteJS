@@ -248,7 +248,7 @@ async function binanceHistoryData(inObj) {
         file: 'BncHistoryDownload.js',
       });
 
-      await sproc_ImportBinanceCsv(symbol, timeFrame, csvPathFull);
+      await sproc_ImportBinanceCsv(symbol, timeFrame, csvFile);
 
       BncHistoryDownloadLog.log({
         level: 'info',
