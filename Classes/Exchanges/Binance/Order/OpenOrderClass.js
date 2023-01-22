@@ -53,7 +53,7 @@ class OpenOrder {
               cost: res.cost,
               orderStatus: res.status,
               tradeStatus: res.info.status,
-              orderId: Number(order.orderId),
+              orderId: order.orderId,
               fee: !res.fee ? null : res.fee,
               exchangeId: this.excObj.id,
               updateTime: new Date(Number(res.info.updateTime)).toISOString(),
