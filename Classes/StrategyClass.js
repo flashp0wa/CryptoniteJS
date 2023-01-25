@@ -819,10 +819,10 @@ class StrategyClass {
         if (side === 1) {
           if (orderSide === 'buy') {
             stop = absLow - atr;
-            limit = openEntryCandle + (1.5 * (openEntryCandle - absLow + atr));
+            limit = openEntryCandle + (2 * (openEntryCandle - absLow + atr));
           } else {
             stop = absHigh + atr;
-            limit = openEntryCandle - (1.5 * (absHigh + atr - openEntryCandle));
+            limit = openEntryCandle - (2 * (absHigh + atr - openEntryCandle));
           }
         } else {
           if (orderSide === 'buy') {

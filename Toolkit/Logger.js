@@ -34,7 +34,7 @@ const ApplicationLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/Application-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -62,7 +62,7 @@ const TraderLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/Trader-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -90,7 +90,7 @@ const SupportResistanceCandleTreeLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/SupportResistanceCandleTreeLog-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -118,7 +118,7 @@ const DatabaseLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/Database-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -146,7 +146,7 @@ const QueryProcessorLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/QueryProcessorLog-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -174,7 +174,7 @@ const ApiLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/Api-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -223,7 +223,7 @@ const StrategyHandlerLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/StrategyHandler-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),
@@ -251,7 +251,7 @@ const DiscordApiLog = winston.createLogger({
     new Discord({format: discordFilter()}),
     new winston.transports.DailyRotateFile({
       filename: `./Log/DiscordApi-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
+      datePattern: 'YYYY',
       maxSize: '20m',
       maxFiles: '14d',
       format: winston.format.json(),

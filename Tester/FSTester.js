@@ -15,12 +15,8 @@ data.split(/\r?\n/).forEach(line =>  {
   }
   console.log(`Line from file: ${JSON.parse(line).message}`);
 });
-// console.log(data.toString());
-
-
-// fs.readFile('./Log/Application-2023-01-20.log', data => {
-//   console.log(data);
-// })
-
 
 })();
+
+const data = fs.readdirSync('./Log');
+console.log(data);
