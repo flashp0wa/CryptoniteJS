@@ -35,7 +35,7 @@ router.route('/:exchange/getAccountInfo').get(async (req, res) => {
   } catch (error) {
     ApiLog.log({
       level: 'error',
-      message: `Could not retrieve account info. ${error}`,
+      message: `Could not retrieve aJBccount info. ${error}`,
       senderFunction: 'route-getAccountInfo',
       file: 'Api.js',
     });
