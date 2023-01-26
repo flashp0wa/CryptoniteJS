@@ -819,22 +819,22 @@ class StrategyClass {
         if (side === 1) {
           if (orderSide === 'buy') {
             stop = absLow - atr;
-            limit = openEntryCandle + (2 * (openEntryCandle - absLow + atr));
+            limit = closeEntryCandle + (2 * (closeEntryCandle - absLow + atr));
           } else {
             stop = absHigh + atr;
-            limit = openEntryCandle - (2 * (absHigh + atr - openEntryCandle));
+            limit = closeEntryCandle - (2 * (absHigh + atr - closeEntryCandle));
           }
         } else {
           if (orderSide === 'buy') {
             stop = absLow - atr;
-            limit = openEntryCandle + (3 * (openEntryCandle - absLow + atr));
+            limit = closeEntryCandle + (3 * (closeEntryCandle - absLow + atr));
           } else {
             stop = absHigh + atr;
-            limit = openEntryCandle - (3 * (absHigh + atr - openEntryCandle));
+            limit = closeEntryCandle - (3 * (absHigh + atr - closeEntryCandle));
           }
         }
-        const positionSize = (capital * risk) / (Math.abs(openEntryCandle - stop));
-        const margin = positionSize * openEntryCandle / leverage;
+        const positionSize = (capital * risk) / (Math.abs(closeEntryCandle - stop));
+        const margin = positionSize * closeEntryCandle / leverage;
         const criteria = margin < capital * process.env.POS_CRITERIA;
 
         StrategyHandlerLog.log({

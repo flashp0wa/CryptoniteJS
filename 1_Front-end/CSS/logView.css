@@ -1,3 +1,30 @@
-.table-row:hover {
-  background-color: green;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #1F1A24;
+  color: white;
+}
+
+.topBar {
+  height: 50px;
+}
+
+.table {
+  border: none;
+}
+
+#logViewer {
+  max-height: 93vh;
+  overflow: auto;
+}
+
+.tableRow:hover {
+  color: white;
+  opacity: 0.9;
+}
+
+#tableRowError {
+  background-color: #CF6679;
 }

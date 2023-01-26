@@ -1,8 +1,8 @@
 'use strict';
 require('dotenv').config({path: '.env-dev'});
 (async () => {
-  const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
-  await loadDiscordApi();
+  // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
+  // await loadDiscordApi();
 
   const {ApplicationLog} = require('./Toolkit/Logger');
   const {loadEventListeners} = require('./Loaders/Events');
@@ -10,9 +10,9 @@ require('dotenv').config({path: '.env-dev'});
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
 
-  await getExchanges().loadExchanges();
-  loadEventListeners();
-  startIntervals();
+  // await getExchanges().loadExchanges();
+  // loadEventListeners();
+  // startIntervals();
   startApi();
   // getExchanges().binanceFutures.startWss();
   ApplicationLog.log({

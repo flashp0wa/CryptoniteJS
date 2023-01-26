@@ -4,7 +4,7 @@ async function listLogs() {
   const url = `${config.BACKEND_URL}/application/logs/listLogs`;
   try {
     const logList = await (await fetch(url)).json();
-    const logDropDown = document.getElementById('log-dropdown');
+    const logDropDown = document.getElementById('logDropdown');
     logList.forEach((log) => {
       const option = document.createElement('option');
       option.value = log;
@@ -19,20 +19,21 @@ async function listLogs() {
 listLogs();
 
 async function loadLog() {
-  const logName = document.getElementById('log-dropdown').value;
+  const logName = document.getElementById('logDropdown').value;
   const url = `${config.BACKEND_URL}/application/logs/loadLog/${logName}`;
   const response = await (await fetch(url)).json();
   const logViewer = document.getElementById('logViewer');
   const table = document.createElement('table');
   table.className = 'table';
   const tr = document.createElement('tr');
-  tr.className = 'table-header-row';
+  tr.className = 'tableRow';
+  tr.id = 'tableHeaderRow';
   logViewer.innerHTML = '';
 
   // Create table header
   for (const key of Object.keys(response[0])) {
     const th = document.createElement('th');
-    th.className = 'table-header';
+    th.className = 'tableHeader';
     const data = document.createTextNode(key[0].toUpperCase() + key.substring(1));
     th.appendChild(data);
     tr.appendChild(th);
@@ -40,14 +41,16 @@ async function loadLog() {
   }
   for (const log of response) {
     const tr = document.createElement('tr');
-    tr.className = 'table-row';
+    tr.className = 'tableRow';
     switch (log.level) {
       case 'error':
-        tr.id = 'table-row-error';
+        tr.id = 'tableRowError';
+        break;
       case 'warn':
-        tr.id = 'table-row-warn';
+        tr.id = 'tableRowWarn';
+        break;
       case 'info':
-        tr.id = 'table-row-info';
+        tr.id = 'tableRowInfo';
         break;
     }
     for (const value of Object.values(log)) {
