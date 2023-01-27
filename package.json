@@ -316,7 +316,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node ./Cryptonite-dev.js",
-    "prod": "node ./Cryptonite.js"
+    "prod": "node ./Cryptonite.js",
+    "build-css": "tailwindcss build 1_Front-end/Tailwind/style.css -o 1_Front-end/CSS/tailwind.css"
   },
   "repository": {
     "type": "git",

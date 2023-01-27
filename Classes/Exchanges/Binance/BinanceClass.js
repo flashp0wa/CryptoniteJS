@@ -393,7 +393,7 @@ class BinanceClass {
         });
         setTimeout(() => {
           this.startWss();
-        }, 3);
+        }, 10000);
       };
 
       ws.on('message', (data) => {
