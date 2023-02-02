@@ -20,6 +20,7 @@ class BinanceClass {
     this.openOrders;
     this.strategy;
     this.technicalIndicator;
+    this.lastWssMessageTimestamp;
   }
   /**
    * @param {array} wss // array of web socket streams
@@ -396,7 +397,9 @@ class BinanceClass {
         }, 10000);
       };
 
+      // Handle incoming messages
       ws.on('message', (data) => {
+        this.lastWssMessageTimestamp = new Date();
         const dataObj = JSON.parse(data);
         const processedData = wssJsonStream2Object(dataObj);
         if (dataIntegrityIsChecked && this.technicalIndicator.isLoaded) {
@@ -411,7 +414,7 @@ class BinanceClass {
           wssCache.push(processedData);
         }
       });
-
+      // Handle errors
       ws.on('error', function error(error) {
         ApplicationLog.log({
           level: 'info',
@@ -421,6 +424,7 @@ class BinanceClass {
         });
       });
 
+      // Check if there is any missing data in the database
       dataIntegrityIsChecked = await dataIntegrityCheck(streams);
       await this.technicalIndicator.loadValues();
     } catch (error) {

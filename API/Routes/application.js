@@ -24,6 +24,7 @@ router.route('/logs/loadLog/:logName').get((req, res) => {
     const logObj = JSON.parse(line);
     for (const key of Object.keys(logObj)) {
       if (key === 'discord') delete logObj[key];
+      if (key === 'obj') delete logObj[key];
     }
     logEntries.push(logObj);
   });

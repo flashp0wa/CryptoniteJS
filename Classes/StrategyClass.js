@@ -10,7 +10,7 @@ class StrategyClass {
     this.excName = excName; // Exchange name
     this.globalEvent = returnEmitter(); // Global event object
     this.technicalIndicators = getTechnicalIndicators();
-    this.wss = wss;
+    this.wss = wss; // Used to construct candle tree object
     this.srCandleTree;
   }
   /**

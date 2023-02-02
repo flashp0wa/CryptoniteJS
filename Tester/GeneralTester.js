@@ -1,4 +1,20 @@
 /*eslint-disable*/
 
+const obj = {
+  date: 'a',
+  time: 'b',
+};
 
-const date = new Date(1499040000000);
+switch (true) {
+  case obj.date === 'a':
+    console.log('date');
+  case obj.time === 'b':
+    console.log('time');
+  case obj.level:
+    console.log('level');
+    break;
+
+  default:
+    break;
+}
+

@@ -1,7 +1,7 @@
 /*eslint-disable*/
 
-require('dotenv').config({path: '../.env-dev'});
-// require('dotenv').config({path: '.env-dev'});
+// require('dotenv').config({path: '../.env-dev'});
+require('dotenv').config({path: '.env-dev'});
 const _ = require('lodash');
 const ccxt = require('ccxt');
 const { BinanceFuturesClass } = require('../Classes/Exchanges/Binance/BinanceFuturesClass');
@@ -17,6 +17,7 @@ const spot = new BinanceSpotClass('binanceSpot');
 
 (async () => {
   try {
+    const res = await futures.excObj.ord;
 
     // const resp = await futures.excObj.fetchClosedOrders('ETHUSDT');
 
