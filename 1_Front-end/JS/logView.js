@@ -16,10 +16,27 @@ async function listLogs() {
   }
 }
 
+listLogs();
+
 async function loadLog() {
   const logName = document.getElementById('logDropdown').value;
-  const url = `${config.BACKEND_URL}/application/logs/loadLog/${logName}`;
-  const response = await (await fetch(url)).json();
+  const url = `${config.BACKEND_URL}/application/logs/loadLog`;
+  const startDate = document.getElementById('filter-start-date').value;
+  const endDate = document.getElementById('filter-end-date').value;
+
+  const response = await (await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      startDate,
+      endDate,
+      logName,
+    }),
+  })).json();
+
   const logViewer = document.getElementById('logViewer');
   const container = document.createElement('div');
   container.className = 'flex bg-white bg-opacity-5 p-2 rounded-lg';
@@ -59,7 +76,7 @@ async function loadLog() {
     }
     for (const value of Object.values(log)) {
       const tcell = document.createElement('div');
-      tcell.className = 'table-cell p-2';
+      tcell.className = 'table-cell p-2 max-w-[280px] overflow-auto';
       const data = document.createTextNode(value);
       tcell.appendChild(data);
       tr.appendChild(tcell);
@@ -72,40 +89,12 @@ async function loadLog() {
   logViewer.appendChild(container);
 }
 
-function buildPage() {
-  const body = document.getElementById('body');
-  body.innerHTML = '';
+function hideSidebar() {
+  document.getElementById('sidebarContent').classList.toggle('hidden');
+}
 
-  const flexContainer = document.createElement('div');
-  flexContainer.className = 'flex flex-row content-end mt-4';
-  const side1 = document.createElement('div');
-  side1.className = 'basis-1/5 mx-6';
-  const buttonAndDropdown = document.createElement('div');
-  buttonAndDropdown.className = 'flex bg-white bg-opacity-5 p-2 rounded-lg';
-  const select = document.createElement('select');
-  select.id = 'logDropdown';
-  select.className = 'shrink bg-zinc-800';
-  select.name = 'logDropDown';
-  const button = document.createElement('button');
-  button.className = 'ml-2 bg-violet-500 flex-initial w-24 p-2 rounded hover:text-white';
-  button.innerHTML = 'Load';
-  button.id = 'loadBtn';
-
-  buttonAndDropdown.appendChild(select);
-  buttonAndDropdown.appendChild(button);
-  side1.appendChild(buttonAndDropdown);
-  flexContainer.appendChild(side1);
-
-  const side2 = document.createElement('div');
-  side2.className = 'basis-4/5 mx-6';
-  side2.id = 'logViewer';
-  flexContainer.appendChild(side2);
-
-  body.appendChild(flexContainer);
-
-  listLogs();
-
-  document.getElementById('loadBtn').addEventListener('click', loadLog);
+function hideMenu() {
+  document.getElementById('mobile-menu').classList.toggle('hidden');
 }
 
 // async function loadLog() {
@@ -161,4 +150,6 @@ function buildPage() {
 //   logViewer.appendChild(table);
 // }
 
-document.getElementById('menuLog').addEventListener('click', buildPage);
+document.getElementById('loadBtn').addEventListener('click', loadLog);
+document.getElementById('sidebarBtn').addEventListener('click', hideSidebar);
+document.getElementById('mobileMenuBtn').addEventListener('click', hideMenu);
