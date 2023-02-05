@@ -5,7 +5,7 @@ const {ApiLog} = require('../../Toolkit/Logger.js');
 const _ = require('lodash');
 const {getExchanges} = require('../../Classes/Exchanges/ExchangesClass');
 const {binanceHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
-const {sproc_GatherSymbolTAData} = require('../../DatabaseConnection/SQLConnector.js');
+const {sproc_GatherSymbolTAData, singleRead} = require('../../DatabaseConnection/SQLConnector.js');
 
 
 router.route('/:exchange/getSymbols').get((req, res) => {
@@ -22,21 +22,43 @@ router.route('/:exchange/getSymbols').get((req, res) => {
   }
 });
 
-router.route('/:exchange/getAccountInfo').get(async (req, res) => {
+router.route('/:exchange/getAccountBalance').get(async (req, res) => {
   try {
     const exchange = getExchanges();
-    const balance = await exchange[req.params.exchange].exchangeObj.fetchBalance();
-    const openOrders = await exchange[req.params.exchange].exchangeObj.fetchOpenOrders();
+    const balance = await exchange[req.params.exchange].excObj.fetchBalance();
     const response = {};
     response.free = balance.free;
     response.used = balance.used;
-    response.openOrders = openOrders;
     res.send(response);
   } catch (error) {
     ApiLog.log({
       level: 'error',
-      message: `Could not retrieve aJBccount info. ${error}`,
-      senderFunction: 'route-getAccountInfo',
+      message: `Could not retrieve balance info. ${error}`,
+      senderFunction: 'route-getAccountBalance',
+      file: 'Api.js',
+    });
+  }
+});
+
+router.route('/getOrders').post(async (req, res) => {
+  try {
+    const paramObj = {
+      exchange: `\'${req.body.exchange}\'`,
+      orderStatus: !req.body.orderStatus ? null : `\'${req.body.orderStatus}\'`,
+      orderId: !req.body.orderId ? null : `\'${req.body.orderId}\'`,
+      orderType: !req.body.orderType ? null : `\'${req.body.orderType}\'`,
+      side: !req.body.side ? null : `\'${req.body.side}\'`,
+      strategyId: !req.body.strategyId ? null : `\'${req.body.strategyId}\'`,
+      startDate: !req.body.startDate ? null : `\'${req.body.startDate}\'`,
+      endDate: !req.body.endDate ? null : `\'${req.body.endDate}\'`,
+    };
+    const orders = await singleRead(`select * from itvf_FE_ReturnOrders(${paramObj.exchange}, ${paramObj.orderStatus}, ${paramObj.orderId}, ${paramObj.orderType}, ${paramObj.side}, ${paramObj.strategyId}, ${paramObj.startDate}, ${paramObj.endDate})`);
+    res.send(orders);
+  } catch (error) {
+    ApiLog.log({
+      level: 'error',
+      message: `Could not retrieve order info. ${error}`,
+      senderFunction: 'route-getOrders',
       file: 'Api.js',
     });
   }
@@ -44,7 +66,7 @@ router.route('/:exchange/getAccountInfo').get(async (req, res) => {
 
 router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
   try {
-    const exchange = getExchanges()[req.params.exchange].exchangeObj;
+    const exchange = getExchanges()[req.params.exchange].excObj;
     const openOrders = await exchange.fetchOpenOrders();
 
     if (req.params.symbol === 'all') {

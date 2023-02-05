@@ -10,8 +10,8 @@ require('dotenv').config({path: '.env-dev'});
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
 
-  // await getExchanges().loadExchanges();
-  // loadEventListeners();
+  await getExchanges().loadExchanges();
+  loadEventListeners();
   // startIntervals();
   startApi();
   // getExchanges().binanceFutures.startWss();

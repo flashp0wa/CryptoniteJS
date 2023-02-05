@@ -6,24 +6,24 @@ loadSymbols();
 
 
 function calcRiskReward() {
-  const buyPrice = parseFloat(document.getElementById('buy-price').value);
-  const sellPrice = parseFloat(document.getElementById('sell-price').value);
+  const price = parseFloat(document.getElementById('buy-price').value);
+  const limitPrice = parseFloat(document.getElementById('sell-price').value);
   const buyCash = parseFloat(document.getElementById('buy-cash').value);
   const riskPercent = parseFloat(document.getElementById('risk-percent').value);
 
-  if (buyCash && buyPrice && riskPercent) {
-    const orderAmount = buyCash / buyPrice;
+  if (buyCash && price && riskPercent) {
+    const orderAmount = buyCash / price;
     const risk = buyCash * (riskPercent / 100);
     const stopPrice = (buyCash - risk) / orderAmount;
-    const totalWProfit = orderAmount * sellPrice;
+    const totalWProfit = orderAmount * limitPrice;
     const totalWoProfit = orderAmount * stopPrice;
     const profit = totalWProfit - buyCash;
     const profitPerorderAmount = (totalWProfit - buyCash) / orderAmount;
     const lossPerorderAmount = (totalWoProfit - buyCash) / orderAmount;
     const riskPerorderAmount = profitPerorderAmount - Math.abs(lossPerorderAmount);
-    const ratio = (buyPrice - stopPrice) / (sellPrice - buyPrice);
+    const ratio = (price - stopPrice) / (limitPrice - price);
 
-    document.getElementById('sell-price').value = sellPrice.toFixed(4);
+    document.getElementById('sell-price').value = limitPrice.toFixed(4);
     document.getElementById('ratio').value = ratio.toFixed(4);
     document.getElementById('order-amount').value = orderAmount.toFixed(4);
     document.getElementById('profit-per-order-amount').value = profitPerorderAmount.toFixed(4);
@@ -44,15 +44,15 @@ async function createTrade() {
   const side = document.getElementById('side').value;
   const exchange = document.getElementById('exchange').value;
   const orderAmount = parseFloat(document.getElementById('order-amount').value);
-  const buyPrice = Number(parseFloat(document.getElementById('buy-price').value).toFixed(4));
-  const sellPrice = Number(parseFloat(document.getElementById('sell-price').value).toFixed(4));
+  const price = Number(parseFloat(document.getElementById('buy-price').value).toFixed(4));
+  const limitPrice = Number(parseFloat(document.getElementById('sell-price').value).toFixed(4));
   const stopPrice = Number(parseFloat(document.getElementById('stop-price').value).toFixed(4));
 
-  function buildBodyObj(symbol, sellPrice, buyPrice, side, orderAmount, exchange, orderType, stopPrice) {
+  function buildBodyObj(symbol, limitPrice, price, side, orderAmount, exchange, orderType, stopPrice) {
     return {
       symbol,
-      sellPrice,
-      buyPrice,
+      limitPrice,
+      price,
       side,
       orderAmount,
       exchange,
@@ -67,7 +67,7 @@ async function createTrade() {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(buildBodyObj(symbol, sellPrice, buyPrice, side, orderAmount, exchange, orderType, stopPrice)),
+    body: JSON.stringify(buildBodyObj(symbol, limitPrice, price, side, orderAmount, exchange, orderType, stopPrice)),
   });
 }
 function resetValues() {
@@ -80,11 +80,11 @@ function resetValues() {
 async function quickTrade() {
   const url = `${config.BACKEND_URL}/trade/createOrder`;
 
-  function buildBodyObj(symbol, sellPrice, buyPrice, side, orderAmount, exchange, orderType, stopPrice) {
+  function buildBodyObj(symbol, limitPrice, price, side, orderAmount, exchange, orderType, stopPrice) {
     return {
       symbol,
-      sellPrice,
-      buyPrice,
+      limitPrice,
+      price,
       side,
       orderAmount,
       exchange,
@@ -99,7 +99,7 @@ async function quickTrade() {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(buildBodyObj('XRPUSDT', 0.60, 0.30, 'buy', 200, 'binanceTest', 'limitOrder', 0.55)),
+    body: JSON.stringify(buildBodyObj('XRPUSDT', 0.60, 0.30, 'buy', 200, 'binanceSpotTest', 'limitOrder', 0.55)),
   });
 }
 

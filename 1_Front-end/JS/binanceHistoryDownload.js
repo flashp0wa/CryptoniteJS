@@ -8,6 +8,7 @@ const radioRange = document.getElementById('radio-range');
 const endDate = document.getElementById('end-date');
 const klines = document.getElementById('dropdown-klines');
 const labelKlines = document.getElementById('label-klines');
+const divlKlines = document.getElementById('div-klines');
 const radioMonthly = document.getElementById('radio-monthly');
 const radioDaily = document.getElementById('radio-daily');
 
@@ -17,6 +18,7 @@ radioDaily.checked = true;
 
 klines.hidden = true;
 labelKlines.hidden = true;
+divlKlines.hidden = true;
 
 function toggleDaily() {
   radioMonthly.checked = false;
@@ -38,14 +40,17 @@ function toggleTradeType() {
     case 'aggTrades':
       klines.hidden = true;
       labelKlines.hidden = true;
+      divlKlines.hidden = true;
       break;
     case 'trades':
       klines.hidden = true;
       labelKlines.hidden = true;
+      divlKlines.hidden = true;
       break;
     case 'klines':
       klines.hidden = false;
       labelKlines.hidden = false;
+      divlKlines.hidden = false;
       const klinesArr = [
         '1m',
         '3m',

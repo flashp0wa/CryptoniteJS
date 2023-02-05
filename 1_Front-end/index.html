@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!-- <link rel="stylesheet" href="./CSS/logView.css"> -->
   <link rel="stylesheet" href="./CSS/tailwind.css">
-  <script type="module" src="./JS/logView.js"></script>
-  <title>Log View</title>
+  <title>Dashboard</title>
 </head>
 <body id="body" class="bg-neutral-900 text-slate-200">
   <nav class="sticky top-0 bg-neutral-800">
@@ -81,31 +79,5 @@
     </div>
   </div>
   </nav>
-  <div>
-    <div class="max-w-8xl mx-auto mr-3 mt-6">
-      <div class="float-left mr-2 sticky top-20">
-        <div class="flex" id="sidebar">
-          <div id="sidebarContent" class="bg-white bg-opacity-10 p-2 rounded-r-lg divide-y-2 divide-dotted divide-violet-300/30">
-            <div id="loadLog" class="flex pb-4">
-              <select name="logDropDown" id="logDropdown" class="w-full bg-zinc-800"></select>
-              <button id="loadBtn" class="bg-violet-500 flex-initial w-24 p-2 rounded-r hover:text-white font-semibold transition-all">Load</button>
-            </div>
-            <div class="grid grid-cols-2 gap-2 pt-4">
-              <p class="mr-2 bg-white bg-opacity-5 p-1 rounded">Start Date</p>
-              <input class="bg-zinc-800 rounded-sm" type="datetime-local" id="filter-start-date">
-              <p class="mr-2 bg-white bg-opacity-5 p-1 rounded">End Date</p>
-              <input class="bg-zinc-800 rounded-sm" type="datetime-local" id="filter-end-date">
-            </div>
-          </div>
-          <div id="sidebarBtn" class="h-7 w-7 mt-3 bg-white bg-opacity-10 rounded-r cursor-pointer">
-            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </div>
-      <div id="logViewer"></div>
-    </div>
-  </div>
 </body>
 </html>
