@@ -7,7 +7,12 @@ const {returnEmitter} = require('../../Loaders/EventEmitter.js');
 const globalEvent = returnEmitter();
 
 router.route('/createOrder').post((req, res) => {
-  ApiLog.info('Creating order');
+  ApiLog.log({
+    level: 'info',
+    message: `Create order request received from ${req.ip}`,
+    senderFunction: 'route-createOrder',
+    file: 'Trade.js',
+  });
   globalEvent.emit('CreateOrder', req.body);
   res.send('Request sent');
 });

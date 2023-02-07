@@ -39,7 +39,7 @@ async function loadLog() {
 
   const logViewer = document.getElementById('logViewer');
   const container = document.createElement('div');
-  container.className = 'flex bg-white bg-opacity-5 p-2 rounded-lg';
+  container.className = 'bg-white bg-opacity-5 p-2 rounded-lg min-w-fit';
   const table = document.createElement('div');
   table.className = 'table w-full bg-zinc-800';
   const thead = document.createElement('div');
@@ -76,7 +76,7 @@ async function loadLog() {
     }
     for (const value of Object.values(log)) {
       const tcell = document.createElement('div');
-      tcell.className = 'table-cell p-2 max-w-[280px] overflow-auto';
+      tcell.className = 'table-cell p-2';
       const data = document.createTextNode(value);
       tcell.appendChild(data);
       tr.appendChild(tcell);
