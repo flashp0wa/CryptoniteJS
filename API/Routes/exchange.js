@@ -26,9 +26,20 @@ router.route('/:exchange/getAccountBalance').get(async (req, res) => {
   try {
     const exchange = getExchanges();
     const balance = await exchange[req.params.exchange].excObj.fetchBalance();
-    const response = {};
-    response.free = balance.free;
-    response.used = balance.used;
+    for (const [key, value] of Object.entries(balance.free)) {
+      if (value === 0) {
+        delete balance.free[key];
+      }
+    }
+    for (const [key, value] of Object.entries(balance.used)) {
+      if (value === 0) {
+        delete balance.used[key];
+      }
+    }
+    const response = {
+      free: balance.free,
+      used: balance.used,
+    };
     res.send(response);
   } catch (error) {
     ApiLog.log({
@@ -84,6 +95,7 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
         senderFunction: 'route-cancelOrders',
         file: 'Api.js',
       });
+      res.send('All orders canceled');
     } else {
       exchange.cancelAllOrders(req.params.symbol);
       ApiLog.log({
@@ -92,6 +104,7 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
         senderFunction: 'route-cancelOrders',
         file: 'Api.js',
       });
+      res.send('Order canceled');
     }
   } catch (error) {
     ApiLog.log({
@@ -100,11 +113,13 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
       senderFunction: 'route-cancelOrders',
       file: 'Api.js',
     });
+    res.send('Order cancel failed');
   }
 });
 
 router.route('/binance/historyDataDownload').post(async (req, res) => {
-  binanceHistoryData(req.body);
+  await binanceHistoryData(req.body);
+  res.send('Download done');
 });
 
 router.route('/binance/coinTAData').post(async (req, res) => {
