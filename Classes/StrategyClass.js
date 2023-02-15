@@ -885,7 +885,7 @@ class StrategyClass {
           stopPrice: stop,
           limitPrice: limit,
           exchange: excName,
-          strategy: 'Candle-Tree',
+          strategy: 'Candle-Tree-1.1',
         };
 
         if ((closeEntryCandle < resistance) && side === 2) {
