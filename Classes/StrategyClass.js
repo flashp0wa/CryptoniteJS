@@ -816,6 +816,23 @@ class StrategyClass {
         if ((timeFrameObj.activator === 'support' && side === 2) ||
       (timeFrameObj.activator === 'resistance' && side === 1)) orderSide = 'sell';
 
+        // if (side === 1) {
+        //   if (orderSide === 'buy') {
+        //     stop = absLow - atr;
+        //     limit = closeEntryCandle + (1.5 * (closeEntryCandle - absLow + atr));
+        //   } else {
+        //     stop = absHigh + atr;
+        //     limit = closeEntryCandle - (1.5 * (absHigh + atr - closeEntryCandle));
+        //   }
+        // } else {
+        //   if (orderSide === 'buy') {
+        //     stop = absLow - atr;
+        //     limit = closeEntryCandle + (3 * (closeEntryCandle - absLow + atr));
+        //   } else {
+        //     stop = absHigh + atr;
+        //     limit = closeEntryCandle - (3 * (absHigh + atr - closeEntryCandle));
+        //   }
+        // }
         if (side === 1) {
           if (orderSide === 'buy') {
             stop = absLow - atr;
@@ -827,10 +844,10 @@ class StrategyClass {
         } else {
           if (orderSide === 'buy') {
             stop = absLow - atr;
-            limit = closeEntryCandle + (3 * (closeEntryCandle - absLow + atr));
+            limit = resistance;
           } else {
             stop = absHigh + atr;
-            limit = closeEntryCandle - (3 * (absHigh + atr - closeEntryCandle));
+            limit = support;
           }
         }
         const positionSize = (capital * risk) / (Math.abs(closeEntryCandle - stop));
