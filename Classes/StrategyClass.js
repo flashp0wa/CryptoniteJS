@@ -836,18 +836,18 @@ class StrategyClass {
         if (side === 1) {
           if (orderSide === 'buy') {
             stop = absLow - atr;
-            limit = closeEntryCandle + (1.5 * (closeEntryCandle - absLow + atr));
-          } else {
-            stop = absHigh + atr;
-            limit = closeEntryCandle - (1.5 * (absHigh + atr - closeEntryCandle));
-          }
-        } else {
-          if (orderSide === 'buy') {
-            stop = absLow - atr;
             limit = resistance;
           } else {
             stop = absHigh + atr;
             limit = support;
+          }
+        } else {
+          if (orderSide === 'buy') {
+            stop = support;
+            limit = closeEntryCandle + (3 * (closeEntryCandle - absLow + atr));
+          } else {
+            stop = resistance;
+            limit = closeEntryCandle - (3 * (absHigh + atr - closeEntryCandle));
           }
         }
         const positionSize = (capital * risk) / (Math.abs(closeEntryCandle - stop));
