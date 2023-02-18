@@ -1,5 +1,7 @@
 // const queryProcessor = require('./DatabaseConnection/QueryProcessor.js');
 const {getExchanges} = require('./Classes/Exchanges/ExchangesClass.js');
+const {getTimeBetweenDates} = require('./Toolkit/OnDateOperations.js');
+const {ApplicationLog} = require('./Toolkit/Logger.js');
 /**
  * // Strats automatic processes
  */
@@ -36,6 +38,20 @@ function startIntervals() {
   setInterval(() => {
     getExchanges().checkOrderStatus();
   }, 10000);
+
+  setInterval(() => {
+    const lastWssMessageTimestamp = getExchanges()['binanceFutures'].lastWssMessageTimestamp;
+    const timeDiff = getTimeBetweenDates(lastWssMessageTimestamp, new Date(), 'minutes');
+    if (timeDiff > 1) {
+      ApplicationLog.log({
+        level: 'error',
+        message: `Web Socket Client has not received any message for ${timeDiff} minute(s).`,
+        senderFunction: 'Interval',
+        file: 'Intervals.js',
+        discord: 'application-errors',
+      });
+    }
+  }, 60000);
 }
 
 

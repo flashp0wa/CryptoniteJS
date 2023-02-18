@@ -916,13 +916,13 @@ class StrategyClass {
             file: 'StrategyClass.js',
           });
         } else {
-          event.emit('CreateOrder', orderObj);
           StrategyHandlerLog.log({
-            level: 'Info',
+            level: 'info',
             message: 'Placing order...',
             senderFunction: 'placeOrder',
             file: 'StrategyClass.js',
           });
+          event.emit('CreateOrder', orderObj);
         }
       }
 

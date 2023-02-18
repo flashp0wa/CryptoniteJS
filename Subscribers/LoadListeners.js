@@ -6,7 +6,6 @@ const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
  */
 function loadListeners(emitter) {
   emitter.on('CreateOrder', (conObj) => {
-    console.log(conObj);
     getExchanges()[conObj.exchange].createOrder(conObj);
   });
 }

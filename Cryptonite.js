@@ -12,9 +12,9 @@ require('dotenv').config({path: '.env'});
 
   await getExchanges().loadExchanges();
   loadEventListeners();
-  startIntervals();
   startApi();
   getExchanges().binanceFutures.startWss();
+  startIntervals();
   ApplicationLog.log({
     level: 'info',
     message: `Application online, let the money shower! | Trade Mode: ${process.env.CRYPTONITE_TRADE_MODE}`,

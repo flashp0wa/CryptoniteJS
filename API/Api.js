@@ -5,7 +5,7 @@ const dataScan = require('./Routes/dataScan');
 const application = require('./Routes/application');
 const {ApiLog} = require('../Toolkit/Logger');
 const morgan = require('morgan');
-const path = require('path');
+// const path = require('path');
 
 /**
  * Initializes cryptonite API
@@ -19,7 +19,7 @@ function startApi() {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     next();
   });
-  app.use(express.static(path.join(__dirname, '../1_Front-end')));
+  // app.use(express.static(path.join(__dirname, '../1_Front-end')));
   app.use(morgan('combined'));
   app.use(express.json());
   app.use('/exchange', exchange);
