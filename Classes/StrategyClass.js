@@ -1,7 +1,7 @@
 const {getTechnicalIndicators} = require('./TechnicalIndicatorClass');
 const {StrategyHandlerLog} = require('../Toolkit/Logger');
 const {returnEmitter} = require('../Loaders/EventEmitter');
-const {sproc_InsertIntoOrderFailed} = require('../DatabaseConnection/SQLConnector');
+const {getDatabase} = require('./Database');
 
 
 class StrategyClass {
@@ -12,6 +12,7 @@ class StrategyClass {
     this.technicalIndicators = getTechnicalIndicators();
     this.wss = wss; // Used to construct candle tree object
     this.srCandleTree;
+    this.db = getDatabase();
   }
   /**
    * IMPORTANT: Because of the balance fetching two calculations may overlap causing timeFrameObj not resetting
@@ -792,7 +793,7 @@ class StrategyClass {
      * @param {object} event
      * @return {void}
      */
-      function placeOrder(symbol, excName, side, atr, support, resistance, timeFrameObj, capital, event) {
+      const placeOrder = (symbol, excName, side, atr, support, resistance, timeFrameObj, capital, event) => {
         StrategyHandlerLog.log({
           level: 'info',
           message: 'Checking order validity...',
@@ -890,7 +891,7 @@ class StrategyClass {
 
         if ((closeEntryCandle < resistance) && side === 2) {
           orderObj.reason = 'Entry candle close price is lower than resistance level.';
-          sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(orderObj);
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Entry candle close price is lower than resistance level. No order will be placed',
@@ -899,7 +900,7 @@ class StrategyClass {
           });
         } else if ((closeEntryCandle > support) && side === 2) {
           orderObj.reason = 'Entry candle close price is higher than support level.';
-          sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(orderObj);
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Entry candle close price is higher than support level. No order will be placed',
@@ -908,7 +909,7 @@ class StrategyClass {
           });
         } else if (!criteria) {
           orderObj.reason = 'Margin value does not meet criteria.';
-          sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(orderObj);
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Margin value does not meet criteria. No order will be placed',
@@ -924,7 +925,7 @@ class StrategyClass {
           });
           event.emit('CreateOrder', orderObj);
         }
-      }
+      };
 
       timeFrameObj.closePrices.push(klineObj.closePrice);
       timeFrameObj.openPrices.push(klineObj.openPrice);

@@ -2,13 +2,10 @@ const {CreateOrder} = require('./Order/CreateOrderClass');
 const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
 const WebSocket = require('ws');
-const {
-  // sproc_AddSymbolToDatabase,
-  singleRead, sproc_InsertIntoKlines, sproc_RunTechnicalAnalysis,
-} = require('../../../DatabaseConnection/SQLConnector');
 const {StrategyClass} = require('../../StrategyClass');
 const {stream_getCandleType} = require('../../../Streams/OnMessageOperations');
 const {getTechnicalIndicators} = require('../../TechnicalIndicatorClass');
+const {getDatabase} = require('../../Database');
 
 
 class BinanceClass {
@@ -21,6 +18,7 @@ class BinanceClass {
     this.strategy;
     this.technicalIndicator;
     this.lastWssMessageTimestamp;
+    this.db = getDatabase();
   }
   /**
    * @param {array} wss // array of web socket streams
@@ -81,7 +79,7 @@ class BinanceClass {
         senderFunction: 'loadExchangeId',
         file: 'BinanceClass.js',
       });
-      const response = await singleRead(`select * from itvf_GetExchangeId('${this.excName}')`);
+      const response = await this.db.singleRead(`select * from itvf_GetExchangeId('${this.excName}')`);
       this.excObj.id = response[0].exchangeId;
     } catch (error) {
       ApplicationLog.log({
@@ -286,7 +284,7 @@ class BinanceClass {
             const timeframe = stream.split('_')[1];
 
             try {
-              const response = await singleRead(`select * from itvf_GetLastKlineOpenTime('${symbol}', '${timeframe}')`);
+              const response = await this.db.singleRead(`select * from itvf_GetLastKlineOpenTime('${symbol}', '${timeframe}')`);
               const lastKlineOpenTime = response[0].openTime;
               const since = new Date(lastKlineOpenTime).getTime();
               const klines = await this.excObj.publicGetKlines({
@@ -313,10 +311,10 @@ class BinanceClass {
                   continue; // The first kline is already in the database, the last is not closed yet.
                 };
                 const obj = klineResponse2Object(kline, symbol, timeframe);
-                await sproc_InsertIntoKlines(obj);
+                await this.db.sproc_InsertIntoKlines(obj);
                 counter++;
               }
-              await sproc_RunTechnicalAnalysis();
+              await this.db.sproc_RunTechnicalAnalysis();
               resolve(true);
             } catch (error) {
               ApplicationLog.log({
@@ -334,7 +332,7 @@ class BinanceClass {
 
     const onMessage = (processedData) => {
       if (processedData.closed) {
-        sproc_InsertIntoKlines(processedData);
+        this.db.sproc_InsertIntoKlines(processedData);
       }
       this.technicalIndicator.atr(processedData);
       this.technicalIndicator.sr(processedData);
@@ -344,7 +342,7 @@ class BinanceClass {
     try {
       let url;
       const baseUrl = process.env.BNC_WSS_URL;
-      const rows = await singleRead(`select * from itvf_GetWss(${this.excObj.id})`);
+      const rows = await this.db.singleRead(`select * from itvf_GetWss(${this.excObj.id})`);
       const streams = [];
       let wssCache = [];
       let dataIntegrityIsChecked = false;

@@ -1,15 +1,18 @@
 'use strict';
+
+
 require('dotenv').config({path: '.env-dev'});
 (async () => {
   // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
   // await loadDiscordApi();
-
+  const {getDatabase} = require('./Classes/Database');
   const {ApplicationLog} = require('./Toolkit/Logger');
   const {loadEventListeners} = require('./Loaders/Events');
   const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
 
+  await getDatabase().connect();
   await getExchanges().loadExchanges();
   loadEventListeners();
   startIntervals();

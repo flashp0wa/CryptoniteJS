@@ -1,12 +1,14 @@
-const download = require('download');
 const _ = require('lodash');
-const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
-const {BncHistoryDownloadLog} = require('./Logger.js');
 const util = require('util');
-const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
 const fs = require('fs');
 const extract = require('extract-zip');
-const {sproc_ImportBinanceCsv} = require('../DatabaseConnection/SQLConnector.js');
+const download = require('download');
+const {getDatesArray} = require('../Toolkit/OnDateOperations.js');
+const {BncHistoryDownloadLog} = require('./Logger.js');
+const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
+const {getDatabase} = require('../Classes/Database.js');
+
+const db = getDatabase();
 const downloadPath = `${process.env.CRYPTONITE_ROOT}\\Inboxes\\BinanceData`;
 
 async function downloadHistoryData(inObj) {
@@ -248,7 +250,7 @@ async function binanceHistoryData(inObj) {
         file: 'BncHistoryDownload.js',
       });
 
-      await sproc_ImportBinanceCsv(symbol, timeFrame, csvPathFull);
+      await db.sproc_ImportBinanceCsv(symbol, timeFrame, csvPathFull);
 
       BncHistoryDownloadLog.log({
         level: 'info',
