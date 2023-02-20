@@ -317,6 +317,12 @@ class BinanceClass {
                 counter++;
               }
               await sproc_RunTechnicalAnalysis();
+              ApplicationLog.log({
+                level: 'info',
+                message: 'Data integrity check finished',
+                senderFunction: 'dataIntegrityCheck',
+                file: 'BinanceClass.js',
+              });
               resolve(true);
             } catch (error) {
               ApplicationLog.log({
