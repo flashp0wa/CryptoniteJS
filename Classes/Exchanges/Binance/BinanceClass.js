@@ -316,14 +316,6 @@ class BinanceClass {
                 await sproc_InsertIntoKlines(obj);
                 counter++;
               }
-              await sproc_RunTechnicalAnalysis();
-              ApplicationLog.log({
-                level: 'info',
-                message: 'Data integrity check finished',
-                senderFunction: 'dataIntegrityCheck',
-                file: 'BinanceClass.js',
-              });
-              resolve(true);
             } catch (error) {
               ApplicationLog.log({
                 level: 'info',
@@ -335,6 +327,15 @@ class BinanceClass {
             }
           }
         }
+
+        await sproc_RunTechnicalAnalysis();
+        ApplicationLog.log({
+          level: 'info',
+          message: 'Data integrity check finished',
+          senderFunction: 'dataIntegrityCheck',
+          file: 'BinanceClass.js',
+        });
+        resolve(true);
       });
     };
 
