@@ -327,6 +327,7 @@ class BinanceClass {
         }
 
         await this.db.sproc_RunTechnicalAnalysis();
+
         ApplicationLog.log({
           level: 'info',
           message: 'Data integrity check finished',
