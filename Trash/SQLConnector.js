@@ -97,7 +97,6 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
     await poolConnect;
 
     let rowsToProcess = [];
-    let rowsProcessed = 0;
 
     const request = new sql.Request(pool);
     request.stream = true;
@@ -124,7 +123,6 @@ const streamRead = async (query, callbFunction, callbFunctionOnDone) => {
     });
     request.on('done', async () => {
       rowsProcessed += rowsToProcess.length;
-      console.log(`Processed rows: ${rowsProcessed}`);
     });
     await once(request, 'done');
     const returnValue = await callbFunctionOnDone(rowsToProcess);

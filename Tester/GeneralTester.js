@@ -1,20 +1,15 @@
 /*eslint-disable*/
 
-const obj = {
-  date: 'a',
-  time: 'b',
-};
+class lol {
+  constructor() {
+    this.test = 'test';
+  }
 
-switch (true) {
-  case obj.date === 'a':
-    console.log('date');
-  case obj.time === 'b':
-    console.log('time');
-  case obj.level:
-    console.log('level');
-    break;
-
-  default:
-    break;
+  testFunct() {
+    return this.test;
+  }
 }
 
+const {testFunct} = new lol();
+
+console.log(testFunct());

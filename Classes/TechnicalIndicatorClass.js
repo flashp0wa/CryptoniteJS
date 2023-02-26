@@ -1,13 +1,12 @@
-const {
-  singleRead,
-} = require('../DatabaseConnection/SQLConnector');
 const {ApplicationLog} = require('../Toolkit/Logger');
+const {getDatabase} = require('./Database');
 
 class TechnicalIndicatorClass {
   constructor() {
     this.isLoaded = false;
     this.averageTrueRange;
     this.supportResistance;
+    this.db = getDatabase();
   }
 
   /**
@@ -22,8 +21,8 @@ class TechnicalIndicatorClass {
     if (!klineObj) {
       try {
         const atrObj = {};
-        const response = await singleRead('select * from itvf_GetLastAtrValues()');
-        const dataPeriod = await singleRead('select * from itvf_GetTechnicalAnalysisPeriodNumber(\'Average True Range\')');
+        const response = await this.db.singleRead('select * from itvf_GetLastAtrValues()');
+        const dataPeriod = await this.db.singleRead('select * from itvf_GetTechnicalAnalysisPeriodNumber(\'Average True Range\')');
         atrObj.dataPeriod = dataPeriod[0].periodNumber;
 
         for (const atr of response) {
@@ -95,7 +94,7 @@ class TechnicalIndicatorClass {
     if (!klineObj) {
       try {
         const srObj = {};
-        const response = await singleRead('select * from itvf_GetLastSupportResistanceValues()');
+        const response = await this.db.singleRead('select * from itvf_GetLastSupportResistanceValues()');
 
         for (const sr of response) {
           if (!srObj[sr.symbol]) {

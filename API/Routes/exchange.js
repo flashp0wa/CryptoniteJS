@@ -5,7 +5,8 @@ const {ApiLog} = require('../../Toolkit/Logger.js');
 const _ = require('lodash');
 const {getExchanges} = require('../../Classes/Exchanges/ExchangesClass');
 const {binanceHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
-const {sproc_GatherSymbolTAData, singleRead} = require('../../DatabaseConnection/SQLConnector.js');
+const {getDatabase} = require('../../Classes/Database.js');
+const db = getDatabase();
 
 
 router.route('/:exchange/getSymbols').get((req, res) => {
@@ -63,7 +64,7 @@ router.route('/getOrders').post(async (req, res) => {
       startDate: !req.body.startDate ? null : `\'${req.body.startDate}\'`,
       endDate: !req.body.endDate ? null : `\'${req.body.endDate}\'`,
     };
-    const orders = await singleRead(`select * from itvf_FE_ReturnOrders(${paramObj.exchange}, ${paramObj.orderStatus}, ${paramObj.orderId}, ${paramObj.orderType}, ${paramObj.side}, ${paramObj.strategyId}, ${paramObj.startDate}, ${paramObj.endDate})`);
+    const orders = await db.singleRead(`select * from itvf_FE_ReturnOrders(${paramObj.exchange}, ${paramObj.orderStatus}, ${paramObj.orderId}, ${paramObj.orderType}, ${paramObj.side}, ${paramObj.strategyId}, ${paramObj.startDate}, ${paramObj.endDate})`);
     res.send(orders);
   } catch (error) {
     ApiLog.log({
@@ -124,7 +125,7 @@ router.route('/binance/historyDataDownload').post(async (req, res) => {
 
 router.route('/binance/coinTAData').post(async (req, res) => {
   try {
-    const result = await sproc_GatherSymbolTAData(req.body);
+    const result = await db.sproc_GatherSymbolTAData(req.body);
     res.send(result);
   } catch (error) {
     ApiLog.log({

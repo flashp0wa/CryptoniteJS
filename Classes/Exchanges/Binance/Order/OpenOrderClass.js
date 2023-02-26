@@ -1,11 +1,12 @@
-const {singleRead, sproc_UpdateOrder} = require('../../../../DatabaseConnection/SQLConnector');
 const {ApplicationLog} = require('../../../../Toolkit/Logger');
+const {getDatabase} = require('../../../Database');
 
 class OpenOrder {
   constructor(excObj, excName) {
     this.excObj = excObj;
     this.excName = excName;
-    this.openOrders; // Array of objects
+    this.openOrders;
+    this.db = getDatabase();
   }
   /**
    * Loads current open orders from the database and checks it's states fetching binance. If state changed updates database.
@@ -18,7 +19,7 @@ class OpenOrder {
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
       });
-      this.openOrders = await singleRead(`select * from itvf_ReturnOrders('open', ${this.excObj.id})`);
+      this.openOrders = await this.db.singleRead(`select * from itvf_ReturnOrders('open', ${this.excObj.id})`);
       for (const order of this.openOrders) {
         try {
           const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
@@ -48,7 +49,7 @@ class OpenOrder {
                 });
               }
             }
-            sproc_UpdateOrder({
+            this.db.sproc_UpdateOrder({
               filled: res.filled,
               cost: res.cost,
               orderStatus: res.status,

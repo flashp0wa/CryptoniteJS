@@ -1,7 +1,6 @@
 const express = require('express');
 const exchange = require('./Routes/exchange');
 const trade = require('./Routes/trade');
-const dataScan = require('./Routes/dataScan');
 const application = require('./Routes/application');
 const {ApiLog} = require('../Toolkit/Logger');
 const morgan = require('morgan');
@@ -24,7 +23,6 @@ function startApi() {
   app.use(express.json());
   app.use('/exchange', exchange);
   app.use('/trade', trade);
-  app.use('/dataScan ', dataScan);
   app.use('/application', application);
 
   app.listen(port, () => {

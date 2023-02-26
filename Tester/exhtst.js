@@ -4,40 +4,40 @@
 require('dotenv').config({path: '.env-dev'});
 const _ = require('lodash');
 const ccxt = require('ccxt');
-const { BinanceFuturesClass } = require('../Classes/Exchanges/Binance/BinanceFuturesClass');
 const { CreateOrder } = require('../Classes/Exchanges/Binance/Order/CreateOrderClass');
 const { BinanceSpotTestClass } = require('../Classes/Exchanges/Binance/BinanceSpotTestClass');
 const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass');
 const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/BinanceFuturesTestClass');
 
-const futures = new BinanceFuturesClass('binanceFutures');
 const futuresTest = new BinanceFuturesTestClass('binanceFuturesTest');
 const spot = new BinanceSpotClass('binanceSpot');
 // const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
   try {
-    const res = await futures.excObj.ord;
+    // await futuresTest.excObj.createLimitOrder('BTCUSDT', 'buy', 0.01, 20000);
+    const res = await futuresTest.excObj.createOrder('BTCUSDT', 'limit', 'buy', 0.01, 20000);
+    console.log(res);
 
-    // const resp = await futures.excObj.fetchClosedOrders('ETHUSDT');
+  // const resp = await futures.excObj.fetchClosedOrders('ETHUSDT');
 
-    // console.log(resp);
+  // console.log(resp);
 
-    // console.log(await futures.excObj.fetchBalance());j
-    // console.log((await futures.excObj.fetchBalance()).free.USDT);
-  await futuresTest.loadExchangeId();
-  futuresTest.loadOpenOrders();
-  await futuresTest.loadMarkets();
-  const orderObj = {
-    symbol: 'BTCUSDT',
-    type: 'market',
-    side: 'buy',
-    price: 21000,
-    stopPrice: 16000,
-    limitPrice: 22000,
-    orderAmount: 0.01,
-  }
-  const order = new CreateOrder(futuresTest.excObj, 'binanceFuturesTest', orderObj).createOrder();
+  // console.log(await futures.excObj.fetchBalance());j
+  // console.log((await futures.excObj.fetchBalance()).free.USDT);
+  // await futuresTest.loadExchangeId();
+  // futuresTest.loadOpenOrders();
+  // await futuresTest.loadMarkets();
+  // const orderObj = {
+  //   symbol: 'BTCUSDT',
+  //   type: 'market',
+  //   side: 'buy',
+  //   price: 21000,
+  //   stopPrice: 16000,
+  //   limitPrice: 22000,
+  //   orderAmount: 0.01,
+  // }
+  // const order = new CreateOrder(futuresTest.excObj, 'binanceFuturesTest', orderObj).createOrder();
 
   // spotTest.openOrders.checkOrderStatus();
 
