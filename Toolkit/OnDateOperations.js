@@ -30,6 +30,9 @@ function getTimeBetweenDates(beginDate, endDate, format = 'minutes') {
   const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
   const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // mins
   switch (format) {
+    case 'ms':
+      returnValue = diffMs;
+      break;
     case 'days':
       returnValue = diffDays;
       break;

@@ -35,7 +35,6 @@ class CreateOcoOrder extends Order {
         tradeStatus: this.orderResponse['orderReports'][0].status,
         exchange: this.exchangeName,
         parentOrderId: this.parentOrderId,
-        siblingOrderId: this.orderResponse['orderReports'][1].orderId,
         oco: true,
         strategy: this.strategy,
       };
@@ -51,7 +50,6 @@ class CreateOcoOrder extends Order {
         tradeStatus: this.orderResponse['orderReports'][1].status,
         exchange: this.exchangeName,
         parentOrderId: this.parentOrderId,
-        siblingOrderId: this.orderResponse['orderReports'][0].orderId,
         oco: true,
         strategy: this.strategy,
       };

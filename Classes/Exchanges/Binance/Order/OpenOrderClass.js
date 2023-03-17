@@ -86,6 +86,40 @@ class OpenOrder {
       file: 'OpenOrderClass.js',
     });
   }
+
+  async checkSupportOrder() {
+    const supportOrders = await this.db.singleRead(`select * from itvf_ReturnSystemStateSupportOrder()`);
+    for (const order of supportOrders) {
+      try {
+        const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
+        if (res.status === 'closed') {
+          this.excObj.createOrder({
+            symbol: order.symbol,
+            side: order.orderSideName,
+            type: order.orderTypeName,
+            exchange: order.exchange,
+            strategy: order.strategyName,
+            orderAmount: order.orderAmount,
+            price: order.price,
+            stopPrice: order.stopPrice,
+            limitPrice: order.limitPrice,
+            reopen: true,
+            orderId: order.orderId,
+          });
+        } else if (res.status === 'canceled') {
+          this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: order.orderId});
+        }
+      } catch (error) {
+        ApplicationLog.log({
+          level: 'error',
+          message: `Could not fetch support order on ${this.excName} to check trade status. ${error}`,
+          senderFunction: 'checkSupportOrder',
+          file: 'OpenOrderClass.js',
+          discord: 'application-errors',
+        });
+      }
+    }
+  }
 }
 
 module.exports = {

@@ -13,7 +13,6 @@ require('dotenv').config({path: '.env'});
   await getExchanges().loadExchanges();
   loadEventListeners();
   startApi();
-  getExchanges().binanceFutures.startWss();
   startIntervals();
   ApplicationLog.log({
     level: 'info',

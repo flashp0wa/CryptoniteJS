@@ -37,6 +37,7 @@ class StrategyClass {
             'candleTypeIds': [],
             'isActive': false,
             'activator': '',
+            'timeFrame': timeframe,
           };
         }
       }
@@ -887,6 +888,7 @@ class StrategyClass {
           limitPrice: limit,
           exchange: excName,
           strategy: 'Candle-Tree-1.1',
+          timeFrame: timeFrameObj.timeFrame,
         };
 
         if ((closeEntryCandle < resistance) && side === 2) {
