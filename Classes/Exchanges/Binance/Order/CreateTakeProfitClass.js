@@ -29,7 +29,7 @@ class CreateTakeProfitOrder extends Order {
       level: 'info',
       message: `Creating ${this.type} order`,
       senderFunction: 'createOrder',
-      file: 'CreateTakerProfitOrderClass.js',
+      file: 'CreateTakeProfitOrderClass.js',
     });
     try {
       this.orderResponse = await this.exchangeObj.createOrder(
@@ -44,7 +44,7 @@ class CreateTakeProfitOrder extends Order {
         level: 'info',
         message: `${this.type} order has been created`,
         senderFunction: 'createOrder',
-        file: 'CreateTakerProfitOrderClass.js',
+        file: 'CreateTakeProfitOrderClass.js',
       });
       return this.orderResponse.id;
     } catch (error) {
@@ -52,7 +52,7 @@ class CreateTakeProfitOrder extends Order {
         level: 'error',
         message: `Failed to create ${this.type} order. ${error.stack}`,
         senderFunction: 'createOrder',
-        file: 'CreateTakerProfitOrderClass.js',
+        file: 'CreateTakeProfitOrderClass.js',
         discord: 'failed-orders',
       });
     }

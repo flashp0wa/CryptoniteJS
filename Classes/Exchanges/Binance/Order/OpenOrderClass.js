@@ -1,4 +1,5 @@
-const {ApplicationLog} = require('../../../../Toolkit/Logger');
+const {returnEmitter} = require('../../../../Loaders/EventEmitter');
+const {OpenOrderCheckLog} = require('../../../../Toolkit/Logger');
 const {getDatabase} = require('../../../Database');
 
 class OpenOrder {
@@ -7,14 +8,16 @@ class OpenOrder {
     this.excName = excName;
     this.openOrders;
     this.db = getDatabase();
+    this.globalEvent = returnEmitter(); // Global event object
   }
+
   /**
    * Loads current open orders from the database and checks it's states fetching binance. If state changed updates database.
    */
   async checkOrderStatus() {
     try {
-      ApplicationLog.log({
-        level: 'silly',
+      OpenOrderCheckLog.log({
+        level: 'info',
         message: `Checking order status on ${this.excName}...`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
@@ -25,7 +28,7 @@ class OpenOrder {
           const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
           if ((res.status === 'closed' || res.status === 'canceled') && order.oco === false) {
             if (order.siblingOrderId && res.status === 'closed') {
-              ApplicationLog.log({
+              OpenOrderCheckLog.log({
                 level: 'info',
                 message: `Order ${order.orderId} has been closed, canceling sibling order ${order.siblingOrderId}`,
                 senderFunction: 'checkOrderStatus',
@@ -33,14 +36,14 @@ class OpenOrder {
               });
               try {
                 await this.excObj.cancelOrder(order.siblingOrderId, order.symbol);
-                ApplicationLog.log({
+                OpenOrderCheckLog.log({
                   level: 'info',
                   message: `Sibling order ${order.siblingOrderId} has been canceled`,
                   senderFunction: 'checkOrderStatus',
                   file: 'OpenOrderClass.js',
                 });
               } catch (error) {
-                ApplicationLog.log({
+                OpenOrderCheckLog.log({
                   level: 'error',
                   message: `Could not cancel sibling order ${order.siblingOrderId}. ${error}`,
                   senderFunction: 'checkOrderStatus',
@@ -61,7 +64,7 @@ class OpenOrder {
             });
           }
         } catch (error) {
-          ApplicationLog.log({
+          OpenOrderCheckLog.log({
             level: 'error',
             message: `Could not fetch open orders on ${this.excName} to check trade status. ${error}`,
             senderFunction: 'checkOrderStatus',
@@ -71,7 +74,7 @@ class OpenOrder {
         }
       }
     } catch (error) {
-      ApplicationLog.log({
+      OpenOrderCheckLog.log({
         level: 'error',
         message: `Error while checking order status on ${this.excName}: ${error}`,
         senderFunction: 'checkOrderStatus',
@@ -79,8 +82,8 @@ class OpenOrder {
         discord: 'application-error',
       });
     }
-    ApplicationLog.log({
-      level: 'silly',
+    OpenOrderCheckLog.log({
+      level: 'info',
       message: `Order status check finished on ${this.excName}`,
       senderFunction: 'checkOrderStatus',
       file: 'OpenOrderClass.js',
@@ -90,33 +93,42 @@ class OpenOrder {
   async checkSupportOrder() {
     const supportOrders = await this.db.singleRead(`select * from itvf_ReturnSystemStateSupportOrder()`);
     for (const order of supportOrders) {
+      let res;
       try {
-        const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
-        if (res.status === 'closed') {
-          this.excObj.createOrder({
-            symbol: order.symbol,
-            side: order.orderSideName,
-            type: order.orderTypeName,
-            exchange: order.exchange,
-            strategy: order.strategyName,
-            orderAmount: order.orderAmount,
-            price: order.price,
-            stopPrice: order.stopPrice,
-            limitPrice: order.limitPrice,
-            reopen: true,
-            orderId: order.orderId,
-          });
-        } else if (res.status === 'canceled') {
-          this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: order.orderId});
-        }
+        res = await this.excObj.fetchOrder(order.orderId, order.symbol);
       } catch (error) {
-        ApplicationLog.log({
+        OpenOrderCheckLog.log({
           level: 'error',
           message: `Could not fetch support order on ${this.excName} to check trade status. ${error}`,
           senderFunction: 'checkSupportOrder',
           file: 'OpenOrderClass.js',
           discord: 'application-errors',
         });
+      }
+      if (res.status === 'closed') {
+        OpenOrderCheckLog.log({
+          level: 'info',
+          message: `Support order ${order.orderId} has been closed, creating new order`,
+          senderFunction: 'checkSupportOrder',
+          file: 'OpenOrderClass.js',
+          discord: 'application-errors',
+        });
+
+        this.globalEvent.emit('CreateOrder', {
+          symbol: order.symbol,
+          side: order.orderSideName,
+          type: order.orderTypeName,
+          exchange: order.exchange,
+          strategy: order.strategyName,
+          orderAmount: order.orderAmount,
+          price: order.price,
+          stopPrice: order.stopPrice,
+          limitPrice: order.limitPrice,
+          reopen: true,
+          orderId: order.orderId,
+        });
+      } else if (res.status === 'canceled') {
+        this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: order.orderId});
       }
     }
   }

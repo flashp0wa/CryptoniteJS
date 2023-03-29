@@ -343,6 +343,7 @@ class Database {
           .input('siblingOrderId', inObj.siblingOrderId)
           .input('strategy', inObj.strategy)
           .input('timeFrame', inObj.timeFrame)
+          .input('leverage', inObj.leverage)
           .execute('InsertIntoOrder');
 
       return request;
@@ -486,11 +487,12 @@ class Database {
       });
       const request = await this.pool.request()
           .input('symbolName', inObj.symbolName)
+          .input('exchangeName', inObj.exchangeName)
           .input('orderSideName', inObj.orderSideName)
           .input('orderTypeName', inObj.orderTypeName)
           .input('strategyName', inObj.strategyName)
           .input('orderAmount', inObj.orderAmount)
-          .input('price', inObj.price)
+          .input('price', inObj.orderPrice)
           .input('stopPrice', inObj.stopPrice)
           .input('limitPrice', inObj.limitPrice)
           .input('orderId', inObj.orderId)

@@ -6,6 +6,8 @@ const _ = require('lodash');
 const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass');
 const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/BinanceFuturesTestClass');
 const { getDatabase } = require('../Classes/Database');
+const { loadEventListeners } = require('../Loaders/Events');
+const { getExchanges } = require('../Classes/Exchanges/ExchangesClass');
 
 const futuresTest = new BinanceFuturesTestClass('binanceFuturesTest');
 const spot = new BinanceSpotClass('binanceSpot');
@@ -18,17 +20,24 @@ const spot = new BinanceSpotClass('binanceSpot');
       side: 'buy',
       type: 'market',
       orderAmount: 0.01,
-      price: 24600,
+      price: 26600,
       stopPrice: 20000,
-      limitPrice: 27000,
+      limitPrice: 32000,
       exchange: 'binanceFuturesTest',
       strategy: 'Candle-Tree-1.1',
     };
+    loadEventListeners();
     await getDatabase().connect();
+    await getExchanges().loadExchanges();
     await futuresTest.loadExchangeId();
     await futuresTest.loadMarkets();
+    await futuresTest.loadOpenOrders();
     const res = await futuresTest.createOrder(orderObj);
     console.log(res);
+    setInterval(() => {
+      futuresTest.openOrders.checkSupportOrder();
+    }, 10000);
+
 
 } catch (error) {
   console.log(error);

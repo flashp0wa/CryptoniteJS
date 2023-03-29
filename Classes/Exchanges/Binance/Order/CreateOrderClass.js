@@ -40,7 +40,7 @@ class CreateOrder extends Order {
       this.traderLog.log({
         level: 'info',
         message: `
-        New order
+        NEW ORDER
         Symbol: ${this.symbol}
         Side: ${this.side},
         Type: ${this.type}
@@ -103,6 +103,7 @@ class CreateOrder extends Order {
             });
             this.db.sproc_InsertIntoSystemStateSupportOrder({
               symbolName: this.symbol,
+              exchangeName: this.exchangeName,
               orderSideName: this.side,
               orderTypeName: this.type,
               strategyName: this.strategy,
@@ -113,8 +114,9 @@ class CreateOrder extends Order {
               orderId: this.orderResponse.id,
               timeFrame: this.timeFrame,
             });
-          };
-          this.supportOrder();
+          } else {
+            this.supportOrder();
+          }
         }
       } catch (error) {
         this.traderLog.log({

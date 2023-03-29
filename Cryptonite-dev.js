@@ -1,6 +1,4 @@
 'use strict';
-
-
 require('dotenv').config({path: '.env-dev'});
 (async () => {
   // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
@@ -12,7 +10,17 @@ require('dotenv').config({path: '.env-dev'});
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
 
-  await getDatabase().connect();
+  const db = getDatabase();
+  await db.connect();
+
+  async function loadEnv() {
+    const res = await db.singleRead('select * from cry_setting_application');
+
+    for (const row of res) {
+      process.env[row.settingKey] = row.settingValue;
+    }
+  }
+  await loadEnv();
   await getExchanges().loadExchanges();
   loadEventListeners();
   startIntervals();

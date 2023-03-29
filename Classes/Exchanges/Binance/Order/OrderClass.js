@@ -24,7 +24,8 @@ class Order {
     this.tradeMode = process.env.CRYPTONITE_TRADE_MODE;
     this.siblingOrderId;
     this.orderId = conObj.orderId ? conObj.orderId : null;
-    this.isReOpen = conObj.isReOpen ? conObj.reopen : false;
+    this.isReOpen = conObj.reopen ? conObj.reopen : false;
+    this.leverage = this.getLeverage();
   }
   /**
    * Write order response data to database
@@ -66,6 +67,7 @@ class Order {
         parentOrderId: this.parentOrderId ? this.parentOrderId : null,
         siblingOrderId: this.siblingOrderId ? this.siblingOrderId : null,
         strategy: this.strategy,
+        leverage: this.leverage,
       };
       if (typeof this.orderResponse.fee === 'undefined') {
         dataObj.fee = null;
@@ -77,7 +79,7 @@ class Order {
         level: 'info',
         message: 'NEW ORDER',
         senderFunction: 'processOrderResponse',
-        file: 'CreateOrderClass.js',
+        file: 'OrderClass.js',
         obj: dataObj,
         discord: 'successful-orders',
       });
@@ -87,14 +89,14 @@ class Order {
         level: 'info',
         message: 'Order response has been processed',
         senderFunction: 'processOrderResponse',
-        file: 'CreateOrderClass.js',
+        file: 'OrderClass.js',
       });
     } catch (error) {
       this.traderLog.log({
         level: 'error',
         message: `Failed to write order response to database. ${error.stack}`,
         senderFunction: 'processOrderResponse',
-        file: 'CreateOrderClass.js',
+        file: 'OrderClass.js',
         discord: 'application-errors',
       });
     }
@@ -110,6 +112,24 @@ class Order {
       this.db.sproc_InsertIntoOrderFailed(databaseObj);
     } else {
       this.db.sproc_InsertIntoOrder(databaseObj);
+    }
+  }
+
+  async getLeverage() {
+    try {
+      const leverage = await this.db.singleRead(`select * from itvf_GetLeverage('${this.symbol}', '${this.exchangeName}')`);
+      if (!leverage.length) {
+        this.leverage = null;
+      } else {
+        this.leverage = leverage[0].amount;
+      }
+    } catch (error) {
+      this.traderLog.log({
+        level: 'error',
+        message: `Failed to fetch leverage from database. ${error.stack}`,
+        senderFunction: 'getLeverage',
+        file: 'OrderClass.js',
+      });
     }
   }
 }

@@ -40,7 +40,7 @@ function startIntervals() {
   }, process.env.CHECK_ORDER_STATUS);
 
   setInterval(() => {
-    getExchanges().checkSupportOrder();
+    getExchanges().checkSupportOrderStatus();
   }, process.env.CHECK_SUPPORT_ORDER);
 
   setInterval(() => {
@@ -56,7 +56,7 @@ function startIntervals() {
         discord: 'application-errors',
       });
     }
-  }, 60000);
+  }, process.env.CHECK_WSS_CONNECTION);
 }
 
 

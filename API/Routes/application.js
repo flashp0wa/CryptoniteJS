@@ -2,6 +2,10 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 const fs = require('fs');
+const {getDatabase} = require('../../Classes/Database.js');
+const {ApiLog} = require('../../Toolkit/Logger.js');
+const db = getDatabase();
+
 
 router.route('/logs/listLogs').get((req, res) => {
   const files = fs.readdirSync(`${process.env.CRYPTONITE_ROOT}/Log`);
@@ -38,6 +42,39 @@ router.route('/logs/loadLog').post((req, res) => {
     logEntries.push(logObj);
   });
   res.send(logEntries);
+});
+
+router.route('/settings/load').get(async (req, res) => {
+  try {
+    const settings = await db.singleRead('select * from cry_setting_application');
+    const returnObj = {};
+    for (const setting of settings) {
+      returnObj[setting.settingKey] = setting.settingValue;
+    }
+    res.send(returnObj);
+  } catch (error) {
+    ApiLog.log({
+      level: 'error',
+      message: `Error loading settings: ${error}`,
+      senderFunction: 'route-settings-save',
+      file: 'application.js',
+    });
+  }
+});
+router.route('/settings/save').post(async (req, res) => {
+  try {
+    for (const [key, value] of Object.entries(req.body)) {
+      await db.singleRead(`update cry_setting_application set settingValue = '${value}' where settingKey = '${key}'`);
+    }
+    res.send('saved');
+  } catch (error) {
+    ApiLog.log({
+      level: 'error',
+      message: `Error saving settings: ${error}`,
+      senderFunction: 'route-settings-save',
+      file: 'application.js',
+    });
+  }
 });
 
 

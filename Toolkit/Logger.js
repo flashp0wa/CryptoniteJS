@@ -76,6 +76,34 @@ const TraderLog = winston.createLogger({
       }),
   ),
 });
+const OpenOrderCheckLog = winston.createLogger({
+  transports: [
+    new winston.transports.Console({
+      level: process.env.CRY_LOG_LEVEL,
+      format: winston.format.combine(
+          pretty(),
+          winston.format.printf((info) => {
+            return info.message;
+          }),
+      ),
+    }),
+    new Discord({format: discordFilter()}),
+    new winston.transports.DailyRotateFile({
+      filename: `./Log/OpenOrderCheck-%DATE%.log`,
+      datePattern: 'YYYY',
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: winston.format.json(),
+    }),
+  ], format: winston.format.combine(
+      winston.format.label({
+        label: 'Trader',
+      }),
+      winston.format.timestamp({
+        format: 'YYYY-MM-DD HH:mm:ss.SSS',
+      }),
+  ),
+});
 const SupportResistanceCandleTreeLog = winston.createLogger({
   transports: [
     new winston.transports.Console({
@@ -276,4 +304,5 @@ module.exports = {
   BncHistoryDownloadLog,
   StrategyHandlerLog,
   DiscordApiLog,
+  OpenOrderCheckLog,
 };
