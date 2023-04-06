@@ -342,6 +342,8 @@ class Database {
           .input('parentOrderId', inObj.parentOrderId)
           .input('siblingOrderId', inObj.siblingOrderId)
           .input('strategy', inObj.strategy)
+          .input('timeFrame', inObj.timeFrame)
+          .input('leverage', inObj.leverage)
           .execute('InsertIntoOrder');
 
       return request;
@@ -469,6 +471,61 @@ class Database {
         level: 'error',
         message: `Encountered an error running 'sproc_InsertIntoSupportResistance'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
         senderFunction: 'sproc_InsertIntoSupportResistance',
+        file: 'Database.js',
+        discord: 'database-errors',
+      });
+    }
+  };
+  sproc_InsertIntoSystemStateSupportOrder = async (inObj) => {
+    try {
+      await this.poolConnect;
+      DatabaseLog.log({
+        level: 'silly',
+        message: 'Running stored procedure Insert Into System State Support Order',
+        senderFunction: 'sproc_InsertIntoSystemStateSupportOrder',
+        file: 'Database.js',
+      });
+      const request = await this.pool.request()
+          .input('symbolName', inObj.symbolName)
+          .input('exchangeName', inObj.exchangeName)
+          .input('orderSideName', inObj.orderSideName)
+          .input('orderTypeName', inObj.orderTypeName)
+          .input('strategyName', inObj.strategyName)
+          .input('orderAmount', inObj.orderAmount)
+          .input('price', inObj.orderPrice)
+          .input('stopPrice', inObj.stopPrice)
+          .input('limitPrice', inObj.limitPrice)
+          .input('orderId', inObj.orderId)
+          .execute('InsertIntoSystemStateSupportOrder');
+      return request;
+    } catch (error) {
+      DatabaseLog.log({
+        level: 'error',
+        message: `Encountered an error running 'sproc_InsertIntoSystemStateSupportOrder'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
+        senderFunction: 'sproc_InsertIntoSystemStateSupportOrder',
+        file: 'Database.js',
+        discord: 'database-errors',
+      });
+    }
+  };
+  sproc_DeleteFromSystemStateSupportOrder = async (inObj) => {
+    try {
+      await this.poolConnect;
+      DatabaseLog.log({
+        level: 'silly',
+        message: 'Running stored procedure Delete From System State Support Order',
+        senderFunction: 'sproc_DeleteFromSystemStateSupportOrder',
+        file: 'Database.js',
+      });
+      const request = await this.pool.request()
+          .input('orderId', inObj.orderId)
+          .execute('DeleteFromSystemStateSupportOrder');
+      return request;
+    } catch (error) {
+      DatabaseLog.log({
+        level: 'error',
+        message: `Encountered an error running 'sproc_DeleteFromSystemStateSupportOrder'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
+        senderFunction: 'sproc_DeleteFromSystemStateSupportOrder',
         file: 'Database.js',
         discord: 'database-errors',
       });

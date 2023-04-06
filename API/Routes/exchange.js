@@ -123,6 +123,15 @@ router.route('/binance/historyDataDownload').post(async (req, res) => {
   res.send('Download done');
 });
 
+router.route('/:exchange/isWssOn').get(async (req, res) => {
+  const state = getExchanges()[req.params.exchange].isWssOn;
+  res.send(state);
+});
+router.route('/:exchange/startWss').get(async (req, res) => {
+  getExchanges()[req.params.exchange].startWss();
+  res.send(true);
+});
+
 router.route('/binance/coinTAData').post(async (req, res) => {
   try {
     const result = await db.sproc_GatherSymbolTAData(req.body);

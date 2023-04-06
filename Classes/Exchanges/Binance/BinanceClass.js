@@ -18,7 +18,9 @@ class BinanceClass {
     this.strategy;
     this.technicalIndicator;
     this.lastWssMessageTimestamp;
+    this.isWssOn = false;
     this.db = getDatabase();
+    this.isPostOnly = true;
   }
   /**
    * @param {array} wss // array of web socket streams
@@ -125,7 +127,11 @@ class BinanceClass {
    * { symbol, side, orderType, orderAmount, buyPrice, }
    */
   createOrder(conObj) {
-    new CreateOrder(this.excObj, this.excName, conObj).createOrder();
+    if (conObj.reopen) {
+      new CreateOrder(this.excObj, this.excName, conObj).supportOrder();
+    } else {
+      new CreateOrder(this.excObj, this.excName, conObj).createOrder();
+    }
   }
   /**
    * Loads exchange data
@@ -382,16 +388,19 @@ class BinanceClass {
 
       const ws = new WebSocket(url);
 
-      ws.on('open', function open() {
+
+      ws.onopen = () => {
+        this.isWssOn = true;
         ApplicationLog.log({
           level: 'info',
           message: 'Connection has been established with the stream server',
           senderFunction: 'startWss',
           file: 'BinanceClass.js',
         });
-      });
+      };
 
       ws.onclose = () => {
+        this.isWssOn = false;
         ApplicationLog.log({
           level: 'info',
           message: 'Stream connection has been closed... trying to reconnect',

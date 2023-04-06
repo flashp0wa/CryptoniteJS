@@ -33,25 +33,30 @@ function startIntervals() {
   // #endregion
   setInterval(() => {
     getExchanges().reloadMarkets();
-  }, 300000);
+  }, process.env.RELOAD_MARKETS);
 
   setInterval(() => {
     getExchanges().checkOrderStatus();
-  }, 10000);
+  }, process.env.CHECK_ORDER_STATUS);
+
+  setInterval(() => {
+    getExchanges().checkSupportOrderStatus();
+  }, process.env.CHECK_SUPPORT_ORDER);
 
   setInterval(() => {
     const lastWssMessageTimestamp = getExchanges()['binanceFutures'].lastWssMessageTimestamp;
-    const timeDiff = getTimeBetweenDates(lastWssMessageTimestamp, new Date(), 'minutes');
-    if (timeDiff > 1) {
+    getExchanges()['binanceFutures'].wssOn = false;
+    const timeDiff = getTimeBetweenDates(lastWssMessageTimestamp, new Date(), 'ms');
+    if (timeDiff > process.env.WSS_TIMEOUT) {
       ApplicationLog.log({
         level: 'error',
-        message: `Web Socket Client has not received any message for ${timeDiff} minute(s).`,
+        message: `Web Socket Client has not received any message for ${timeDiff} ms.`,
         senderFunction: 'Interval',
         file: 'Intervals.js',
         discord: 'application-errors',
       });
     }
-  }, 60000);
+  }, process.env.CHECK_WSS_CONNECTION);
 }
 
 

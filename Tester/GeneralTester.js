@@ -1,15 +1,5 @@
 /*eslint-disable*/
 
-class lol {
-  constructor() {
-    this.test = 'test';
-  }
+process.env.david = 'Say my name';
 
-  testFunct() {
-    return this.test;
-  }
-}
-
-const {testFunct} = new lol();
-
-console.log(testFunct());
+console.log(process.env.david);

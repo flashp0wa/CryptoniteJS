@@ -1,24 +1,32 @@
 /* eslint-disable */
 
 // require('dotenv').config({path: '../.env'});
-require('dotenv').config({path: '.env-dev'});
+require('dotenv').config({path: '.envbkp'});
+const { getDatabase } = require('../Classes/Database.js');
 const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass.js');
 const { getTechnicalIndicators } = require('../Classes/TechnicalIndicatorClass.js');
-const sqlConnector = require('../DatabaseConnection/SQLConnector.js');
+const db = getDatabase();
 
 (async () => {
-  const obj = {
-    exchange: '\'BinanceFuturesTest\'',
-    orderStatus: null,
-    orderId: null,
-    orderType: null,
-    side: null,
-    strategyId: null,
-    startDate: null,
-    endDate: null,
+  await db.connect();
+
+  async function loadEnv() {
+    const res = await db.singleRead('select * from cry_setting_application');
+    console.log(res);
+
   }
 
-const resp = await sqlConnector.singleRead(`select * from itvf_FE_ReturnOrders(${obj.exchange}, ${obj.orderStatus}, ${obj.orderId}, ${obj.orderType}, ${obj.side}, ${obj.strategyId}, ${obj.startDate}, ${obj.endDate})`);
-console.log(resp);
+  await loadEnv();
+  // const obj = {
+  //   exchange: '\'BinanceFuturesTest\'',
+  //   orderStatus: null,
+  //   orderId: null,
+  //   orderType: null,
+  //   side: null,
+  //   strategyId: null,
+  //   startDate: null,
+  //   endDate: null,
+  // }
+
 })();
 

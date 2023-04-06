@@ -45,6 +45,14 @@ class Exchanges {
     }
   }
   /**
+   * Check all exchange's support order status
+   */
+  checkSupportOrderStatus() {
+    for (const exchange of Object.keys(getExchanges())) {
+      this[exchange].openOrders.checkSupportOrder();
+    }
+  }
+  /**
    * Reload all exchange's market data
    */
   async reloadMarkets() {
