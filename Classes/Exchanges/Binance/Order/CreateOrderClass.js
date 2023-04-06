@@ -59,6 +59,7 @@ class CreateOrder extends Order {
             this.side,
             this.orderAmount,
             this.price,
+            {timeInForce: this.exchangeObj.isPostOnly && this.type === 'limit' ? 'GTX' : 'GTC'},
         );
 
         this.traderLog.log({

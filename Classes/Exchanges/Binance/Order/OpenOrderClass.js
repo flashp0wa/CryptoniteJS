@@ -25,9 +25,9 @@ class OpenOrder {
       this.openOrders = await this.db.singleRead(`select * from itvf_ReturnOrders('open', ${this.excObj.id})`);
       for (const order of this.openOrders) {
         try {
-          const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
-          if ((res.status === 'closed' || res.status === 'canceled') && order.oco === false) {
-            if (order.siblingOrderId && res.status === 'closed') {
+          const res = await this.excObj.fetchOrderStatus(order.orderId, order.symbol);
+          if ((res === 'closed' || res === 'canceled') && order.oco === false) {
+            if (order.siblingOrderId && res === 'closed') {
               OpenOrderCheckLog.log({
                 level: 'info',
                 message: `Order ${order.orderId} has been closed, canceling sibling order ${order.siblingOrderId}`,
@@ -91,11 +91,35 @@ class OpenOrder {
   }
 
   async checkSupportOrder() {
-    const supportOrders = await this.db.singleRead(`select * from itvf_ReturnSystemStateSupportOrder()`);
+    const supportOrders = await this.db.singleRead(`select * from itvf_ReturnSystemStateSupportOrder('${this.excName}')`);
     for (const order of supportOrders) {
-      let res;
       try {
-        res = await this.excObj.fetchOrder(order.orderId, order.symbol);
+        const res = await this.excObj.fetchOrderStatus(order.orderId, order.symbol);
+        if (res === 'closed') {
+          OpenOrderCheckLog.log({
+            level: 'info',
+            message: `Support order ${order.orderId} has been closed, creating new order`,
+            senderFunction: 'checkSupportOrder',
+            file: 'OpenOrderClass.js',
+            discord: 'application-errors',
+          });
+
+          this.globalEvent.emit('CreateOrder', {
+            symbol: order.symbol,
+            side: order.orderSideName,
+            type: order.orderTypeName,
+            exchange: order.exchange,
+            strategy: order.strategyName,
+            orderAmount: order.orderAmount,
+            price: order.price,
+            stopPrice: order.stopPrice,
+            limitPrice: order.limitPrice,
+            reopen: true,
+            orderId: order.orderId,
+          });
+        } else if (res === 'canceled') {
+          this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: order.orderId});
+        }
       } catch (error) {
         OpenOrderCheckLog.log({
           level: 'error',
@@ -104,31 +128,6 @@ class OpenOrder {
           file: 'OpenOrderClass.js',
           discord: 'application-errors',
         });
-      }
-      if (res.status === 'closed') {
-        OpenOrderCheckLog.log({
-          level: 'info',
-          message: `Support order ${order.orderId} has been closed, creating new order`,
-          senderFunction: 'checkSupportOrder',
-          file: 'OpenOrderClass.js',
-          discord: 'application-errors',
-        });
-
-        this.globalEvent.emit('CreateOrder', {
-          symbol: order.symbol,
-          side: order.orderSideName,
-          type: order.orderTypeName,
-          exchange: order.exchange,
-          strategy: order.strategyName,
-          orderAmount: order.orderAmount,
-          price: order.price,
-          stopPrice: order.stopPrice,
-          limitPrice: order.limitPrice,
-          reopen: true,
-          orderId: order.orderId,
-        });
-      } else if (res.status === 'canceled') {
-        this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: order.orderId});
       }
     }
   }

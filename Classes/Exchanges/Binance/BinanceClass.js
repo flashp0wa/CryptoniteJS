@@ -20,6 +20,7 @@ class BinanceClass {
     this.lastWssMessageTimestamp;
     this.isWssOn = false;
     this.db = getDatabase();
+    this.isPostOnly = true;
   }
   /**
    * @param {array} wss // array of web socket streams

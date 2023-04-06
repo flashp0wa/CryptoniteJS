@@ -1,7 +1,7 @@
 /*eslint-disable*/
 
 // require('dotenv').config({path: '../.env-dev'});
-require('dotenv').config({path: '.env-dev'});
+require('dotenv').config({path: '.envbkp'});
 const _ = require('lodash');
 const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass');
 const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/BinanceFuturesTestClass');
@@ -15,28 +15,31 @@ const spot = new BinanceSpotClass('binanceSpot');
 
 (async () => {
   try {
-    const orderObj = {
-      symbol: 'BTCUSDT',
-      side: 'buy',
-      type: 'market',
-      orderAmount: 0.01,
-      price: 26600,
-      stopPrice: 20000,
-      limitPrice: 32000,
-      exchange: 'binanceFuturesTest',
-      strategy: 'Candle-Tree-1.1',
-    };
-    loadEventListeners();
-    await getDatabase().connect();
-    await getExchanges().loadExchanges();
-    await futuresTest.loadExchangeId();
-    await futuresTest.loadMarkets();
-    await futuresTest.loadOpenOrders();
-    const res = await futuresTest.createOrder(orderObj);
+    // const orderObj = {
+    //   symbol: 'BTCUSDT',
+    //   side: 'buy',
+    //   type: 'limit',
+    //   orderAmount: 0.01,
+    //   price: 26600,
+    //   stopPrice: 20000,
+    //   limitPrice: 32000,
+    //   exchange: 'binanceFuturesTest',
+    //   strategy: 'Candle-Tree-1.1',
+    // };
+    // loadEventListeners();
+    // await getDatabase().connect();
+    // await getExchanges().loadExchanges();
+    // await futuresTest.loadExchangeId();
+    // await futuresTest.loadMarkets();
+    // await futuresTest.loadOpenOrders();
+    // const res = await futuresTest.createOrder(orderObj);
+
+    const res = await futuresTest.excObj.fetchOrder('3305896329', 'BTCUSDT');
+
     console.log(res);
-    setInterval(() => {
-      futuresTest.openOrders.checkSupportOrder();
-    }, 10000);
+    // setInterval(() => {
+    //   futuresTest.openOrders.checkSupportOrder();
+    // }, 10000);
 
 
 } catch (error) {
