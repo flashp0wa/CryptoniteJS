@@ -45,7 +45,7 @@ class TechnicalIndicatorClass {
       } catch (error) {
         ApplicationLog.log({
           level: 'error',
-          message: `Could no load values of Average True Range. ${error}`,
+          message: `Could not load values of Average True Range. ${error}`,
           senderFunction: 'atr',
           file: 'TechnicalIndicatorClass.js',
           discord: 'application-errors',

@@ -8,11 +8,11 @@ class StrategyClass {
   constructor(excObj, excName, wss) {
     this.excObj = excObj; // CCXT Exchange object
     this.excName = excName; // Exchange name
+    this.db = getDatabase();
     this.globalEvent = returnEmitter(); // Global event object
     this.technicalIndicators = getTechnicalIndicators();
     this.wss = wss; // Used to construct candle tree object
     this.srCandleTree;
-    this.db = getDatabase();
   }
   /**
    * IMPORTANT: Because of the balance fetching two calculations may overlap causing timeFrameObj not resetting
