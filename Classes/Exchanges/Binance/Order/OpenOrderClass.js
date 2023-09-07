@@ -17,7 +17,7 @@ class OpenOrder {
   async checkOrderStatus() {
     try {
       OpenOrderCheckLog.log({
-        level: 'info',
+        level: 'silly',
         message: `Checking order status on ${this.excName}...`,
         senderFunction: 'checkOrderStatus',
         file: 'OpenOrderClass.js',
@@ -83,7 +83,7 @@ class OpenOrder {
       });
     }
     OpenOrderCheckLog.log({
-      level: 'info',
+      level: 'silly',
       message: `Order status check finished on ${this.excName}`,
       senderFunction: 'checkOrderStatus',
       file: 'OpenOrderClass.js',

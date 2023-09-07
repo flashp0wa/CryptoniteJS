@@ -291,9 +291,41 @@ class Database {
           .input('timeFrame', inObj.timeFrame)
           .input('symbol', inObj.symbol)
           .input('candleTypeId', inObj.candleTypeId)
+          .output('symbolId', sql.Int)
+          .output('timeFrameId', sql.Int)
+          .output('accDistIndicator', sql.Decimal(19, 2))
+          .output('aroonUp14', sql.SmallInt)
+          .output('aroonDown14', sql.SmallInt)
+          .output('aroonUp25', sql.SmallInt)
+          .output('aroonDown25', sql.SmallInt)
+          .output('avgDirIndx', sql.Decimal(4, 2))
+          .output('support', sql.Decimal(19, 8))
+          .output('resistance', sql.Decimal(19, 8))
+          .output('atr50', sql.Decimal(19, 8))
+          .output('bollUpBand30', sql.Decimal(19, 8))
+          .output('bollDownBand30', sql.Decimal(19, 8))
+          .output('bollWidthBand30', sql.Decimal(19, 8))
+          .output('ema50', sql.Decimal(19, 8))
+          .output('ema9', sql.Decimal(19, 8))
+          .output('ema200', sql.Decimal(19, 8))
+          .output('ema10', sql.Decimal(19, 8))
+          .output('ema12', sql.Decimal(19, 8))
+          .output('ema26', sql.Decimal(19, 8))
+          .output('macd1226', sql.Decimal(19, 8))
+          .output('rsi', sql.Decimal(19, 8))
+          .output('sma10', sql.Decimal(19, 8))
+          .output('sma20', sql.Decimal(19, 8))
+          .output('sma30', sql.Decimal(19, 8))
+          .output('sma50', sql.Decimal(19, 8))
+          .output('sma100', sql.Decimal(19, 8))
+          .output('sma200', sql.Decimal(19, 8))
+          .output('stoFastSmooth', sql.Decimal(19, 8))
+          .output('stoSlowSmooth', sql.Decimal(19, 8))
+          .output('willFracBuy', sql.Bit)
+          .output('willFracSell', sql.Bit)
           .execute('InsertIntoKlines');
 
-      return request;
+      return request.output;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
@@ -567,6 +599,31 @@ class Database {
         level: 'error',
         message: `Encountered an error running 'sproc_GatherSymbolTAData. Object: ${JSON.stringify(inObj)} ${error.stack}`,
         senderFunction: 'sproc_GatherSymbolTAData',
+        file: 'Database.js',
+        discord: 'database-errors',
+      });
+    }
+  };
+
+  sproc_SwitchTradeMode = async (inObj) => {
+    try {
+      await this.poolConnect;
+      DatabaseLog.log({
+        level: 'silly',
+        message: 'Running stored procedure Switch Trade Mode',
+        senderFunction: 'sproc_SwitchTradeMode',
+        file: 'Database.js',
+      });
+      const request = await this.pool.request()
+          .input('getValue', inObj.getValue)
+          .output('returnValue', sql.VarChar(5))
+          .execute('SwitchTradeMode');
+      return request.output;
+    } catch (error) {
+      DatabaseLog.log({
+        level: 'error',
+        message: `Encountered an error running 'sproc_SwitchTradeMode. Object: ${JSON.stringify(inObj)} ${error.stack}`,
+        senderFunction: 'sproc_SwitchTradeMode',
         file: 'Database.js',
         discord: 'database-errors',
       });

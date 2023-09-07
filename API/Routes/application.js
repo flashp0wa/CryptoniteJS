@@ -76,6 +76,20 @@ router.route('/settings/save').post(async (req, res) => {
     });
   }
 });
+router.route('/settings/switchTradeMode').post(async (req, res) => {
+  // If getValue is 0, does not switch trade mode just return current value
+  try {
+    const response = await db.sproc_SwitchTradeMode({getValue: req.body.getValue});
+    res.send(response.returnValue);
+  } catch (error) {
+    ApiLog.log({
+      level: 'error',
+      message: `Error saving settings: ${error}`,
+      senderFunction: 'route-settings-save',
+      file: 'application.js',
+    });
+  }
+});
 
 
 module.exports = router;

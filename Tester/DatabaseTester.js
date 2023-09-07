@@ -10,8 +10,27 @@ const db = getDatabase();
 (async () => {
   await db.connect();
 
+  const obj = {
+    openTime: '2023-07-10 00:00:00',
+    openPrice: 30160.71000000,
+    closePrice: 30411.57000000,
+    highPrice: 31045.78000000,
+    lowPrice: 29950.00000000,
+    volume: 41262.8765,
+    closeTime: '2023-07-10 23:59:59',
+    quoteAssetVolume: 1254289037.7421,
+    numberOfTrades: 896853,
+    takerBuyBaseAssetVolume: 19574.2347,
+    takerBuyQuoteAssetVolume: 595390893.145,
+    ignore: 0,
+    timeFrame: '1d',
+    symbol: 'BTCUSDT',
+    candleTypeId: 1,
+  };
+
+
   async function loadEnv() {
-    const res = await db.singleRead('select * from cry_setting_application');
+    const res = await db.sproc_InsertIntoKlines(obj);    
     console.log(res);
 
   }

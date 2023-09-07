@@ -346,10 +346,8 @@ class BinanceClass {
 
     const onMessage = (processedData) => {
       if (processedData.closed) {
-        this.db.sproc_InsertIntoKlines(processedData);
+        this.technicalIndicator.handleKline(processedData);
       }
-      this.technicalIndicator.atr(processedData);
-      this.technicalIndicator.sr(processedData);
       this.strategy.run_srCandleTree(processedData);
     };
 
