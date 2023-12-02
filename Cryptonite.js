@@ -26,6 +26,8 @@ require('dotenv').config({path: '.env'});
   loadEventListeners();
   startIntervals();
   startApi();
+
+  // const exchagne = getExchanges()['binance'].technicalIndicator.getSymbolData(3, 3);
   ApplicationLog.log({
     level: 'info',
     message: `Application online, let the money shower! | Trade Mode: ${process.env.CRYPTONITE_TRADE_MODE}`,

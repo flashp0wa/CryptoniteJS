@@ -18,8 +18,8 @@ class TechnicalIndicatorClass {
    * @return {object} Average True Range value
   */
 
-  getSymbolData(symbol, timeFrame) {
-    return this.symbolData.get(symbol).get(timeFrame);
+  getSymbolData(symbolId, timeFrameId) {
+    // return this.symbolData.get(symbolId).get(timeFrameId);
   }
 
   processSymbolData(data) {

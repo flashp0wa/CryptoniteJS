@@ -75,6 +75,18 @@ router.route('/getOrders').post(async (req, res) => {
     });
   }
 });
+router.route('/getSymbolData').post(async (req, res) => {
+  try {
+    res.send(getExchanges()['binance'].excObj.technicalIndicator.getSymbolData(req.body.symbol, req.body.timeFrame));
+  } catch (error) {
+    ApiLog.log({
+      level: 'error',
+      message: `Could not retrieve order info. ${error}`,
+      senderFunction: 'route-getOrders',
+      file: 'Api.js',
+    });
+  }
+});
 
 router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
   try {

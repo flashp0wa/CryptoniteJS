@@ -32,8 +32,9 @@ class BinanceClass {
   /**
    * Loads technical indicator class
    */
-  loadTechnicalIndicator() {
+  async loadTechnicalIndicator() {
     this.technicalIndicator = getTechnicalIndicators();
+    await this.technicalIndicator.loadValues();
   }
   /**
    * Loads open orders for exchagne
@@ -141,7 +142,7 @@ class BinanceClass {
       this.loadOpenOrders();
       await this.loadExchangeId();
       await this.loadMarkets();
-      this.loadTechnicalIndicator();
+      await this.loadTechnicalIndicator();
       this.loadSymbols();
     } catch (error) {
       ApplicationLog.log({
@@ -348,7 +349,7 @@ class BinanceClass {
       if (processedData.closed) {
         this.technicalIndicator.handleKline(processedData);
       }
-      this.strategy.run_srCandleTree(processedData);
+      // this.strategy.run_srCandleTree(processedData);
     };
 
     try {
