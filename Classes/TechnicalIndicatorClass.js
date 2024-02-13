@@ -19,24 +19,26 @@ class TechnicalIndicatorClass {
   */
 
   getSymbolData(symbolId, timeFrameId) {
-    // return this.symbolData.get(symbolId).get(timeFrameId);
+    return this.symbolData.get(symbolId).get(timeFrameId);
   }
 
   processSymbolData(data) {
-    if (this.symbolData.has(data.symbolId)) {
-      const timeFrame = this.symbolData.get(data.symbolId);
-      timeFrame.set(data.timeFrameId, new Map(Object.entries(data)));
-      this.symbolData.set(data.symbolId, timeFrame);
-    } else {
+    for (const element of data) {
       const timeFrame = new Map();
-      timeFrame.set(data.timeFrameId, new Map(Object.entries(data)));
-      this.symbolData.set(data.symbolId, timeFrame);
+      timeFrame.set(element.timeFrameId, new Map(Object.entries(element)));
+      if (this.symbolData.has(element.symbolId)) {
+        const timeFrameRead = this.symbolData.get(element.symbolId);
+        timeFrameRead.set(element.timeFrameId, timeFrame);
+      } else {
+        this.symbolData.set(element.symbolId, timeFrame);
+      }
     }
   }
 
   async handleKline(klineObj) {
     try {
       const res = await this.db.sproc_InsertIntoKlines(klineObj);
+      console.log(res);
       this.processSymbolData(res);
     } catch (error) {
       ApplicationLog.log({
@@ -59,11 +61,14 @@ class TechnicalIndicatorClass {
         senderFunction: 'loadValues',
         file: 'TechnicalIndicatorClass.js',
       });
+      if (this.isLoaded) {
+        return;
+      } else {
+        const res = await this.db.singleRead('select * from itvf_GetLastSymbolData()');
+        this.processSymbolData(res);
 
-      const res = await this.db.singleRead('select * from itvf_GetLastSymbolData()');
-      this.processSymbolData(res);
-
-      this.isLoaded = true;
+        this.isLoaded = true;
+      }
     } catch (error) {
       ApplicationLog.log({
         level: 'error',

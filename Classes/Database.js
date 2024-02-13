@@ -293,36 +293,36 @@ class Database {
           .input('candleTypeId', inObj.candleTypeId)
           .output('symbolId', sql.Int)
           .output('timeFrameId', sql.Int)
-          .output('accDistIndicator', sql.Decimal(19, 2))
-          .output('aroonUp14', sql.SmallInt)
-          .output('aroonDown14', sql.SmallInt)
-          .output('aroonUp25', sql.SmallInt)
-          .output('aroonDown25', sql.SmallInt)
-          .output('avgDirIndx', sql.Decimal(4, 2))
-          .output('support', sql.Decimal(19, 8))
-          .output('resistance', sql.Decimal(19, 8))
-          .output('atr50', sql.Decimal(19, 8))
-          .output('bollUpBand30', sql.Decimal(19, 8))
-          .output('bollDownBand30', sql.Decimal(19, 8))
-          .output('bollWidthBand30', sql.Decimal(19, 8))
-          .output('ema50', sql.Decimal(19, 8))
-          .output('ema9', sql.Decimal(19, 8))
-          .output('ema200', sql.Decimal(19, 8))
-          .output('ema10', sql.Decimal(19, 8))
-          .output('ema12', sql.Decimal(19, 8))
-          .output('ema26', sql.Decimal(19, 8))
-          .output('macd1226', sql.Decimal(19, 8))
           .output('rsi', sql.Decimal(19, 8))
-          .output('sma10', sql.Decimal(19, 8))
-          .output('sma20', sql.Decimal(19, 8))
-          .output('sma30', sql.Decimal(19, 8))
-          .output('sma50', sql.Decimal(19, 8))
-          .output('sma100', sql.Decimal(19, 8))
-          .output('sma200', sql.Decimal(19, 8))
-          .output('stoFastSmooth', sql.Decimal(19, 8))
-          .output('stoSlowSmooth', sql.Decimal(19, 8))
-          .output('willFracBuy', sql.Bit)
-          .output('willFracSell', sql.Bit)
+          // .output('accDistIndicator', sql.Decimal(19, 2))
+          // .output('aroonUp14', sql.SmallInt)
+          // .output('aroonDown14', sql.SmallInt)
+          // .output('aroonUp25', sql.SmallInt)
+          // .output('aroonDown25', sql.SmallInt)
+          // .output('avgDirIndx', sql.Decimal(4, 2))
+          // .output('support', sql.Decimal(19, 8))
+          // .output('resistance', sql.Decimal(19, 8))
+          // .output('atr50', sql.Decimal(19, 8))
+          // .output('bollUpBand30', sql.Decimal(19, 8))
+          // .output('bollDownBand30', sql.Decimal(19, 8))
+          // .output('bollWidthBand30', sql.Decimal(19, 8))
+          // .output('ema50', sql.Decimal(19, 8))
+          // .output('ema9', sql.Decimal(19, 8))
+          // .output('ema200', sql.Decimal(19, 8))
+          // .output('ema10', sql.Decimal(19, 8))
+          // .output('ema12', sql.Decimal(19, 8))
+          // .output('ema26', sql.Decimal(19, 8))
+          // .output('macd1226', sql.Decimal(19, 8))
+          // .output('sma10', sql.Decimal(19, 8))
+          // .output('sma20', sql.Decimal(19, 8))
+          // .output('sma30', sql.Decimal(19, 8))
+          // .output('sma50', sql.Decimal(19, 8))
+          // .output('sma100', sql.Decimal(19, 8))
+          // .output('sma200', sql.Decimal(19, 8))
+          // .output('stoFastSmooth', sql.Decimal(19, 8))
+          // .output('stoSlowSmooth', sql.Decimal(19, 8))
+          // .output('willFracBuy', sql.Bit)
+          // .output('willFracSell', sql.Bit)
           .execute('InsertIntoKlines');
 
       return request.output;
@@ -330,7 +330,7 @@ class Database {
       DatabaseLog.log({
         level: 'error',
         message: `Encountered an error running 'sproc_InsertIntoKlines' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
-        senderFunction: 'sproc_InsertIntoOrder',
+        senderFunction: 'sproc_InsertIntoKlines',
         file: 'Database.js',
         discord: 'database-errors',
       });
@@ -341,7 +341,7 @@ class Database {
       await this.poolConnect;
       DatabaseLog.log({
         level: 'silly',
-        message: 'Running stroed procedure Insert Into Order',
+        message: 'Running stored procedure Insert Into Order',
         senderFunction: 'sproc_InsertIntoOrder',
         file: 'Database.js',
       });

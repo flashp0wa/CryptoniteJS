@@ -228,6 +228,13 @@ const BncHistoryDownloadLog = winston.createLogger({
       ),
     }),
     new Discord({format: discordFilter()}),
+    new winston.transports.DailyRotateFile({
+      filename: `./Log/BncHistoryDownloadLog-%DATE%.log`,
+      datePattern: 'YYYY',
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: winston.format.json(),
+    }),
   ], format: winston.format.combine(
       winston.format.label({
         label: 'BinanceDownload',

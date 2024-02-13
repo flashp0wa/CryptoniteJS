@@ -4,8 +4,8 @@ require('dotenv').config({path: '.env'});
   // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
   // await loadDiscordApi();
   const {getDatabase} = require('./Classes/Database');
-  const db = getDatabase();
-  await db.connect();
+  const db = await getDatabase();
+  db.connect();
 
   async function loadEnv() {
     const res = await db.singleRead('select * from cry_setting_application');
@@ -21,13 +21,16 @@ require('dotenv').config({path: '.env'});
   const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
   const {startApi} = require('./API/Api');
   const {startIntervals} = require('./Intervals');
-
+  const {getTechnicalIndicators} = require('./Classes/TechnicalIndicatorClass');
+  await getTechnicalIndicators().loadValues();
   await getExchanges().loadExchanges();
+  const {getCryptoniteWebSocket} = require('./Classes/WebSocket');
+  getCryptoniteWebSocket().startServer();
+  // getCryptoniteWebSocket().connectToBinance();
   loadEventListeners();
   startIntervals();
   startApi();
 
-  // const exchagne = getExchanges()['binance'].technicalIndicator.getSymbolData(3, 3);
   ApplicationLog.log({
     level: 'info',
     message: `Application online, let the money shower! | Trade Mode: ${process.env.CRYPTONITE_TRADE_MODE}`,

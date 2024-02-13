@@ -1,4 +1,5 @@
-const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
+const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
+const {getCryptoniteWebSocket} = require('../Classes/WebSocket');
 
 /**
  *
@@ -7,6 +8,9 @@ const {getExchanges} = require('../Classes/Exchanges/ExchangesClass.js');
 function loadListeners(emitter) {
   emitter.on('CreateOrder', (conObj) => {
     getExchanges()[conObj.exchange].createOrder(conObj);
+  });
+  emitter.on('SendWssMessage', (msg) => {
+    getCryptoniteWebSocket().sendMessage(msg);
   });
 }
 

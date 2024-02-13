@@ -135,6 +135,7 @@ class CreateOrder extends Order {
     if (this.isReOpen) {
       this.stopLossOrder.parentOrderId = this.orderId;
       this.takeProfitOrder.parentOrderId = this.orderId;
+      this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: this.orderId});
     }
     const id1 = await this.stopLossOrder.createOrder();
     const id2 = await this.takeProfitOrder.createOrder();
@@ -142,10 +143,6 @@ class CreateOrder extends Order {
     this.takeProfitOrder.siblingOrderId = id1;
     this.stopLossOrder.processOrderResponse();
     this.takeProfitOrder.processOrderResponse();
-
-    if (this.isReOpen) {
-      this.db.sproc_DeleteFromSystemStateSupportOrder({orderId: this.orderId});
-    }
   }
 }
 
