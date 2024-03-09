@@ -100,6 +100,15 @@ class BinanceClass {
         this.symbolList.push(actualSymbol);
         await this.db.sproc_AddSymbolToDatabase(actualSymbol, this.excObj.id);
       }
+
+      ApplicationLog.log({
+        level: 'info',
+        message: `Symbols loaded on ${this.excName}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
+
+      console.log(this.symbolList);
     } catch (error) {
       ApplicationLog.log({
         level: 'warn',

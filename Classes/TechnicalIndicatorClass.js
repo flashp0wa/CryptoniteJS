@@ -64,7 +64,7 @@ class TechnicalIndicatorClass {
       if (this.isLoaded) {
         return;
       } else {
-        const res = await this.db.singleRead('select * from itvf_GetLastSymbolData()');
+        const res = await this.db.singleRead('select * from itvf_GetLastSymbolData(null)');
         this.processSymbolData(res);
 
         this.isLoaded = true;
