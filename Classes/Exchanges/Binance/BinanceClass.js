@@ -107,8 +107,6 @@ class BinanceClass {
         senderFunction: 'loadSymbols',
         file: 'BinanceClass.js',
       });
-
-      console.log(this.symbolList);
     } catch (error) {
       ApplicationLog.log({
         level: 'warn',
