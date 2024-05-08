@@ -1055,9 +1055,9 @@ class StrategyClass {
     const newPrice = klineObj.closePrice;
     const diff = Math.abs((initialPrice - newPrice) / initialPrice);
 
-    console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${newPrice} Difference: ${diff}`);
-
+    
     if (diff > threshold) {
+      console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${newPrice} Difference: ${diff}`);
       StrategyHandlerLog.log({
         level: 'info',
         message: `Price crash for ${klineObj.symbol}`,
