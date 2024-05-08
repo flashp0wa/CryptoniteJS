@@ -11,8 +11,9 @@ class StrategyClass {
     this.db = getDatabase();
     this.globalEvent = returnEmitter(); // Global event object
     this.technicalIndicators = getTechnicalIndicators();
-    this.wss = wss; // Used to construct candle tree object
+    // this.wss = wss; // Used to construct candle tree object
     this.srCandleTree;
+    this.pricefallTree = new Map();
   }
   /**
    * IMPORTANT: Because of the balance fetching two calculations may overlap causing timeFrameObj not resetting
@@ -1040,6 +1041,30 @@ class StrategyClass {
       );
       // Clear price array and deactivate candle tree check until price hits either support or resistance again
       resetTimeFrameObj(timeFrameObj);
+    }
+  }
+
+  run_PriceFall(klineObj) {
+    const threshold = 0.3;
+
+    if (!this.pricefallTree.has(klineObj.symbol)) {
+      this.pricefallTree.set(klineObj.symbol, klineObj.closePrice);
+    }
+
+    const initialPrice = this.pricefallTree.get(klineObj.symbol);
+    const newPrice = klineObj.closePrice;
+    const diff = Math.abs((initialPrice - newPrice) / initialPrice);
+
+    console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${newPrice} Difference: ${diff}`);
+
+    if (diff > threshold) {
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: `Price crash for ${klineObj.symbol}`,
+        senderFunction: 'run_PriceFall',
+        file: 'StrategyClass.js',
+        discord: 'gumiszoba',
+      });
     }
   }
 }

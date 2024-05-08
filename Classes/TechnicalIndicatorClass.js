@@ -38,7 +38,6 @@ class TechnicalIndicatorClass {
   async handleKline(klineObj) {
     try {
       const res = await this.db.sproc_InsertIntoKlines(klineObj);
-      console.log(res);
       this.processSymbolData(res);
     } catch (error) {
       ApplicationLog.log({

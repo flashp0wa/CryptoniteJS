@@ -1,8 +1,6 @@
 'use strict';
 require('dotenv').config({path: '.env'});
 (async () => {
-  // const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
-  // await loadDiscordApi();
   const {getDatabase} = require('./Classes/Database');
   const db = await getDatabase();
   db.connect();
@@ -25,8 +23,10 @@ require('dotenv').config({path: '.env'});
   await getTechnicalIndicators().loadValues();
   await getExchanges().loadExchanges();
   const {getCryptoniteWebSocket} = require('./Classes/WebSocket');
+  const {loadDiscordApi} = require('./DiscordAPI/DiscordBot');
+  await loadDiscordApi();
   getCryptoniteWebSocket().startServer();
-  // getCryptoniteWebSocket().connectToBinance();
+  getCryptoniteWebSocket().connectToBinance();
   loadEventListeners();
   startIntervals();
   startApi();

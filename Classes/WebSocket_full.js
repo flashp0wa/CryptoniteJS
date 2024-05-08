@@ -69,33 +69,39 @@ class CryptoniteWebSocket {
       let processedStream = {};
 
       switch (streamType) {
-        case '24hrTicker': {
-          // processedStream.EventType = jsonStreamObj['e'];
-          // processedStream.EventTime = new Date(eventUnixTime).toISOString();
-          // processedStream.Symbol = jsonStreamObj['s'];
-          // processedStream.PriceChange = jsonStreamObj['p'];
-          // processedStream.PriceChangePercent = jsonStreamObj['P'];
-          // processedStream.WeightedAveragePrice = jsonStreamObj['w'];
-          // processedStream.FirstTradePrice = jsonStreamObj['x'];
-          // processedStream.LastPrice = jsonStreamObj['c'];
-          // processedStream.LastQuantity = jsonStreamObj['Q'];
-          // processedStream.BestBidPrice = jsonStreamObj['b'];
-          // processedStream.BestBidQuantity = jsonStreamObj['B'];
-          // processedStream.BestAskPrice = jsonStreamObj['a'];
-          // processedStream.BestAskQuantity = jsonStreamObj['A'];
-          // processedStream.OpenPrice = jsonStreamObj['o'];
-          // processedStream.HighPrice = jsonStreamObj['h'];
-          // processedStream.LowPrice = jsonStreamObj['l'];
-          // processedStream.TotalTradedBaseAssetVolume = jsonStreamObj['v'];
-          // processedStream.TotalTradedQuoteAssetVolume = jsonStreamObj['q'];
-          // processedStream.StatisticsTimeOpen = jsonStreamObj['O'];
-          // processedStream.StatisticsCloseTime = jsonStreamObj['C'];
-          // processedStream.FirstTradeId = jsonStreamObj['F'];
-          // processedStream.LastTradeId = jsonStreamObj['L'];
-          // processedStream.TotalTrades = jsonStreamObj['n'];
+        // case '24hrTicker': {
+        //   processedStream.EventType = jsonStreamObj['data']['e'];
+        //   processedStream.EventTime = new Date(eventUnixTime).toISOString();
+        //   processedStream.Symbol = jsonStreamObj['data']['s'];
+        //   processedStream.PriceChange = jsonStreamObj['data']['p'];
+        //   processedStream.PriceChangePercent = jsonStreamObj['data']['P'];
+        //   processedStream.WeightedAveragePrice = jsonStreamObj['data']['w'];
+        //   processedStream.FirstTradePrice = jsonStreamObj['data']['x'];
+        //   processedStream.LastPrice = jsonStreamObj['data']['c'];
+        //   processedStream.LastQuantity = jsonStreamObj['data']['Q'];
+        //   processedStream.BestBidPrice = jsonStreamObj['data']['b'];
+        //   processedStream.BestBidQuantity = jsonStreamObj['data']['B'];
+        //   processedStream.BestAskPrice = jsonStreamObj['data']['a'];
+        //   processedStream.BestAskQuantity = jsonStreamObj['data']['A'];
+        //   processedStream.OpenPrice = jsonStreamObj['data']['o'];
+        //   processedStream.HighPrice = jsonStreamObj['data']['h'];
+        //   processedStream.LowPrice = jsonStreamObj['data']['l'];
+        //   processedStream.TotalTradedBaseAssetVolume = jsonStreamObj['data']['v'];
+        //   processedStream.TotalTradedQuoteAssetVolume = jsonStreamObj['data']['q'];
+        //   processedStream.StatisticsTimeOpen = jsonStreamObj['data']['O'];
+        //   processedStream.StatisticsCloseTime = jsonStreamObj['data']['C'];
+        //   processedStream.FirstTradeId = jsonStreamObj['data']['F'];
+        //   processedStream.LastTradeId = jsonStreamObj['data']['L'];
+        //   processedStream.TotalTrades = jsonStreamObj['data']['n'];
 
-          // return processedStream;
-        }
+        //   processedStream.sqlInsertString = `INSERT INTO IndividualSymbolTickerStream VALUES (\'${processedStream.PriceChange}\',\'${processedStream.PriceChangePercent}\',\'${processedStream.WeightedAveragePrice}\',\'${processedStream.FirstTradePrice}\',\'${processedStream.LastPrice}\',\'${processedStream.LastQuantity}\',\'${processedStream.BestBidPrice}\',\'${processedStream.BestBidQuantity}\',\'${processedStream.BestAskPrice}\',\'${processedStream.BestAskQuantity}\',\'${processedStream.OpenPrice}\',\'${processedStream.HighPrice}\',\'${processedStream.LowPrice}\',\'${processedStream.TotalTradedBaseAssetVolume}\',\'${processedStream.TotalTradedQuoteAssetVolume}\',\'${processedStream.StatisticsTimeOpen}\',\'${processedStream.StatisticsCloseTime}\',\'${processedStream.FirstTradeId}\',\'${processedStream.LastTradeId}\',\'${processedStream.TotalTrades}\',\'${processedStream.EventType}\',\'${processedStream.EventTime}\',\'${processedStream.Symbol}\')`;
+        //   writeToDatabase(processedStream.sqlInsertString);
+        //   onMessageOperations.stream_TotalTradedQuoteAssetVolume(processedStream);
+        //   onMessageOperations.stream_CalculateCoinPairPriceGap(processedStream);
+        //   onMessageOperations.stream_PriceWatch(processedStream);
+
+        //   break;
+        // }
         case 'kline': {
           processedStream.openTime = new Date(jsonStreamObj['k']['t']).toISOString().split('.')[0];
           processedStream.closeTime = new Date(jsonStreamObj['k']['T']).toISOString().split('.')[0];
@@ -115,7 +121,7 @@ class CryptoniteWebSocket {
           processedStream.takerBuyQuoteAssetVolume = parseFloat(jsonStreamObj['k']['Q']);
           processedStream.ignore = parseInt(jsonStreamObj['k']['B']);
 
-          // if (processedStream.closed) processedStream = stream_getCandleType(processedStream);
+          if (processedStream.closed) processedStream = stream_getCandleType(processedStream);
           return processedStream;
         }
 
@@ -242,9 +248,9 @@ class CryptoniteWebSocket {
     };
     const onMessage = (processedData) => {
       if (processedData.closed) {
-        // this.technicalIndicator.handleKline(processedData);
-        getExchanges()['binanceFutures'].strategy.run_PriceFall(processedData);
+        this.technicalIndicator.handleKline(processedData);
       }
+      // this.strategy.run_srCandleTree(processedData);
     };
 
     try {
@@ -254,7 +260,7 @@ class CryptoniteWebSocket {
       const rows = await this.db.singleRead(`select * from itvf_GetWss(${exchangeId})`);
       const streams = [];
       let wssCache = [];
-      const dataIntegrityIsChecked = true;
+      let dataIntegrityIsChecked = false;
 
       for (const row of rows) {
         streams.push(`${row.symbol.toLowerCase()}@${row.streamType}`);
@@ -301,7 +307,7 @@ class CryptoniteWebSocket {
           file: 'WebSocket.js',
         });
         setTimeout(() => {
-          this.connectToBinance();
+          this.startWss();
         }, process.env.WSS_TIMEOUT_CONNECTION_REBUILD);
       };
 
@@ -333,8 +339,8 @@ class CryptoniteWebSocket {
       });
 
       // Check if there is any missing data in the database
-      // dataIntegrityIsChecked = await dataIntegrityCheck(streams);
-      // await this.technicalIndicator.loadValues();
+      dataIntegrityIsChecked = await dataIntegrityCheck(streams);
+      await this.technicalIndicator.loadValues();
     } catch (error) {
       ApplicationLog.log({
         level: 'error',

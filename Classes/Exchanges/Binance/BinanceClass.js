@@ -3,6 +3,7 @@ const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
 const {getTechnicalIndicators} = require('../../TechnicalIndicatorClass');
 const {getDatabase} = require('../../Database');
+const {StrategyClass} = require('../../StrategyClass');
 
 
 class BinanceClass {
@@ -138,6 +139,7 @@ class BinanceClass {
       await this.loadMarkets();
       await this.loadTechnicalIndicator();
       this.loadSymbols();
+      this.strategy = new StrategyClass(this.excObj, this.excName);
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
