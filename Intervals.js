@@ -32,6 +32,10 @@ function startIntervals() {
 
   // #endregion
   setInterval(() => {
+    getExchanges()['binanceFutures'].strategy.pricefallTree = new Map();
+  }, 3600000);
+
+  setInterval(() => {
     getExchanges().reloadMarkets();
   }, process.env.RELOAD_MARKETS);
 

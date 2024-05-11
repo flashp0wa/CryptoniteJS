@@ -30,6 +30,17 @@ class Database {
 
   async connect() {
     try {
+      if (this.config.user === undefined) {
+        DatabaseLog.log({
+          level: 'error',
+          message: 'Config could not be fetched from .env',
+          senderFunction: 'IIF',
+          file: 'Database.js',
+        });
+
+        process.exit();
+      }
+
       this.pool = new sql.ConnectionPool(this.config);
       this.poolConnect = this.pool.connect();
       DatabaseLog.log({

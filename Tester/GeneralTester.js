@@ -18,9 +18,15 @@
 
 const a = new Map();
 
-a.set(3, 2);
+a.set('david', {
+    first: 100,
+    second: 200,
+});
 
-console.log(a);
-a.set(3, 2);
-console.log(a);
+const obj = a.get('david');
+
+obj.first = 300;
+
+console.log(a.get('david'));
+
 

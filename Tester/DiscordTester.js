@@ -1,11 +1,9 @@
 /*eslint-disable*/
-require('dotenv').config({path:'../.env'});
-const { ApplicationLog } = require('../Toolkit/Logger');
-const {getDatabase} = require('../Classes/Database');
-const {load} = require('../LoadEnvironment')
 
 async function start() {
+  const {load} = require('../LoadEnvironment')
   await load();
+  const { ApplicationLog } = require('../Toolkit/Logger')
   
   ApplicationLog.log({
     level: 'info',

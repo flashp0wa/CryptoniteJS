@@ -1048,16 +1048,24 @@ class StrategyClass {
     const threshold = 0.3;
 
     if (!this.pricefallTree.has(klineObj.symbol)) {
-      this.pricefallTree.set(klineObj.symbol, klineObj.closePrice);
+      this.pricefallTree.set(klineObj.symbol,
+        {
+          initialPrice: klineObj.closePrice,
+          highPrice: klineObj.closePrice,
+          isActive: false,
+        });
+
+      return;
     }
 
-    const initialPrice = this.pricefallTree.get(klineObj.symbol);
-    const newPrice = klineObj.closePrice;
-    const diff = Math.abs((initialPrice - newPrice) / initialPrice);
+    const symbolObj = this.pricefallTree.get(klineObj.symbol);
+    if (symbolObj.highPrice < klineObj.closePrice) symbolObj.highPrice = klineObj.closePrice;
 
-    
-    if (diff > threshold) {
-      console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${newPrice} Difference: ${diff}`);
+    const diff = Math.abs((symbolObj.initialPrice - klineObj.closePrice) / symbolObj.initialPrice);
+
+    if (diff > threshold && symbolObj.isActive === false) {
+      symbolObj.isActive = true;
+      console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`);
       StrategyHandlerLog.log({
         level: 'info',
         message: `Price crash for ${klineObj.symbol}`,
