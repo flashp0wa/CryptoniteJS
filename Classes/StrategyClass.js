@@ -1049,11 +1049,11 @@ class StrategyClass {
 
     if (!this.pricefallTree.has(klineObj.symbol)) {
       this.pricefallTree.set(klineObj.symbol,
-        {
-          initialPrice: klineObj.closePrice,
-          highPrice: klineObj.closePrice,
-          isActive: false,
-        });
+          {
+            initialPrice: klineObj.closePrice,
+            highPrice: klineObj.closePrice,
+            isActive: false,
+          });
 
       return;
     }

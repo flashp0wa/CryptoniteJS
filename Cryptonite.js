@@ -1,19 +1,8 @@
 'use strict';
-require('dotenv').config({path: '.env'});
+const {load} = require('./LoadEnvironment');
+
 (async () => {
-  const {getDatabase} = require('./Classes/Database');
-  const db = await getDatabase();
-  db.connect();
-
-  async function loadEnv() {
-    const res = await db.singleRead('select * from cry_setting_application');
-
-    for (const row of res) {
-      process.env[row.settingKey] = row.settingValue;
-    }
-  }
-
-  await loadEnv();
+  await load();
   const {ApplicationLog} = require('./Toolkit/Logger');
   const {loadEventListeners} = require('./Loaders/Events');
   const {getExchanges} = require('./Classes/Exchanges/ExchangesClass');
