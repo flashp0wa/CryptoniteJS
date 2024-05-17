@@ -1044,8 +1044,8 @@ class StrategyClass {
     }
   }
 
-  run_PriceFall(klineObj) {
-    const threshold = 0.3;
+  async run_PriceFall(klineObj) {
+    const threshold = 0.2;
 
     if (!this.pricefallTree.has(klineObj.symbol)) {
       this.pricefallTree.set(klineObj.symbol,
@@ -1065,14 +1065,29 @@ class StrategyClass {
 
     if (diff > threshold && symbolObj.isActive === false) {
       symbolObj.isActive = true;
-      console.log(`Current symbol: ${klineObj.symbol} Initial price: ${initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`);
+      const capital = (await this.excObj.fetchBalance()).free.USDT;
       StrategyHandlerLog.log({
         level: 'info',
-        message: `Price crash for ${klineObj.symbol}`,
+        message: `!=PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
         senderFunction: 'run_PriceFall',
         file: 'StrategyClass.js',
         discord: 'gumiszoba',
       });
+
+      this.globalEvent.emit('CreateOrder',
+        {
+          symbol: klineObj.symbol,
+          side: klineObj.closePrice > symbolObj.initialPrice ? 'sell' : 'buy',
+          type: 'market',
+          orderAmount: capital / klineObj.closePrice,
+          price: klineObj.closePrice,
+          stopPrice: '1',
+          limitPrice: '1',
+          exchange: this.excName,
+          strategy: 'priceFall',
+          timeFrame: '1m',
+        }
+      );
     }
   }
 }

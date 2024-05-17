@@ -15,5 +15,10 @@ async function start() {
   
 }
 
+const a = {
+  lol: a,
+  fuck: b
+}
+
 start();
 
