@@ -16,17 +16,13 @@
 //   });
 // }, 1000);
 
-const a = new Map();
+const a = false;
 
-a.set('david', {
-    first: 100,
-    second: 200,
-});
+switch (a === false) {
+  case true:
+    console.log('lol');
+    break;
 
-const obj = a.get('david');
-
-obj.first = 300;
-
-console.log(a.get('david'));
-
-
+  default:
+    break;
+}

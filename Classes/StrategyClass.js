@@ -1064,7 +1064,7 @@ class StrategyClass {
     const symbolObj = this.pricefallTree.get(klineObj.symbol);
     if (symbolObj.highPrice < klineObj.closePrice) symbolObj.highPrice = klineObj.closePrice;
 
-    const diff = Math.abs((symbolObj.initialPrice - klineObj.closePrice) / symbolObj.initialPrice);
+    const diff = (Math.abs((symbolObj.initialPrice - klineObj.closePrice) / symbolObj.initialPrice)).toFixed(2);
 
     switch (symbolObj.isActive === false) {
       case diff > threshold3:
@@ -1098,6 +1098,7 @@ class StrategyClass {
         thresholdHit = true;
         break;
       default:
+        console.log(diff);
         break;
     }
 
