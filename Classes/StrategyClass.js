@@ -1046,7 +1046,7 @@ class StrategyClass {
 
   async run_PriceFall(klineObj) {
     const threshold1 = 0.1;
-    const threshold2= 0.2;
+    const threshold2 = 0.2;
     const threshold3 = 0.3;
     let thresholdHit = false;
 
@@ -1067,10 +1067,10 @@ class StrategyClass {
     const diff = Math.abs((symbolObj.initialPrice - klineObj.closePrice) / symbolObj.initialPrice);
 
     switch (symbolObj.isActive === false) {
-      case diff > threshold1:
+      case diff > threshold3:
         StrategyHandlerLog.log({
           level: 'info',
-          message: `!= 10% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
+          message: `!= 30% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
           senderFunction: 'run_PriceFall',
           file: 'StrategyClass.js',
           discord: 'gumiszoba',
@@ -1087,10 +1087,10 @@ class StrategyClass {
         });
         thresholdHit = true;
         break;
-      case diff > threshold3:
+      case diff > threshold1:
         StrategyHandlerLog.log({
           level: 'info',
-          message: `!= 30% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
+          message: `!= 10% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
           senderFunction: 'run_PriceFall',
           file: 'StrategyClass.js',
           discord: 'gumiszoba',

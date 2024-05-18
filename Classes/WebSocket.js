@@ -243,7 +243,7 @@ class CryptoniteWebSocket {
     const onMessage = (processedData) => {
       if (processedData.closed) {
         // this.technicalIndicator.handleKline(processedData);
-        getExchanges()['binanceFutures'].strategy.run_PriceFall(processedData);
+        getExchanges()['binance'].strategy.run_PriceFall(processedData);
       }
     };
 
