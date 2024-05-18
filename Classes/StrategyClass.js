@@ -1045,10 +1045,7 @@ class StrategyClass {
   }
 
   async run_PriceFall(klineObj) {
-    const threshold1 = 0.1;
-    const threshold2 = 0.2;
-    const threshold3 = 0.3;
-    let thresholdHit = false;
+    const threshold = 0.1;
 
     if (!this.pricefallTree.has(klineObj.symbol)) {
       this.pricefallTree.set(klineObj.symbol,
@@ -1066,42 +1063,14 @@ class StrategyClass {
 
     const diff = (Math.abs((symbolObj.initialPrice - klineObj.closePrice) / symbolObj.initialPrice)).toFixed(5);
 
-    switch (symbolObj.isActive === false) {
-      case diff > threshold3:
-        StrategyHandlerLog.log({
-          level: 'info',
-          message: `!= 30% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
-          senderFunction: 'run_PriceFall',
-          file: 'StrategyClass.js',
-          discord: 'gumiszoba',
-        });
-        thresholdHit = true;
-        break;
-      case diff > threshold2:
-        StrategyHandlerLog.log({
-          level: 'info',
-          message: `!= 20% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
-          senderFunction: 'run_PriceFall',
-          file: 'StrategyClass.js',
-          discord: 'gumiszoba',
-        });
-        thresholdHit = true;
-        break;
-      case diff > threshold1:
-        StrategyHandlerLog.log({
-          level: 'info',
-          message: `!= 10% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
-          senderFunction: 'run_PriceFall',
-          file: 'StrategyClass.js',
-          discord: 'gumiszoba',
-        });
-        thresholdHit = true;
-        break;
-      default:
-        break;
-    }
-
-    if (thresholdHit) {
+    if (symbolObj.isActive === false && diff > threshold) {
+      StrategyHandlerLog.log({
+        level: 'info',
+        message: `!= 10% PRICE CRASH=! symbol: ${klineObj.symbol} Initial price: ${symbolObj.initialPrice} New Price: ${klineObj.closePrice} Difference: ${diff}`,
+        senderFunction: 'run_PriceFall',
+        file: 'StrategyClass.js',
+        discord: 'gumiszoba',
+      });
       symbolObj.isActive = true;
       const capital = (await this.excObj.fetchBalance()).free.USDT;
       this.globalEvent.emit('CreateOrder',

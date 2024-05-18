@@ -16,13 +16,6 @@
 //   });
 // }, 1000);
 
-const a = false;
 
-switch (a === false) {
-  case true:
-    console.log('lol');
-    break;
-
-  default:
-    break;
-}
+const a = (0.00234242).toFixed(3);
+console.log(a);
