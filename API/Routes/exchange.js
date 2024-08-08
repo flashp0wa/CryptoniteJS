@@ -48,7 +48,7 @@ router.route('/:exchange/getAccountBalance').get(async (req, res) => {
       level: 'error',
       message: `Could not retrieve balance info. ${error}`,
       senderFunction: 'route-getAccountBalance',
-      file: 'Api.js',
+      file: 'exchange.js',
     });
   }
 });

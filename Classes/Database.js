@@ -433,7 +433,7 @@ class Database {
       });
     }
   };
-  sproc_InsertIntoOrderPaper = async (inObj) => {
+  sproc_InsertIntoOrderPaper = async (json) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
@@ -443,28 +443,52 @@ class Database {
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('symbol', inObj.symbol)
-          .input('orderType', inObj.type)
-          .input('side', inObj.side)
-          .input('price', inObj.price)
-          .input('stopPrice', inObj.stopPrice)
-          .input('amount', inObj.orderAmount)
-          .input('exchange', inObj.exchange)
-          .input('limitPrice', inObj.limitPrice)
-          .input('strategy', inObj.strategy)
+          .input('json', json)
           .execute('InsertIntoOrderPaper');
 
       return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_InsertIntoOrderPaper' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+        message: `Encountered an error running 'sproc_InsertIntoOrderPaper' JSON: ${json}}. ${error.stack}`,
         senderFunction: 'sproc_InsertIntoOrderPaper',
         file: 'Database.js',
         discord: 'database-errors',
       });
     }
   };
+  // sproc_InsertIntoOrderPaper = async (inObj) => {
+  //   try {
+  //     await this.poolConnect;
+  //     DatabaseLog.log({
+  //       level: 'silly',
+  //       message: 'Running stroed procedure Insert Into OrderPaper',
+  //       senderFunction: 'sproc_InsertIntoOrderPaper',
+  //       file: 'Database.js',
+  //     });
+  //     const request = await this.pool.request()
+  //         .input('symbol', inObj.symbol)
+  //         .input('orderType', inObj.type)
+  //         .input('side', inObj.side)
+  //         .input('price', inObj.price)
+  //         .input('stopPrice', inObj.stopPrice)
+  //         .input('amount', inObj.orderAmount)
+  //         .input('exchange', inObj.exchange)
+  //         .input('limitPrice', inObj.limitPrice)
+  //         .input('strategy', inObj.strategy)
+  //         .execute('InsertIntoOrderPaper');
+
+  //     return request;
+  //   } catch (error) {
+  //     DatabaseLog.log({
+  //       level: 'error',
+  //       message: `Encountered an error running 'sproc_InsertIntoOrderPaper' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+  //       senderFunction: 'sproc_InsertIntoOrderPaper',
+  //       file: 'Database.js',
+  //       discord: 'database-errors',
+  //     });
+  //   }
+  // };
   sproc_InsertIntoAverageTrueRange = async (inObj) => {
     try {
       await this.poolConnect;

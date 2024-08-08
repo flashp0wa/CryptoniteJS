@@ -28,9 +28,19 @@ const db = getDatabase();
     candleTypeId: 1,
   };
 
+  const obj2 = {
+    orderType: 'market',
+    side: 'sell',
+    amount: '0.1',
+    price: 222.222,
+    stopPrice: 11.1,
+    limitPrice: 22.33,
+    exchange: 'binance'
+  }
+
 
   async function loadEnv() {
-    const res = await db.sproc_InsertIntoKlines(obj);    
+    const res = await db.sproc_InsertIntoOrderPaper(JSON.stringify(obj2));    
     console.log(res);
 
   }
