@@ -664,6 +664,32 @@ class Database {
       });
     }
   };
+
+  pushJson = async (inObj, sprocName) => {
+    const json = JSON.stringify(inObj);
+    try {
+      await this.poolConnect;
+      DatabaseLog.log({
+        level: 'silly',
+        message: `Running stored procedure ${sprocName}`,
+        senderFunction: 'pushJson',
+        file: 'Database.js',
+      });
+      const request = await this.pool.request()
+          .input('inputJSON', json)
+          .output('outputJSON', sql.NVarChar(1000))
+          .execute(sprocName);
+      return JSON.parse(request.output.outputJSON);
+    } catch (error) {
+      DatabaseLog.log({
+        level: 'error',
+        message: `Encountered an error running ${sprocName}. Object: ${json} ${error.stack}`,
+        senderFunction: 'pushJson',
+        file: 'Database.js',
+        discord: 'database-errors',
+      });
+    }
+  };
 }
 
 let database = new Database();

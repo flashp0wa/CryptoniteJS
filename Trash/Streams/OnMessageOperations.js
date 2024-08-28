@@ -3,7 +3,7 @@
 // const {ApplicationLog} = require('../../Toolkit/Logger.js');
 // const dataBank = require('../../Loaders/LoadDataBank.js');
 
-const {ApplicationLog} = require('../Toolkit/Logger');
+const {ApplicationLog} = require('../../Toolkit/Logger');
 
 // const globalEvent = returnEmitter();
 

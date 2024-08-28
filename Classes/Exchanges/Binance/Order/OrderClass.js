@@ -1,135 +1,209 @@
 const {TraderLog} = require('../../../../Toolkit/Logger');
 const {getDatabase} = require('../../../Database');
 
+
 class Order {
+  /**
+   *
+   * @param {object} excObj
+   * @param {string} excName
+   * @param {object} conObj
+   * {
+   *  symbol,
+   *  side,
+   *  type,
+   *  orderAmount,
+   *  price,
+   *  stopPrice,
+   *  limitPrice,
+   *  strategy,
+   * }
+   */
   constructor(excObj, excName, conObj) {
     this.exchangeObj = excObj;
     this.exchangeName = excName;
     this.symbol = conObj.symbol;
     this.timeFrame = conObj.timeFrame;
     this.type = conObj.type;
-    this.stopLossType = excName === 'binanceFutures' || 'binanceFuturesTest' ? 'STOP_MARKET' : 'STOP_LOSS_LIMIT';
-    this.takeProfitType = excName === 'binanceFutures' || 'binanceFuturesTest' ? 'TAKE_PROFIT_MARKET' : 'TAKE_PROFIT_LIMIT';
     this.side = conObj.side;
     this.orderAmount = conObj.orderAmount ? this.exchangeObj.decimalToPrecision(conObj.orderAmount, 'ROUND', 2, 'DECIMAL_PLACES') : false;
     this.price = this.exchangeObj.priceToPrecision(this.symbol, conObj.price);
     this.limitPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.limitPrice);
     this.stopPrice = this.exchangeObj.priceToPrecision(this.symbol, conObj.stopPrice);
     this.stopLimitPrice = this.exchangeObj.priceToPrecision(this.symbol, (conObj.stopPrice - conObj.stopPrice * 0.01));
-    this.orderResponse;
     this.traderLog = TraderLog;
     this.strategy = conObj.strategy;
     this.conObj = conObj;
     this.db = getDatabase();
-    this.tradeMode = process.env.CRYPTONITE_TRADE_MODE;
-    this.siblingOrderId;
-    this.orderId = conObj.orderId ? conObj.orderId : null;
-    this.isReOpen = conObj.reopen ? conObj.reopen : false;
-    this.leverage = this.getLeverage();
+    this.options;
   }
+
   /**
    * Write order response data to database
    * @param {object} inObj Input object
    */
-  processOrderResponse(inObj) {
+  async databasePush() {
     this.traderLog.log({
       level: 'info',
-      message: `Processing order response`,
-      senderFunction: 'processOrderResponse',
+      message: `Push position details to database`,
+      senderFunction: 'databasePush',
       file: 'createOrderClass.js',
     });
     try {
       const dataObj = {
-        eventTime: this.orderResponse.datetime,
-        updateTime: this.orderResponse.info.updateTime ? new Date(Number(this.orderResponse.info.updateTime)).toISOString() : null,
-        orderId: this.orderResponse.id,
-        symbol: this.orderResponse.info.symbol,
-        orderType: this.orderResponse.type,
-        side: this.orderResponse.side,
-        price: this.orderResponse.price,
-        stopPrice: this.orderResponse.stopPrice,
-        amount: this.orderResponse.amount,
-        cost: this.orderResponse.cost,
-        filled: this.orderResponse.filled,
-        remaining: this.orderResponse.remaining,
-        timeInForce: this.orderResponse.timeInForce,
-        postOnly: this.orderResponse.postOnly,
-        reduceOnly: this.orderResponse.reduceOnly,
-        priceProtect: this.orderResponse.info.priceProtect,
-        workingType: this.orderResponse.info.workingType,
-        positionSide: this.orderResponse.info.positionSide,
-        orderStatus: this.orderResponse.status,
-        tradeStatus: this.orderResponse.info.status,
         exchange: this.exchangeName,
-        oco: false,
-        ocoLimitId: !inObj ? null : inObj.ocoLimitId,
-        ocoStopLossLimitId: !inObj ? null : inObj.ocoStopLossLimitId,
-        parentOrderId: this.parentOrderId ? this.parentOrderId : null,
-        siblingOrderId: this.siblingOrderId ? this.siblingOrderId : null,
+        symbol: this.symbol,
+        timeFrame: this.timeFrame,
+        type: this.type,
+        side: this.side,
+        orderAmount: this.orderAmount,
+        price: this.price,
+        limitPrice: this.limitPrice,
+        stopPrice: this.stopPrice,
+        stopLimitPrice: this.stopLimitPrice,
         strategy: this.strategy,
-        leverage: this.leverage,
+        isPostOnly: this.exchangeObj.isPostOnly,
+        options: this.options,
       };
-      if (typeof this.orderResponse.fee === 'undefined') {
-        dataObj.fee = null;
-      } else {
-        dataObj.fee = this.orderResponse.fee.cost * this.orderResponse.price; // convert fee to USD
-      }
+
+      const res = await this.db.pushJson(dataObj, 'NI _CreateOrder');
 
       this.traderLog.log({
         level: 'info',
-        message: 'NEW ORDER',
-        senderFunction: 'processOrderResponse',
+        message: 'Database push succeeded',
+        senderFunction: 'databasePush',
         file: 'OrderClass.js',
-        obj: dataObj,
-        discord: 'successful-orders',
       });
 
-      this.writeToDatabase(dataObj);
-      this.traderLog.log({
-        level: 'info',
-        message: 'Order response has been processed',
-        senderFunction: 'processOrderResponse',
-        file: 'OrderClass.js',
-      });
+      return res;
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Failed to write order response to database. ${error.stack}`,
-        senderFunction: 'processOrderResponse',
+        message: `Database push failed. ${error.stack}`,
+        senderFunction: 'databasePush',
         file: 'OrderClass.js',
         discord: 'application-errors',
       });
     }
   }
-  /**
-   * @param {object} databaseObj Object with values will be written to the database
-   * @param {boolean} failed True when order is failed
-   */
-  writeToDatabase(databaseObj, failed) {
-    if (this.tradeMode === 'Paper') {
-      this.db.sproc_InsertIntoOrderPaper(databaseObj);
-    } else if (failed) {
-      this.db.sproc_InsertIntoOrderFailed(databaseObj);
-    } else {
-      this.db.sproc_InsertIntoOrder(databaseObj);
-    }
-  }
 
-  async getLeverage() {
+  /**
+  * Creates the order with it's corresponding OCO order and then writes the response to the database.
+  * @param {object} param Optional order parameters
+  */
+  async createOrder() {
+    this.traderLog.log({
+      level: 'info',
+      message: 'New position request',
+      senderFunction: 'createOrder',
+      file: 'CreateOrderClass.js',
+    });
+    const order = await super.databasePush();
+    const options = {...order.entryOrder.options};
+
     try {
-      const leverage = await this.db.singleRead(`select * from itvf_GetLeverage('${this.symbol}', '${this.exchangeName}')`);
-      if (!leverage.length) {
-        this.leverage = null;
-      } else {
-        this.leverage = leverage[0].amount;
-      }
+      await this.exchangeObj.createOrder(
+          order.entryOrder.symbol,
+          order.entryOrder.type,
+          order.entryOrder.side,
+          order.entryOrder.orderAmount,
+          order.entryOrder.price,
+          options,
+      );
+
+      this.traderLog.log({
+        level: 'info',
+        message: `New ${order.type} order has been created on ${this.exchangeName} with ID: ${options.listClientOrderId}.`,
+        senderFunction: 'createOrder',
+        file: 'CreateOrderClass.js',
+      });
     } catch (error) {
       this.traderLog.log({
         level: 'error',
-        message: `Failed to fetch leverage from database. ${error.stack}`,
-        senderFunction: 'getLeverage',
-        file: 'OrderClass.js',
+        message: `Market order creation failed. ${error}`,
+        senderFunction: 'createOrder',
+        file: 'CreateOrderClass.js',
+        discord: 'failed-orders',
       });
+    }
+
+    if (order.oco) {
+      try {
+        this.traderLog.log({
+          level: 'info',
+          message: 'New OCO order',
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+        });
+
+        await this.exchangeObj.privatePostOrderOco(order.oco);
+
+        this.traderLog.log({
+          level: 'info',
+          message: 'OCO order has been created.',
+          senderFunction: 'createOrder',
+          file: 'CreateOcoOrder.js',
+        });
+      } catch (error) {
+        this.traderLog.log({
+          level: 'error',
+          message: `OCO order creation failed. ${error}`,
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+          discord: 'failed-orders',
+        });
+      }
+    } else {
+      try {
+        this.traderLog.log({
+          level: 'info',
+          message: 'New take profit order',
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+        });
+        const options = {...order.takeProfit.options};
+        await this.exchangeObj.createOrder(
+            order.takeProfit.symbol,
+            order.takeProfit.stopLossType,
+            order.takeProfit.side,
+            order.takeProfit.orderAmount,
+            order.takeProfit.price,
+            options,
+        );
+      } catch {
+        this.traderLog.log({
+          level: 'error',
+          message: `Take profit order creation failed. ${error}`,
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+          discord: 'failed-orders',
+        });
+      }
+      try {
+        this.traderLog.log({
+          level: 'info',
+          message: 'New stop loss order',
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+        });
+        const options = {...order.stopLoss.options};
+        await this.exchangeObj.createOrder(
+            order.stopLoss.symbol,
+            order.stopLoss.stopLossType,
+            order.stopLoss.side,
+            order.stopLoss.orderAmount,
+            order.stopLoss.price,
+            options,
+        );
+      } catch {
+        this.traderLog.log({
+          level: 'error',
+          message: `Stop loss order creation failed. ${error}`,
+          senderFunction: 'createOrder',
+          file: 'CreateOrderClass.js',
+          discord: 'failed-orders',
+        });
+      }
     }
   }
 }

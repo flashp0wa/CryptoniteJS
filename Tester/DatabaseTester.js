@@ -4,58 +4,32 @@
 require('dotenv').config({path: '.envbkp'});
 const { getDatabase } = require('../Classes/Database.js');
 const { BinanceSpotClass } = require('../Classes/Exchanges/Binance/BinanceSpotClass.js');
-const { getTechnicalIndicators } = require('../Classes/TechnicalIndicatorClass.js');
 const db = getDatabase();
 
 (async () => {
   await db.connect();
 
-  const obj = {
-    openTime: '2023-07-10 00:00:00',
-    openPrice: 30160.71000000,
-    closePrice: 30411.57000000,
-    highPrice: 31045.78000000,
-    lowPrice: 29950.00000000,
-    volume: 41262.8765,
-    closeTime: '2023-07-10 23:59:59',
-    quoteAssetVolume: 1254289037.7421,
-    numberOfTrades: 896853,
-    takerBuyBaseAssetVolume: 19574.2347,
-    takerBuyQuoteAssetVolume: 595390893.145,
-    ignore: 0,
-    timeFrame: '1d',
+  const dataObj = {
+    exchange: 'binanceFutures',
     symbol: 'BTCUSDT',
-    candleTypeId: 1,
+    timeFrame: '1d',
+    type: 'market',
+    side: 'buy',
+    orderAmount: '100',
+    price: '222',
+    limitPrice: '333',
+    stopPrice: '111',
+    stopLimitPrice: '111',
+    strategy: '1',
+    isPostOnly: true,
+    options: {
+      cashbackTrail: '30'
+    },
   };
 
-  const obj2 = {
-    orderType: 'market',
-    side: 'sell',
-    amount: '0.1',
-    price: 222.222,
-    stopPrice: 11.1,
-    limitPrice: 22.33,
-    exchange: 'binance'
-  }
-
-
-  async function loadEnv() {
-    const res = await db.sproc_InsertIntoOrderPaper(JSON.stringify(obj2));    
-    console.log(res);
-
-  }
-
-  await loadEnv();
-  // const obj = {
-  //   exchange: '\'BinanceFuturesTest\'',
-  //   orderStatus: null,
-  //   orderId: null,
-  //   orderType: null,
-  //   side: null,
-  //   strategyId: null,
-  //   startDate: null,
-  //   endDate: null,
-  // }
+  const res = await db.pushJson(dataObj, 'NI_CreateOrder');
+  console.log(res);
 
 })();
 
+  

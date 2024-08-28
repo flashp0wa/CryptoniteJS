@@ -12,7 +12,7 @@ class OpenOrder {
   }
 
   /**
-   * Loads current open orders from the database and checks it's states fetching binance. If state changed updates database.
+   * Loads current open orders from the database and checks it's states by fetching binance. If state changed updates database.
    */
   async checkOrderStatus() {
     try {

@@ -1,4 +1,4 @@
-const {CreateOrder} = require('./Order/CreateOrderClass');
+const {Order} = require('./Order/OrderClass');
 const {OpenOrder} = require('./Order/OpenOrderClass');
 const {ApplicationLog} = require('../../../Toolkit/Logger');
 const {getTechnicalIndicators} = require('../../TechnicalIndicatorClass');
@@ -123,11 +123,7 @@ class BinanceClass {
    * { symbol, side, orderType, orderAmount, buyPrice, }
    */
   createOrder(conObj) {
-    if (conObj.reopen) {
-      new CreateOrder(this.excObj, this.excName, conObj).supportOrder();
-    } else {
-      new CreateOrder(this.excObj, this.excName, conObj).createOrder();
-    }
+    new Order(this.excObj, this.excName, conObj).createOrder();
   }
   /**
    * Loads exchange data

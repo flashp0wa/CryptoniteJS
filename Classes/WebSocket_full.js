@@ -1,7 +1,6 @@
 const {WebSocketServer, WebSocket} = require('ws');
 const {ApplicationLog} = require('../Toolkit/Logger');
 const {getDatabase} = require('./Database');
-const {stream_getCandleType} = require('../Streams/OnMessageOperations');
 const {getTechnicalIndicators} = require('./TechnicalIndicatorClass');
 const {getExchanges} = require('./Exchanges/ExchangesClass');
 
@@ -57,122 +56,7 @@ class CryptoniteWebSocket {
 
   async connectToBinance() {
     const excObj = getExchanges()['binanceFutures'].excObj;
-    /**
-        *
-        * @param {object} jsonStreamObj
-        * @return {object} Returns the processed object
-        */
-    function wssJsonStream2Object(jsonStreamObj) {
-      const streamType = jsonStreamObj['data']['e'];
-      jsonStreamObj = jsonStreamObj['data'];
-      // const eventUnixTime = jsonStreamObj['data']['E'];
-      let processedStream = {};
 
-      switch (streamType) {
-        // case '24hrTicker': {
-        //   processedStream.EventType = jsonStreamObj['data']['e'];
-        //   processedStream.EventTime = new Date(eventUnixTime).toISOString();
-        //   processedStream.Symbol = jsonStreamObj['data']['s'];
-        //   processedStream.PriceChange = jsonStreamObj['data']['p'];
-        //   processedStream.PriceChangePercent = jsonStreamObj['data']['P'];
-        //   processedStream.WeightedAveragePrice = jsonStreamObj['data']['w'];
-        //   processedStream.FirstTradePrice = jsonStreamObj['data']['x'];
-        //   processedStream.LastPrice = jsonStreamObj['data']['c'];
-        //   processedStream.LastQuantity = jsonStreamObj['data']['Q'];
-        //   processedStream.BestBidPrice = jsonStreamObj['data']['b'];
-        //   processedStream.BestBidQuantity = jsonStreamObj['data']['B'];
-        //   processedStream.BestAskPrice = jsonStreamObj['data']['a'];
-        //   processedStream.BestAskQuantity = jsonStreamObj['data']['A'];
-        //   processedStream.OpenPrice = jsonStreamObj['data']['o'];
-        //   processedStream.HighPrice = jsonStreamObj['data']['h'];
-        //   processedStream.LowPrice = jsonStreamObj['data']['l'];
-        //   processedStream.TotalTradedBaseAssetVolume = jsonStreamObj['data']['v'];
-        //   processedStream.TotalTradedQuoteAssetVolume = jsonStreamObj['data']['q'];
-        //   processedStream.StatisticsTimeOpen = jsonStreamObj['data']['O'];
-        //   processedStream.StatisticsCloseTime = jsonStreamObj['data']['C'];
-        //   processedStream.FirstTradeId = jsonStreamObj['data']['F'];
-        //   processedStream.LastTradeId = jsonStreamObj['data']['L'];
-        //   processedStream.TotalTrades = jsonStreamObj['data']['n'];
-
-        //   processedStream.sqlInsertString = `INSERT INTO IndividualSymbolTickerStream VALUES (\'${processedStream.PriceChange}\',\'${processedStream.PriceChangePercent}\',\'${processedStream.WeightedAveragePrice}\',\'${processedStream.FirstTradePrice}\',\'${processedStream.LastPrice}\',\'${processedStream.LastQuantity}\',\'${processedStream.BestBidPrice}\',\'${processedStream.BestBidQuantity}\',\'${processedStream.BestAskPrice}\',\'${processedStream.BestAskQuantity}\',\'${processedStream.OpenPrice}\',\'${processedStream.HighPrice}\',\'${processedStream.LowPrice}\',\'${processedStream.TotalTradedBaseAssetVolume}\',\'${processedStream.TotalTradedQuoteAssetVolume}\',\'${processedStream.StatisticsTimeOpen}\',\'${processedStream.StatisticsCloseTime}\',\'${processedStream.FirstTradeId}\',\'${processedStream.LastTradeId}\',\'${processedStream.TotalTrades}\',\'${processedStream.EventType}\',\'${processedStream.EventTime}\',\'${processedStream.Symbol}\')`;
-        //   writeToDatabase(processedStream.sqlInsertString);
-        //   onMessageOperations.stream_TotalTradedQuoteAssetVolume(processedStream);
-        //   onMessageOperations.stream_CalculateCoinPairPriceGap(processedStream);
-        //   onMessageOperations.stream_PriceWatch(processedStream);
-
-        //   break;
-        // }
-        case 'kline': {
-          processedStream.openTime = new Date(jsonStreamObj['k']['t']).toISOString().split('.')[0];
-          processedStream.closeTime = new Date(jsonStreamObj['k']['T']).toISOString().split('.')[0];
-          processedStream.symbol = jsonStreamObj['k']['s'];
-          processedStream.timeFrame = jsonStreamObj['k']['i'];
-          processedStream.FirstTradeId = jsonStreamObj['k']['f'];
-          processedStream.LastTradeId = jsonStreamObj['k']['L'];
-          processedStream.openPrice = parseFloat(jsonStreamObj['k']['o']);
-          processedStream.closePrice = parseFloat(jsonStreamObj['k']['c']);
-          processedStream.highPrice = parseFloat(jsonStreamObj['k']['h']);
-          processedStream.lowPrice = parseFloat(jsonStreamObj['k']['l']);
-          processedStream.volume = parseFloat(jsonStreamObj['k']['v']);
-          processedStream.numberOfTrades = jsonStreamObj['k']['n'];
-          processedStream.closed = jsonStreamObj['k']['x'];
-          processedStream.quoteAssetVolume = parseFloat(jsonStreamObj['k']['q']);
-          processedStream.takerBuyBaseAssetVolume = parseFloat(jsonStreamObj['k']['V']);
-          processedStream.takerBuyQuoteAssetVolume = parseFloat(jsonStreamObj['k']['Q']);
-          processedStream.ignore = parseInt(jsonStreamObj['k']['B']);
-
-          if (processedStream.closed) processedStream = stream_getCandleType(processedStream);
-          return processedStream;
-        }
-
-        // case 'trade': {
-        //   processedStream.EventType = jsonStreamObj['data']['e'];
-        //   processedStream.EventTime = new Date(eventUnixTime).toISOString();
-        //   processedStream.Symbol = jsonStreamObj['data']['s'];
-        //   processedStream.TradeId = jsonStreamObj['data']['t'];
-        //   processedStream.Price = jsonStreamObj['data']['p'];
-        //   processedStream.Quantity = jsonStreamObj['data']['q'];
-        //   processedStream.BuyerOrderId = jsonStreamObj['data']['b'];
-        //   processedStream.SellerOrderId = jsonStreamObj['data']['a'];
-        //   processedStream.TradeTime = new Date(eventUnixTime).toISOString();
-        //   processedStream.IsBuyerMarketMaker = jsonStreamObj['data']['m'];
-        //   processedStream.Ignore = jsonStreamObj['data']['M'];
-
-        //   processedStream.sqlInsertString = `INSERT INTO Trades VALUES (\'${processedStream.TradeId}\',\'${processedStream.Price}\',\'${processedStream.Quantity}\',\'${processedStream.BuyerOrderId}\',\'${processedStream.SellerOrderId}\',\'${processedStream.TradeTime}\',\'${processedStream.IsBuyerMarketMaker}\',\'${processedStream.Ignore}\',\'${processedStream.EventType}\',\'${processedStream.EventTime}\',\'${processedStream.Symbol}\')`;
-        //   writeToDatabase(processedStream.sqlInsertString);
-        //   break;
-        // }
-        default:
-          break;
-      }
-    }
-    /**
-         *  Transfroms kline array to object
-         * @param {array} array
-         * @param {string} symbol
-         * @param {string} timeFrame
-         * @return {object}
-         */
-    function klineResponse2Object(array, symbol, timeFrame) {
-      let processedArray = {};
-      processedArray.openTime = new Date(array[0]).toISOString().split('.')[0];
-      processedArray.closeTime = new Date(array[6]).toISOString().split('.')[0];
-      processedArray.symbol = symbol;
-      processedArray.timeFrame = timeFrame;
-      processedArray.openPrice = parseFloat(array[1]);
-      processedArray.closePrice = parseFloat(array[4]);
-      processedArray.highPrice = parseFloat(array[2]);
-      processedArray.lowPrice = parseFloat(array[3]);
-      processedArray.numberOfTrades = array[8];
-      processedArray.quoteAssetVolume = parseFloat(array[7]);
-      processedArray.volume = parseFloat(array[5]);
-      processedArray.takerBuyBaseAssetVolume = parseFloat(array[9]);
-      processedArray.takerBuyQuoteAssetVolume = parseFloat(array[10]);
-      processedArray.ignore = parseInt(array[11]);
-
-      processedArray = stream_getCandleType(processedArray);
-      return processedArray;
-    }
     /**
          * Checks for missing kline data between last database entry and current application run time.
          * @param {array} streams
