@@ -6,7 +6,7 @@ async function load() {
   const db = await getDatabase();
   db.connect();
 
-  const res = await db.singleRead('select * from cry_setting_application');
+  const res = await db.singleRead('select * from cry_setting_application_mem');
 
   for (const row of res) {
     process.env[row.settingKey] = row.settingValue;

@@ -171,7 +171,7 @@ class Database {
       });
     }
   };
-  sproc_ImportBinanceCsv = async (symbol, timeFrame, path) => {
+  sproc_ImportBinanceCsv = async (symbol, timeFrame, path, isMemoryOptimized) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
@@ -184,6 +184,7 @@ class Database {
           .input('symbol', symbol)
           .input('timeFrame', timeFrame)
           .input('path', path)
+          .input('isMemoryOptimized', isMemoryOptimized)
           .execute('ImportBinanceCsv');
 
       return request;
@@ -665,8 +666,18 @@ class Database {
     }
   };
 
-  pushJson = async (inObj, sprocName) => {
-    const json = JSON.stringify(inObj);
+  pushJson = async (input, sprocName) => {
+    function isValidJSON(str) {
+      try {
+        JSON.parse(str);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const json = isValidJSON(input) ? input : JSON.stringify(input);
+
     try {
       await this.poolConnect;
       DatabaseLog.log({

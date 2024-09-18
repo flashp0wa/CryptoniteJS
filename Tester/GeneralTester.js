@@ -58,6 +58,7 @@ async function binanceSpotDataStream() {
   const endpoint = '/api/v3/userDataStream';
   const fullurl = `${apibase}${endpoint}`;
   const key = await getListenKey(fullurl);
+  console.log(key);
   start(wssurl, key);
 }
 
@@ -72,7 +73,7 @@ async function binanceFuturesDataStream() {
 }
 
 async function binanceTestnetDataStream() {
-  const apibase = 'https://testnet.binance.vision/';
+  const apibase = 'https://testnet.binance.vision';
   const hash = createHash('sha256').update(secKey).digest('hex');
   const endpoint = '/api/v3/userDataStream';
   const timestamp = new Date().getTime();
@@ -81,11 +82,13 @@ async function binanceTestnetDataStream() {
   start(wssurl, key);
 }
 
-
-
-// binanceSpotDataStream();
-// binanceFuturesDataStream();
+binanceSpotDataStream();
 binanceTestnetDataStream();
+binanceFuturesDataStream();
 
 
-// Renew api key every 30 min
+let arr = [1, 10];
+let newArray = arr.slice(1, -1);
+console.log(newArray); // Output: [2, 3, 4, 5, 6, 7, 8, 9]
+
+/

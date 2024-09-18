@@ -15,7 +15,7 @@ class Exchanges {
   /**
    * Load all exchange's market data
    */
-  async loadExchanges() {
+  async initialize() {
     for (const exchange of Object.keys(getExchanges())) {
       try {
         ApplicationLog.log({
@@ -24,7 +24,7 @@ class Exchanges {
           senderFunction: 'loadExchanges',
           file: 'ExchangesClass.js',
         });
-        await this[exchange].loadExchange();
+        await this[exchange].configure();
       } catch (error) {
         ApplicationLog.log({
           level: 'error',
@@ -34,22 +34,6 @@ class Exchanges {
           discord: 'application-errors',
         });
       }
-    }
-  }
-  /**
-   * Check all exchange's order status
-   */
-  checkOrderStatus() {
-    for (const exchange of Object.keys(getExchanges())) {
-      this[exchange].openOrders.checkOrderStatus();
-    }
-  }
-  /**
-   * Check all exchange's support order status
-   */
-  checkSupportOrderStatus() {
-    for (const exchange of Object.keys(getExchanges())) {
-      this[exchange].openOrders.checkSupportOrder();
     }
   }
   /**

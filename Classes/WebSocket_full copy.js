@@ -54,7 +54,7 @@ class CryptoniteWebSocket {
     });
   }
 
-  async connectToBinance() {
+  async connect() {
     const excObj = getExchanges()['binanceFutures'].excObj;
 
     /**
@@ -162,6 +162,7 @@ class CryptoniteWebSocket {
           }
         }
       }
+
       ApplicationLog.log({
         level: 'info',
         message: `URL build succeeded. Stream URL: ${url}`,
@@ -170,7 +171,6 @@ class CryptoniteWebSocket {
       });
 
       const ws = new WebSocket(url);
-
 
       ws.onopen = () => {
         this.isWsStreamOn = true;

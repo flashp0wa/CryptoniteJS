@@ -8,25 +8,40 @@ const { BinanceFuturesTestClass } = require('../Classes/Exchanges/Binance/Binanc
 const { getDatabase } = require('../Classes/Database');
 // const { loadEventListeners } = require('../Loaders/Events');
 const { getExchanges } = require('../Classes/Exchanges/ExchangesClass');
+const ccxt = require('ccxt');
+
 
 const futuresTest = new BinanceFuturesTestClass('binanceFuturesTest');
-const spot = new BinanceSpotClass('binanceSpot');
+const spot = new ccxt.pro.binance();
 // const spotTest = new BinanceSpotTestClass('binanceSpotTest');
 
 (async () => {
   try {
+    const klines = await spot.publicGetKlines({
+      symbol: 'BTCUSDT',
+      interval: '1d',
+      startTime: 1715299200000,
+      endTime: 1725297211663
+    });
+
+    console.log(klines);
+  } catch (error) {
+    console.log(error);
+  }
+  })();
+
     
-      while (true) {
-        console.log('enter');
-          try {
-              const trades = await spot.excObj.watchMyTrades('SOLUSDT')
-              console.log (new Date (), trades)
-          } catch (e) {
-              console.log (e)
-              // stop the loop on exception or leave it commented to retry
-              // throw e
-          }
-    }
+      // while (true) {
+      //   console.log('enter');
+      //     try {
+      //         const trades = await spot.excObj.watchMyTrades('SOLUSDT')
+      //         console.log (new Date (), trades)
+      //     } catch (e) {
+      //         console.log (e)
+      //         // stop the loop on exception or leave it commented to retry
+      //         // throw e
+      //     }
+      //   }
     // const orderObj = {
     //   symbol: 'BTCUSDT',
     //   side: 'buy',
@@ -48,13 +63,9 @@ const spot = new BinanceSpotClass('binanceSpot');
 
     // const res = await futuresTest.excObj.fetchOrder('3305896329', 'BTCUSDT');
 
-    console.log(res);
+    // console.log(res);
     // setInterval(() => {
     //   futuresTest.openOrders.checkSupportOrder();
     // }, 10000);
 
 
-} catch (error) {
-  console.log(error);
-}
-})();

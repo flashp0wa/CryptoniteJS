@@ -26,9 +26,15 @@ const db = getDatabase();
       cashbackTrail: '30'
     },
   };
+  const response = await db.singleRead(`select * from itvf_GetLastKlineOpenTime('1')`);
+  console.log(response);
 
-  const res = await db.pushJson(dataObj, 'NI_CreateOrder');
-  console.log(res);
+  response.forEach(element => {
+    console.log(element.symbol);
+  });
+
+  // const res = await db.pushJson(dataObj, 'NI_CreateOrder');
+  // console.log(res);
 
 })();
 

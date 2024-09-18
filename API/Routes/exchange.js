@@ -6,7 +6,6 @@ const _ = require('lodash');
 const {getExchanges} = require('../../Classes/Exchanges/ExchangesClass');
 const {binanceHistoryData} = require('../../Toolkit/BncHistoryDownload.js');
 const {getDatabase} = require('../../Classes/Database.js');
-const {getCryptoniteWebSocket} = require('../../Classes/WebSocket.js');
 const db = getDatabase();
 
 
@@ -134,15 +133,6 @@ router.route('/:exchange/cancelOrders/:symbol').get(async (req, res) => {
 router.route('/binance/historyDataDownload').post(async (req, res) => {
   await binanceHistoryData(req.body);
   res.send('Download done');
-});
-
-router.route('/:exchange/isWssOn').get(async (req, res) => {
-  const state = getCryptoniteWebSocket().isWsServerOn;
-  res.send(state);
-});
-router.route('/:exchange/startWss').get(async (req, res) => {
-  getCryptoniteWebSocket().connectToServer();
-  res.send(true);
 });
 
 router.route('/binance/coinTAData').post(async (req, res) => {
