@@ -20,15 +20,17 @@ class BinanceFuturesClass extends BinanceClass {
     binance.name = 'binance-futures';
     this.excObj = binance;
     await super.loadExchange();
-    this.webSocketClient = new WebSocketClient({
-      userDataStreamApiUrl: `${process.env.BINANCE_FUTURES_USER_DATASTREAM_URL}?timestamp=${new Date().getTime()}&signature=${
-        createHash('sha256').update(process.env.BINANCE_SPOT_SECRETKEY).digest('hex')
-      }`,
-      apiKey: process.env.BINANCE_SPOT_APIKEY,
-      wssBaseUrl: this.wssBaseUrl,
-      exchange: this.excName,
-      excObj: this.excObj,
-    });
+    if (this.isWebSocketEnabled) {
+      this.webSocketClient = new WebSocketClient({
+        userDataStreamApiUrl: `${process.env.BINANCE_FUTURES_USER_DATASTREAM_URL}?timestamp=${new Date().getTime()}&signature=${
+          createHash('sha256').update(process.env.BINANCE_SPOT_SECRETKEY).digest('hex')
+        }`,
+        apiKey: process.env.BINANCE_SPOT_APIKEY,
+        wssBaseUrl: this.wssBaseUrl,
+        exchange: this.excName,
+        excObjId: this.excObj.id,
+      });
+    }
   }
 }
 

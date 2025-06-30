@@ -1,0 +1,3 @@
+{
+    "cmake.sourceDirectory": "C:/Users/wd976098/OneDrive - Siemens Healthineers/GitHub/Crypt0nite/Cryptonit3"
+}

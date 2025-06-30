@@ -7,11 +7,10 @@ class BinanceClass {
   constructor(excName) {
     this.excName = excName;
     this.markets;
-    this.symbolList = [];
-    this.https://union-click.jd.com/jdc?e=jdext-1261348777639735296-0&p=AyIGZRhbHQsWAVIaXxEyEgRdG1sRBxU3EUQDS10iXhBeGlcJDBkNXg9JHUlSSkkFSRwSBF0bWxEHFRgMXgdIMkRxFAUJD1RQZT0cBnwKDE4%2BaDpgB2ILWStbHAIQD1QaWxIBIgdUGlsRBxEEUxprJQIXNwd1g6O0yqLkB4%2B%2FjcePwitaJQIWD1cfWhwKGwVSG1wlAhoDZc31gdeauIyr%2FsOovNLYq46cqca50ytrJQEiXABPElAeEgRSG1kQCxQBUxxZHQQQA1YTXAkDIgdUGlscChECXRs1FGwSD1UbWRALFwRWK1slASJZOxoLRlUXU1NONU9QEkdXWRlJbBUDVB9TFgAVN1caWhcAexcObj;
     this.strategy;
     this.db = getDatabase();
     this.isPostOnly = true;
+    this.isWebSocketEnabled = false;
     this.webSocketClient;
   }
 
@@ -45,7 +44,7 @@ class BinanceClass {
     try {
       ApplicationLog.log({
         level: 'info',
-        message: `Loading exchange ID on ${this.excName}`,
+        message: `Loading exchange ID on ${this.excName}...`,
         senderFunction: 'loadExchangeId',
         file: 'BinanceClass.js',
       });
@@ -64,38 +63,38 @@ class BinanceClass {
   /**
    * Loads symbols available on the exchange
    */
-  // async loadSymbols() {
-  //   try {
-  //     ApplicationLog.log({
-  //       level: 'info',
-  //       message: `Loading symbols on ${this.excName}`,
-  //       senderFunction: 'loadSymbols',
-  //       file: 'BinanceClass.js',
-  //     });
-  //     if (this.symbolList.length !== 0) {
-  //       this.symbolList = [];
-  //     }
-  //     for (const market of Object.keys(this.markets)) {
-  //       const actualSymbol = this.markets[market].info.symbol;
-  //       this.symbolList.push(actualSymbol);
-  //       await this.db.sproc_AddSymbolToDatabase(actualSymbol, this.excObj.id);
-  //     }
+  async loadSymbols() {
+    try {
+      ApplicationLog.log({
+        level: 'info',
+        message: `Loading symbols on ${this.excName}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
+      const symbolList = [];
+      for (const market of Object.keys(this.markets)) {
+        const actualSymbol = this.markets[market].info.symbol;
+        console.log(actualSymbol);
+        symbolList.push({symbol: actualSymbol, exchangeId: this.excObj.id});
+      }
+      console.log(symbolList);
+      // await this.db.pushJson(symbolList, 'AddSymbol');
 
-  //     ApplicationLog.log({
-  //       level: 'info',
-  //       message: `Symbols loaded on ${this.excName}`,
-  //       senderFunction: 'loadSymbols',
-  //       file: 'BinanceClass.js',
-  //     });
-  //   } catch (error) {
-  //     ApplicationLog.log({
-  //       level: 'warn',
-  //       message: `Loading symbols failed on ${this.excName}. ${error}`,
-  //       senderFunction: 'loadSymbols',
-  //       file: 'BinanceClass.js',
-  //     });
-  //   }
-  // }
+      ApplicationLog.log({
+        level: 'info',
+        message: `Symbols loaded on ${this.excName}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
+    } catch (error) {
+      ApplicationLog.log({
+        level: 'warn',
+        message: `Loading symbols failed on ${this.excName}. ${error}`,
+        senderFunction: 'loadSymbols',
+        file: 'BinanceClass.js',
+      });
+    }
+  }
   /**
    *
    * @param {object} conObj Constructor object containing order details

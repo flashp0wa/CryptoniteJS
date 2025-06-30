@@ -21,16 +21,19 @@ class BinanceSpotTestClass extends BinanceClass {
     binance.name = 'binance-test';
     this.excObj = binance;
     await super.loadExchange();
-    this.webSocketClient = new WebSocketClient({
-      userDataStreamUrl: `${process.env.BINANCE_SPOTTEST_USER_DATASTREAM_URL}?timestamp=${new Date().getTime()}&signature=${
-        createHash('sha256').update(process.env.BINANCE_SPOTTEST_SECRETKEY).digest('hex')
-      }`,
-      apiKey: process.env.BINANCE_SPOTTEST_APIKEY,
-      wssBaseUrl: this.wssBaseUrl,
-      wssUrl: await super.buildWebSocketStreamUrl(this.wssBaseUrl),
-      exchange: this.excName,
-      excObj: this.excObj,
-    });
+    if (this.isWebSocketEnabled) {
+      this.webSocketClient =
+        new WebSocketClient({
+          userDataStreamUrl: `${process.env.BINANCE_SPOTTEST_USER_DATASTREAM_URL}?timestamp=${new Date().getTime()}&signature=${
+            createHash('sha256').update(process.env.BINANCE_SPOTTEST_SECRETKEY).digest('hex')
+          }`,
+          apiKey: process.env.BINANCE_SPOTTEST_APIKEY,
+          wssBaseUrl: this.wssBaseUrl,
+          wssUrl: await super.buildWebSocketStreamUrl(this.wssBaseUrl),
+          exchange: this.excName,
+          excObjId: this.excObjId,
+        });
+    }
   }
 }
 module.exports = {

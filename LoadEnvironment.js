@@ -1,5 +1,4 @@
 'use strict';
-require('dotenv').config({path: './.env'});
 
 async function load() {
   const {getDatabase} = require('./Classes/Database');

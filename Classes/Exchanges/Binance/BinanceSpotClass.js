@@ -19,14 +19,16 @@ class BinanceSpotClass extends BinanceClass {
     binance.options['warnOnFetchOpenOrdersWithoutSymbol'] = false; // Call all open orders only 1 / 10 seconds
     this.excObj = binance;
     await super.loadExchange();
-    this.webSocketClient = new WebSocketClient({
-      userDataStreamApiUrl: process.env.BINANCE_SPOT_USER_DATASTREAM_URL,
-      apiKey: process.env.BINANCE_SPOT_APIKEY,
-      wssBaseUrl: this.wssBaseUrl,
-      wssUrl: await super.buildWebSocketStreamUrl(this.wssBaseUrl),
-      exchange: this.excName,
-      excObj: this.excObj,
-    }).startWebSocketStream();
+    if (this.isWebSocketEnabled) {
+      this.webSocketClient = new WebSocketClient({
+        userDataStreamApiUrl: process.env.BINANCE_SPOT_USER_DATASTREAM_URL,
+        apiKey: process.env.BINANCE_SPOT_APIKEY,
+        wssBaseUrl: this.wssBaseUrl,
+        wssUrl: await super.buildWebSocketStreamUrl(this.wssBaseUrl),
+        exchange: this.excName,
+        excObjId: this.excObjId,
+      }).startWebSocketStream();
+    }
   }
 }
 

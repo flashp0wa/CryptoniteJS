@@ -1,7 +1,8 @@
 'use strict';
+require('dotenv').config({path: '.env'});
 const {load} = require('./LoadEnvironment');
 
-(async () => {
+async function start() {
   await load();
   const {ApplicationLog} = require('./Toolkit/Logger');
   const {loadEventListeners} = require('./Loaders/Events');
@@ -22,4 +23,6 @@ const {load} = require('./LoadEnvironment');
     file: 'Cryptonite.js',
     discord: 'gumiszoba',
   });
-})();
+}
+
+module.exports = {start};

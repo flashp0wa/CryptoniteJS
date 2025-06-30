@@ -8,11 +8,12 @@ class WebSocketClient {
     this.lastWssMessageTimestamp;
     this.isWsStreamOn = false;
     this.isDataStreamOn = false;
+    this.isWsServerOn = false;
     this.apiKey = inObj.apiKey;
     this.userDataStreamApiUrl = inObj.userDataStreamApiUrl;
     this.wssBaseUrl = inObj.wssBaseUrl;
     this.webSocketStreamUrl = inObj.wssUrl;
-    this.excObj = inObj.excObj;
+    this.excObjId = inObj.excObjId;
     this.exchangeName = inObj.exchange;
     this.isDataIntegrityChecked = false;
   }
@@ -72,10 +73,10 @@ class WebSocketClient {
 
   async startWebSocketStream() {
     /**
-         * Checks for missing kline data between last database entry and current application run time.
-         * @param {kline} streams
-         * @return {promise} // Resolves true if success, false if fail.
-         */
+    * Checks for missing kline data between last database entry and current application run time.
+    * @param {kline} streams
+    * @return {promise} // Resolves true if success, false if fail.
+    */
     const dataIntegrityCheck = async () => {
       return new Promise(async (resolve, reject) => {
         ApplicationLog.log({
@@ -85,7 +86,7 @@ class WebSocketClient {
           file: 'WebSocketClient',
         });
 
-        const response = await this.db.singleRead(`select * from itvf_GetLastKlineOpenTime('${this.excObj.id}')`);
+        const response = await this.db.singleRead(`select * from itvf_GetLastKlineOpenTime('${this.excObjId}')`);
         for (const stream of response) {
           try {
             const res = await this.excObj.publicGetKlines({

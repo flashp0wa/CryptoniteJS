@@ -1,8 +1,8 @@
 const {WebSocketServer, WebSocket} = require('ws');
 const {ApplicationLog} = require('../Toolkit/Logger');
-const {getDatabase} = require('./Database');
+const {getDatabase} = require('../Classes/Database');
 const {getTechnicalIndicators} = require('./TechnicalIndicatorClass');
-const {getExchanges} = require('./Exchanges/ExchangesClass');
+const {getExchanges} = require('../Classes/Exchanges/ExchangesClass');
 
 class CryptoniteWebSocket {
   constructor() {

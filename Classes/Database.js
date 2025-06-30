@@ -27,7 +27,6 @@ class Database {
     this.pool;
     this.poolConnect;
   }
-
   async connect() {
     try {
       if (this.config.user === undefined) {
@@ -45,7 +44,7 @@ class Database {
       this.poolConnect = this.pool.connect();
       DatabaseLog.log({
         level: 'info',
-        message: 'Connection to database has been succesfully established',
+        message: 'Connecting to database...',
         senderFunction: 'IIF',
         file: 'Database.js',
       });
