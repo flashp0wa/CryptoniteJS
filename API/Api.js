@@ -4,7 +4,6 @@ const trade = require('./Routes/trade');
 const application = require('./Routes/application');
 const {ApiLog} = require('../Toolkit/Logger');
 const morgan = require('morgan');
-// const path = require('path');
 
 /**
  * Initializes cryptonite API
