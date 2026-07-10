@@ -273,70 +273,30 @@ class Database {
       });
     }
   };
-  sproc_InsertIntoKlines = async (inObj) => {
+  /**
+   * @param {string} json JSON string handed straight from the Binance websocket stream: a
+   * combined-stream frame ({stream, data:{k}}), a raw single-stream frame ({e, k}), a bare
+   * kline object, or an array of any of these for batch backfill. The InsertIntoKlines stored
+   * procedure shreds it with OPENJSON; only closed candles are persisted.
+   */
+  sproc_InsertIntoKlines = async (json) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
         level: 'silly',
-        message: 'Running stroed procedure Insert Into Klines',
+        message: 'Running stored procedure Insert Into Klines',
         senderFunction: 'sproc_InsertIntoKlines',
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('openTime', inObj.openTime)
-          .input('openPrice', inObj.openPrice)
-          .input('highPrice', inObj.highPrice)
-          .input('lowPrice', inObj.lowPrice)
-          .input('closePrice', inObj.closePrice)
-          .input('volume', inObj.volume)
-          .input('closeTime', inObj.closeTime)
-          .input('quoteAssetVolume', inObj.quoteAssetVolume)
-          .input('numberOfTrades', inObj.numberOfTrades)
-          .input('takerBuyBaseAssetVolume', inObj.takerBuyBaseAssetVolume)
-          .input('takerBuyQuoteAssetVolume', inObj.takerBuyQuoteAssetVolume)
-          .input('ignore', inObj.ignore)
-          .input('timeFrame', inObj.timeFrame)
-          .input('symbol', inObj.symbol)
-          .input('candleTypeId', inObj.candleTypeId)
-          .output('symbolId', sql.Int)
-          .output('timeFrameId', sql.Int)
-          .output('rsi', sql.Decimal(19, 8))
-          // .output('accDistIndicator', sql.Decimal(19, 2))
-          // .output('aroonUp14', sql.SmallInt)
-          // .output('aroonDown14', sql.SmallInt)
-          // .output('aroonUp25', sql.SmallInt)
-          // .output('aroonDown25', sql.SmallInt)
-          // .output('avgDirIndx', sql.Decimal(4, 2))
-          // .output('support', sql.Decimal(19, 8))
-          // .output('resistance', sql.Decimal(19, 8))
-          // .output('atr50', sql.Decimal(19, 8))
-          // .output('bollUpBand30', sql.Decimal(19, 8))
-          // .output('bollDownBand30', sql.Decimal(19, 8))
-          // .output('bollWidthBand30', sql.Decimal(19, 8))
-          // .output('ema50', sql.Decimal(19, 8))
-          // .output('ema9', sql.Decimal(19, 8))
-          // .output('ema200', sql.Decimal(19, 8))
-          // .output('ema10', sql.Decimal(19, 8))
-          // .output('ema12', sql.Decimal(19, 8))
-          // .output('ema26', sql.Decimal(19, 8))
-          // .output('macd1226', sql.Decimal(19, 8))
-          // .output('sma10', sql.Decimal(19, 8))
-          // .output('sma20', sql.Decimal(19, 8))
-          // .output('sma30', sql.Decimal(19, 8))
-          // .output('sma50', sql.Decimal(19, 8))
-          // .output('sma100', sql.Decimal(19, 8))
-          // .output('sma200', sql.Decimal(19, 8))
-          // .output('stoFastSmooth', sql.Decimal(19, 8))
-          // .output('stoSlowSmooth', sql.Decimal(19, 8))
-          // .output('willFracBuy', sql.Bit)
-          // .output('willFracSell', sql.Bit)
+          .input('json', sql.NVarChar(sql.MAX), json)
           .execute('InsertIntoKlines');
 
-      return request.output;
+      return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_InsertIntoKlines' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+        message: `Encountered an error running 'sproc_InsertIntoKlines' JSON: ${json}. ${error.stack}`,
         senderFunction: 'sproc_InsertIntoKlines',
         file: 'Database.js',
         discord: 'database-errors',

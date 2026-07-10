@@ -1,7 +1,6 @@
 const {WebSocketServer, WebSocket} = require('ws');
 const {ApplicationLog} = require('../Toolkit/Logger');
 const {getDatabase} = require('./Database');
-const {stream_getCandleType} = require('../Streams/OnMessageOperations');
 const {getTechnicalIndicators} = require('./TechnicalIndicatorClass');
 const {getExchanges} = require('./Exchanges/ExchangesClass');
 
@@ -141,31 +140,33 @@ class CryptoniteWebSocket {
       }
     }
     /**
-         *  Transfroms kline array to object
-         * @param {array} array
+         * Maps a Binance REST kline array to the websocket kline ("k") object shape so a gap
+         * backfill can be handed to InsertIntoKlines as JSON, exactly like a live stream frame.
+         * Historical klines returned for a closed gap are complete, so x (closed) is true.
+         * @param {array} array Binance REST kline
+         *   [openTime, open, high, low, close, volume, closeTime, quoteVol, trades, takerBase, takerQuote, ignore]
          * @param {string} symbol
          * @param {string} timeFrame
-         * @return {object}
+         * @return {object} kline object in Binance websocket "k" shape
          */
-    function klineResponse2Object(array, symbol, timeFrame) {
-      let processedArray = {};
-      processedArray.openTime = new Date(array[0]).toISOString().split('.')[0];
-      processedArray.closeTime = new Date(array[6]).toISOString().split('.')[0];
-      processedArray.symbol = symbol;
-      processedArray.timeFrame = timeFrame;
-      processedArray.openPrice = parseFloat(array[1]);
-      processedArray.closePrice = parseFloat(array[4]);
-      processedArray.highPrice = parseFloat(array[2]);
-      processedArray.lowPrice = parseFloat(array[3]);
-      processedArray.numberOfTrades = array[8];
-      processedArray.quoteAssetVolume = parseFloat(array[7]);
-      processedArray.volume = parseFloat(array[5]);
-      processedArray.takerBuyBaseAssetVolume = parseFloat(array[9]);
-      processedArray.takerBuyQuoteAssetVolume = parseFloat(array[10]);
-      processedArray.ignore = parseInt(array[11]);
-
-      processedArray = stream_getCandleType(processedArray);
-      return processedArray;
+    function klineRestToK(array, symbol, timeFrame) {
+      return {
+        t: array[0], // open time (epoch ms)
+        T: array[6], // close time (epoch ms)
+        s: symbol,
+        i: timeFrame,
+        o: array[1],
+        h: array[2],
+        l: array[3],
+        c: array[4],
+        v: array[5],
+        n: array[8],
+        x: true,
+        q: array[7],
+        V: array[9],
+        Q: array[10],
+        B: array[11],
+      };
     }
     /**
          * Checks for missing kline data between last database entry and current application run time.
@@ -207,16 +208,14 @@ class CryptoniteWebSocket {
                 continue;
               }
 
-              let counter = 0;
-              for (const kline of klines) {
-                if (counter === 0 || counter === klines.length - 1) {
-                  counter++;
-                  continue; // The first kline is already in the database, the last is not closed yet.
-                };
-                const obj = klineResponse2Object(kline, symbol, timeframe);
-                await this.db.sproc_InsertIntoKlines(obj);
-                counter++;
+              const klineBatch = [];
+              for (let counter = 0; counter < klines.length; counter++) {
+                // The first kline is already in the database, the last is not closed yet.
+                if (counter === 0 || counter === klines.length - 1) continue;
+                klineBatch.push(klineRestToK(klines[counter], symbol, timeframe));
               }
+              // Persist the whole gap in a single round trip; the stored procedure batch-inserts.
+              if (klineBatch.length) await this.db.sproc_InsertIntoKlines(JSON.stringify(klineBatch));
             } catch (error) {
               ApplicationLog.log({
                 level: 'error',
@@ -242,7 +241,8 @@ class CryptoniteWebSocket {
     };
     const onMessage = (processedData) => {
       if (processedData.closed) {
-        // this.technicalIndicator.handleKline(processedData);
+        // Persistence of closed candles is handled in the ws 'message' handler above,
+        // where the raw websocket JSON is passed straight to InsertIntoKlines.
         getExchanges()['binance'].strategy.run_PriceFall(processedData);
       }
     };
@@ -309,6 +309,12 @@ class CryptoniteWebSocket {
       ws.on('message', (data) => {
         this.lastWssMessageTimestamp = new Date();
         const dataObj = JSON.parse(data);
+        // Persist closed candles by handing the raw websocket JSON straight to SQL, which
+        // shreds it with OPENJSON. No field-by-field decomposition, no per-row round trips.
+        const kline = (dataObj.data && dataObj.data.k) || dataObj.k;
+        if (kline && kline.x) {
+          this.db.sproc_InsertIntoKlines(data.toString());
+        }
         const processedData = wssJsonStream2Object(dataObj);
         if (dataIntegrityIsChecked && this.technicalIndicator.isLoaded) {
           if (wssCache.length !== 0) {

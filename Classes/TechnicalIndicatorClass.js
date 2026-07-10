@@ -35,14 +35,19 @@ class TechnicalIndicatorClass {
     }
   }
 
-  async handleKline(klineObj) {
+  /**
+   * Persists a closed kline. The raw websocket JSON is handed straight to the
+   * InsertIntoKlines stored procedure, which shreds it with OPENJSON. Technical
+   * analysis runs separately (RunTechnicalAnalysis), so nothing is returned here.
+   * @param {string} rawJson Raw Binance kline websocket frame (or JSON array of frames)
+   */
+  async handleKline(rawJson) {
     try {
-      const res = await this.db.sproc_InsertIntoKlines(klineObj);
-      this.processSymbolData(res);
+      await this.db.sproc_InsertIntoKlines(rawJson);
     } catch (error) {
       ApplicationLog.log({
         level: 'error',
-        message: 'Error in processing kline data',
+        message: `Error in persisting kline data. ${error}`,
         senderFunction: 'handleKline',
         file: 'TechnicalIndicatorClass.js',
       });
