@@ -35,7 +35,7 @@ class CreateOrder extends Order {
   */
   async createOrder() {
     if (this.tradeMode === 'Paper') {
-      super.writeToDatabase(this.conObj);
+      super.writeToDatabase(JSON.stringify({...this.conObj, exchange: this.exchangeName}));
     } else {
       this.traderLog.log({
         level: 'info',

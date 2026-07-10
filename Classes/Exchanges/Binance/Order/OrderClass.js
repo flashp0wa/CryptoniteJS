@@ -28,8 +28,9 @@ class Order {
     this.leverage = this.getLeverage();
   }
   /**
-   * Write order response data to database
-   * @param {object} inObj Input object
+   * Writes the raw exchange order response straight to the database as JSON, merged with
+   * metadata the exchange doesn't know about (linkage, strategy, leverage).
+   * @param {object} inObj Optional OCO leg ids ({ocoLimitId, ocoStopLossLimitId}) for the parent order of an OCO pair
    */
   processOrderResponse(inObj) {
     this.traderLog.log({
@@ -39,52 +40,29 @@ class Order {
       file: 'createOrderClass.js',
     });
     try {
-      const dataObj = {
-        eventTime: this.orderResponse.datetime,
-        updateTime: this.orderResponse.info.updateTime ? new Date(Number(this.orderResponse.info.updateTime)).toISOString() : null,
-        orderId: this.orderResponse.id,
-        symbol: this.orderResponse.info.symbol,
-        orderType: this.orderResponse.type,
-        side: this.orderResponse.side,
-        price: this.orderResponse.price,
-        stopPrice: this.orderResponse.stopPrice,
-        amount: this.orderResponse.amount,
-        cost: this.orderResponse.cost,
-        filled: this.orderResponse.filled,
-        remaining: this.orderResponse.remaining,
-        timeInForce: this.orderResponse.timeInForce,
-        postOnly: this.orderResponse.postOnly,
-        reduceOnly: this.orderResponse.reduceOnly,
-        priceProtect: this.orderResponse.info.priceProtect,
-        workingType: this.orderResponse.info.workingType,
-        positionSide: this.orderResponse.info.positionSide,
-        orderStatus: this.orderResponse.status,
-        tradeStatus: this.orderResponse.info.status,
+      const payload = {
+        ...this.orderResponse,
         exchange: this.exchangeName,
         oco: false,
-        ocoLimitId: !inObj ? null : inObj.ocoLimitId,
-        ocoStopLossLimitId: !inObj ? null : inObj.ocoStopLossLimitId,
+        ocoLimitId: inObj ? inObj.ocoLimitId : null,
+        ocoStopLossLimitId: inObj ? inObj.ocoStopLossLimitId : null,
         parentOrderId: this.parentOrderId ? this.parentOrderId : null,
         siblingOrderId: this.siblingOrderId ? this.siblingOrderId : null,
         strategy: this.strategy,
+        timeFrame: this.timeFrame,
         leverage: this.leverage,
       };
-      if (typeof this.orderResponse.fee === 'undefined') {
-        dataObj.fee = null;
-      } else {
-        dataObj.fee = this.orderResponse.fee.cost * this.orderResponse.price; // convert fee to USD
-      }
 
       this.traderLog.log({
         level: 'info',
         message: 'NEW ORDER',
         senderFunction: 'processOrderResponse',
         file: 'OrderClass.js',
-        obj: dataObj,
+        obj: payload,
         discord: 'successful-orders',
       });
 
-      this.writeToDatabase(dataObj);
+      this.writeToDatabase(JSON.stringify(payload));
       this.traderLog.log({
         level: 'info',
         message: 'Order response has been processed',
@@ -102,16 +80,16 @@ class Order {
     }
   }
   /**
-   * @param {object} databaseObj Object with values will be written to the database
+   * @param {string} json JSON string to persist as-is; the stored procedure extracts columns from it
    * @param {boolean} failed True when order is failed
    */
-  writeToDatabase(databaseObj, failed) {
+  writeToDatabase(json, failed) {
     if (this.tradeMode === 'Paper') {
-      this.db.sproc_InsertIntoOrderPaper(databaseObj);
+      this.db.sproc_InsertIntoOrderPaper(json);
     } else if (failed) {
-      this.db.sproc_InsertIntoOrderFailed(databaseObj);
+      this.db.sproc_InsertIntoOrderFailed(json);
     } else {
-      this.db.sproc_InsertIntoOrder(databaseObj);
+      this.db.sproc_InsertIntoOrder(json);
     }
   }
 

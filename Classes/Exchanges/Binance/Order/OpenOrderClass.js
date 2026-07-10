@@ -25,9 +25,9 @@ class OpenOrder {
       this.openOrders = await this.db.singleRead(`select * from itvf_ReturnOrders('open', ${this.excObj.id})`);
       for (const order of this.openOrders) {
         try {
-          const res = await this.excObj.fetchOrderStatus(order.orderId, order.symbol);
-          if ((res === 'closed' || res === 'canceled') && order.oco === false) {
-            if (order.siblingOrderId && res === 'closed') {
+          const res = await this.excObj.fetchOrder(order.orderId, order.symbol);
+          if ((res.status === 'closed' || res.status === 'canceled') && order.oco === false) {
+            if (order.siblingOrderId && res.status === 'closed') {
               OpenOrderCheckLog.log({
                 level: 'info',
                 message: `Order ${order.orderId} has been closed, canceling sibling order ${order.siblingOrderId}`,
@@ -52,16 +52,11 @@ class OpenOrder {
                 });
               }
             }
-            this.db.sproc_UpdateOrder({
-              filled: res.filled,
-              cost: res.cost,
-              orderStatus: res.status,
-              tradeStatus: res.info.status,
+            this.db.sproc_UpdateOrder(JSON.stringify({
+              ...res,
               orderId: order.orderId,
-              fee: !res.fee ? null : res.fee,
               exchangeId: this.excObj.id,
-              updateTime: new Date(Number(res.info.updateTime)).toISOString(),
-            });
+            }));
           }
         } catch (error) {
           OpenOrderCheckLog.log({

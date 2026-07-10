@@ -894,7 +894,7 @@ class StrategyClass {
 
         if ((closeEntryCandle < resistance) && side === 2) {
           orderObj.reason = 'Entry candle close price is lower than resistance level.';
-          this.db.sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(JSON.stringify(orderObj));
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Entry candle close price is lower than resistance level. No order will be placed',
@@ -903,7 +903,7 @@ class StrategyClass {
           });
         } else if ((closeEntryCandle > support) && side === 2) {
           orderObj.reason = 'Entry candle close price is higher than support level.';
-          this.db.sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(JSON.stringify(orderObj));
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Entry candle close price is higher than support level. No order will be placed',
@@ -912,7 +912,7 @@ class StrategyClass {
           });
         } else if (!criteria) {
           orderObj.reason = 'Margin value does not meet criteria.';
-          this.db.sproc_InsertIntoOrderFailed(orderObj);
+          this.db.sproc_InsertIntoOrderFailed(JSON.stringify(orderObj));
           StrategyHandlerLog.log({
             level: 'warn',
             message: 'Margin value does not meet criteria. No order will be placed',

@@ -12,7 +12,15 @@ class CreateOcoOrder extends Order {
     this.parentOrderId;
   }
   /**
-   * Write order response data to database
+   * Writes each raw leg of the OCO order response (orderReports[0] is the STOP leg,
+   * orderReports[1] is the LIMIT leg) straight to the database as JSON, merged with
+   * metadata the exchange doesn't know about (linkage, strategy).
+   *
+   * Binance's raw OCO leg shape (orderId/origQty/transactTime/...) differs from ccxt's
+   * unified order shape that the main order path writes. To let both paths share one
+   * stored procedure, each leg is nested under `info` (mirroring ccxt's own convention
+   * of unified fields + raw `info`) with just enough top-level fields added to line up
+   * with the ccxt shape - no data is dropped, only addressed under consistent keys.
    */
   processOrderResponse() {
     this.traderLog.log({
@@ -22,44 +30,34 @@ class CreateOcoOrder extends Order {
       file: 'CreateOcoOrder.js',
     });
     try {
-      const ocoStopLossDataObj = {
-        symbol: this.orderResponse['orderReports'][0].symbol,
-        orderId: this.orderResponse['orderReports'][0].orderId,
-        eventTime: new Date(Number(this.orderResponse['orderReports'][0].transactTime)).toISOString(),
-        orderType: (this.orderResponse['orderReports'][0].type).toLowerCase(),
-        side: (this.orderResponse['orderReports'][0].side).toLowerCase(),
-        price: this.orderResponse['orderReports'][0].price,
-        stopPrice: this.orderResponse['orderReports'][0].stopPrice,
-        amount: this.orderResponse['orderReports'][0].origQty,
-        orderStatus: 'open',
-        tradeStatus: this.orderResponse['orderReports'][0].status,
+      const [stopLossLeg, limitLeg] = this.orderResponse['orderReports'];
+      const legMetadata = {
         exchange: this.exchangeName,
         parentOrderId: this.parentOrderId,
         oco: true,
         strategy: this.strategy,
       };
-      const ocoLimitDataObj = {
-        symbol: this.orderResponse['orderReports'][1].symbol,
-        orderId: this.orderResponse['orderReports'][1].orderId,
-        eventTime: new Date(Number(this.orderResponse['orderReports'][1].transactTime)).toISOString(),
-        orderType: (this.orderResponse['orderReports'][1].type).toLowerCase(),
-        side: (this.orderResponse['orderReports'][1].side).toLowerCase(),
-        price: this.orderResponse['orderReports'][1].price,
-        amount: this.orderResponse['orderReports'][1].origQty,
-        orderStatus: 'open',
-        tradeStatus: this.orderResponse['orderReports'][1].status,
-        exchange: this.exchangeName,
-        parentOrderId: this.parentOrderId,
-        oco: true,
-        strategy: this.strategy,
-      };
+      const toOrderPayload = (leg) => ({
+        id: leg.orderId,
+        datetime: new Date(Number(leg.transactTime)).toISOString(),
+        type: leg.type,
+        side: leg.side,
+        price: leg.price,
+        stopPrice: leg.stopPrice,
+        amount: leg.origQty,
+        status: 'open', // OCO legs are freshly placed and working
+        info: leg,
+        ...legMetadata,
+      });
+      const stopLossPayload = toOrderPayload(stopLossLeg);
+      const limitPayload = toOrderPayload(limitLeg);
 
       this.traderLog.log({
         level: 'info',
         message: 'One-Cancles-the-Other || LIMIT',
         senderFunction: 'processOrderResponse',
         file: 'CreateOcoOrder.js',
-        obj: ocoLimitDataObj,
+        obj: limitPayload,
         discord: 'successful-orders',
       });
       this.traderLog.log({
@@ -67,12 +65,12 @@ class CreateOcoOrder extends Order {
         message: 'One-Cancles-the-Other || STOP',
         senderFunction: 'processOrderResponse',
         file: 'CreateOcoOrder.js',
-        obj: ocoStopLossDataObj,
+        obj: stopLossPayload,
         discord: 'successful-orders',
       });
 
-      super.writeToDatabase(ocoLimitDataObj);
-      super.writeToDatabase(ocoStopLossDataObj);
+      super.writeToDatabase(JSON.stringify(limitPayload));
+      super.writeToDatabase(JSON.stringify(stopLossPayload));
       this.traderLog.log({
         level: 'info',
         message: 'OCO order response has been processed',

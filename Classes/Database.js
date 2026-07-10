@@ -246,7 +246,10 @@ class Database {
       });
     }
   };
-  sproc_UpdateOrder = async (inObj) => {
+  /**
+   * @param {string} json JSON string: raw ccxt order status response merged with {orderId, exchangeId}
+   */
+  sproc_UpdateOrder = async (json) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
@@ -256,21 +259,14 @@ class Database {
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('filled', inObj.filled)
-          .input('cost', inObj.cost )
-          .input('orderStatus', inObj.orderStatus)
-          .input('tradeStatus', inObj.tradeStatus)
-          .input('orderId', inObj.orderId)
-          .input('fee', inObj.fee)
-          .input('exchangeId', inObj.exchangeId)
-          .input('updateTime', inObj.updateTime)
+          .input('json', sql.NVarChar(sql.MAX), json)
           .execute('UpdateOrder');
 
       return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_UpdateOrder'. Object: ${JSON.stringify(inObj)} ${error.stack}`,
+        message: `Encountered an error running 'sproc_UpdateOrder'. JSON: ${json} ${error.stack}`,
         senderFunction: 'sproc_UpdateOrder',
         file: 'Database.js',
         discord: 'database-errors',
@@ -347,7 +343,10 @@ class Database {
       });
     }
   };
-  sproc_InsertIntoOrder = async (inObj) => {
+  /**
+   * @param {string} json JSON string: raw ccxt order response merged with exchange/strategy/leverage/oco metadata
+   */
+  sproc_InsertIntoOrder = async (json) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
@@ -357,50 +356,24 @@ class Database {
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('symbol', inObj.symbol)
-          .input('updateTime', inObj.updateTime)
-          .input('orderId', inObj.orderId)
-          .input('eventTime', inObj.eventTime)
-          .input('orderType', inObj.orderType)
-          .input('side', inObj.side)
-          .input('price', inObj.price)
-          .input('stopPrice', inObj.stopPrice)
-          .input('timeInForce', inObj.timeInForce)
-          .input('postOnly', inObj.postOnly)
-          .input('reduceOnly', inObj.reduceOnly)
-          .input('priceProtect', inObj.priceProtect)
-          .input('workingType', inObj.workingType)
-          .input('positionSide', inObj.positionSide)
-          .input('amount', inObj.amount)
-          .input('orderStatus', inObj.orderStatus)
-          .input('tradeStatus', inObj.tradeStatus)
-          .input('cost', inObj.cost)
-          .input('exchange', inObj.exchange)
-          .input('filled', inObj.filled)
-          .input('remaining', inObj.remaining)
-          .input('fee', inObj.fee)
-          .input('oco', inObj.oco)
-          .input('ocoLimitId', inObj.ocoLimitId)
-          .input('ocoStopLossLimitId', inObj.ocoLimitId)
-          .input('parentOrderId', inObj.parentOrderId)
-          .input('siblingOrderId', inObj.siblingOrderId)
-          .input('strategy', inObj.strategy)
-          .input('timeFrame', inObj.timeFrame)
-          .input('leverage', inObj.leverage)
+          .input('json', sql.NVarChar(sql.MAX), json)
           .execute('InsertIntoOrder');
 
       return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_InsertIntoOrder' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+        message: `Encountered an error running 'sproc_InsertIntoOrder' JSON: ${json}. ${error.stack}`,
         senderFunction: 'sproc_InsertIntoOrder',
         file: 'Database.js',
         discord: 'database-errors',
       });
     }
   };
-  sproc_InsertIntoOrderFailed = async (inObj) => {
+  /**
+   * @param {string} json JSON string: either a raw ccxt order response, or the order request when it was rejected pre-flight
+   */
+  sproc_InsertIntoOrderFailed = async (json) => {
     try {
       await this.poolConnect;
       DatabaseLog.log({
@@ -410,29 +383,23 @@ class Database {
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('symbol', inObj.symbol)
-          .input('orderType', inObj.type)
-          .input('side', inObj.side)
-          .input('price', inObj.price)
-          .input('stopPrice', inObj.stopPrice)
-          .input('amount', inObj.orderAmount)
-          .input('exchange', inObj.exchange)
-          .input('limitPrice', inObj.limitPrice)
-          .input('strategy', inObj.strategy)
-          .input('reason', inObj.reason)
+          .input('json', sql.NVarChar(sql.MAX), json)
           .execute('InsertIntoOrderFailed');
 
       return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_InsertIntoOrderFailed' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
+        message: `Encountered an error running 'sproc_InsertIntoOrderFailed' JSON: ${json}. ${error.stack}`,
         senderFunction: 'sproc_InsertIntoOrderFailed',
         file: 'Database.js',
         discord: 'database-errors',
       });
     }
   };
+  /**
+   * @param {string} json JSON string: the order request object (paper trading never calls the exchange, so there is no response to persist)
+   */
   sproc_InsertIntoOrderPaper = async (json) => {
     try {
       await this.poolConnect;
@@ -443,52 +410,20 @@ class Database {
         file: 'Database.js',
       });
       const request = await this.pool.request()
-          .input('json', json)
+          .input('json', sql.NVarChar(sql.MAX), json)
           .execute('InsertIntoOrderPaper');
 
       return request;
     } catch (error) {
       DatabaseLog.log({
         level: 'error',
-        message: `Encountered an error running 'sproc_InsertIntoOrderPaper' JSON: ${json}}. ${error.stack}`,
+        message: `Encountered an error running 'sproc_InsertIntoOrderPaper' JSON: ${json}. ${error.stack}`,
         senderFunction: 'sproc_InsertIntoOrderPaper',
         file: 'Database.js',
         discord: 'database-errors',
       });
     }
   };
-  // sproc_InsertIntoOrderPaper = async (inObj) => {
-  //   try {
-  //     await this.poolConnect;
-  //     DatabaseLog.log({
-  //       level: 'silly',
-  //       message: 'Running stroed procedure Insert Into OrderPaper',
-  //       senderFunction: 'sproc_InsertIntoOrderPaper',
-  //       file: 'Database.js',
-  //     });
-  //     const request = await this.pool.request()
-  //         .input('symbol', inObj.symbol)
-  //         .input('orderType', inObj.type)
-  //         .input('side', inObj.side)
-  //         .input('price', inObj.price)
-  //         .input('stopPrice', inObj.stopPrice)
-  //         .input('amount', inObj.orderAmount)
-  //         .input('exchange', inObj.exchange)
-  //         .input('limitPrice', inObj.limitPrice)
-  //         .input('strategy', inObj.strategy)
-  //         .execute('InsertIntoOrderPaper');
-
-  //     return request;
-  //   } catch (error) {
-  //     DatabaseLog.log({
-  //       level: 'error',
-  //       message: `Encountered an error running 'sproc_InsertIntoOrderPaper' Object: ${JSON.stringify(inObj)}. ${error.stack}`,
-  //       senderFunction: 'sproc_InsertIntoOrderPaper',
-  //       file: 'Database.js',
-  //       discord: 'database-errors',
-  //     });
-  //   }
-  // };
   sproc_InsertIntoAverageTrueRange = async (inObj) => {
     try {
       await this.poolConnect;
